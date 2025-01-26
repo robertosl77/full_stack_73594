@@ -1,0 +1,64 @@
+/* General */
+body {
+    font-family: Verdana, Arial, sans-serif;
+    margin: 0;
+    padding: 5px;
+    background-color: #edece9;
+    color: #775548;
+}
+
+a {
+    color: #ef6d24;
+    text-decoration: underline;
+    font-weight: bold;
+
+}
+
+.diario1 {
+    color: #3baec8;
+}
+
+.diario2 {
+    color: #ef4b51;
+}
+
+/* Header */
+.header-img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* Navigation */
+.menu {
+    /* display: flex; */
+    align-items: center;
+    gap: 10px;
+}
+
+.menu a {
+    font-size: 1.3rem;
+}
+
+.menu span.separator {
+    font-size: 1.3rem;
+    color: #d35400;
+}
+
+/* Main Content */
+h2 {
+    color: #775548;
+    font-size: 2.4rem;
+}
+
+/* Sections with brown borders */
+section h3 {
+    background-color: #775548;
+    color: #e1d4ce;
+    padding: 1px;
+    font-size: large;
+}
+
+.diferente {
+    color: #d8b03b;
+}
