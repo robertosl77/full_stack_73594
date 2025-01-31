@@ -4,16 +4,32 @@ body {
     background-color: #e11364;
     margin: 0;
     padding: 0;
-}
-
-main {
     width: 80%;
     margin: 15px auto 15px;
 }
 
+header {
+    margin: 15px auto 15px;
+    background-color: #bc105c;
+    border-left: 5px solid #ffffff;
+    border-right: 5px solid #ffffff;
+    text-align: center;
+}
+
+footer {
+    background-color: #e96093;
+    text-align: center;
+    padding: 5px;
+    color: white;
+    margin-top: 20px;
+    font-size: 0.6em;
+}
+
+/* Estructuras de Titulos */
 h1 {
     color: white;
     font-size: 2.5em;
+    padding: 10px;
 }
 
 h2 {
@@ -27,14 +43,6 @@ h3 {
 }
 
 /* Clases Personalizadas */
-.titulo_principal {
-    background-color: #bc105c;
-    padding: 10px;
-    border-left: 5px solid #ffffff;
-    border-right: 5px solid #ffffff;
-    text-align: center;
-}
-
 .juegos {
     background-color: #bc105c;
     padding: 10px;
@@ -86,10 +94,3 @@ h3 {
     background-color: #388E3C;
 }
 
-footer {
-    background-color: #c2185b;
-    text-align: center;
-    padding: 10px;
-    color: white;
-    margin-top: 20px;
-}
