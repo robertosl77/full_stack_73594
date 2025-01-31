@@ -29,7 +29,7 @@ h3 {
 /* Clases Personalizadas */
 .titulo_principal {
     background-color: #bc105c;
-    padding: 20px;
+    padding: 10px;
     border-left: 5px solid #ffffff;
     border-right: 5px solid #ffffff;
     text-align: center;
@@ -37,7 +37,7 @@ h3 {
 
 .juegos {
     background-color: #bc105c;
-    padding: 20px;
+    padding: 10px;
     border-radius: 10px;
 }
 
@@ -60,21 +60,20 @@ h3 {
 }
 
 .contenido img {
-    width: 300px;
-    border-radius: 10px;
+    width: 100%;
 }
 
-.descripcion {
-    flex: 1;
-}
-
-p {
+.descripcion p  {
     color: black;
-    font-size: 1em;
+    font-size: 0.7em;
 }
 
 .btn {
-    display: inline-block;
+    /* ubica al centro --> */
+    display: block;
+    width: fit-content; /* Hace que el ancho se ajuste al contenido */
+    margin: 10px auto; /* Centra horizontalmente */    
+    /* <-- */
     background-color: #4CAF50;
     color: white;
     padding: 10px 20px;
