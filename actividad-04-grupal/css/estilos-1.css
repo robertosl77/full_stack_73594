@@ -94,3 +94,34 @@ h3 {
     background-color: #388E3C;
 }
 
+
+/* ------------------------------------------------------------------------------------------------------- */
+
+.imagenes {
+    display: flex;
+    flex-wrap: wrap; /* Permite que las imágenes pasen a la siguiente línea si no caben */
+    justify-content: center; /* Centra las imágenes horizontalmente */
+    gap: 5px; /* Espacio entre imágenes */
+    margin: 5px auto;
+}
+
+.imagenes img {
+    margin: 5px;
+    width: 380px;
+    height: auto;
+    max-width: 100%;
+    border: 1px solid #000;
+}
+
+.imagenes img:hover {
+    opacity: 0.8; /* Reduce la opacidad al pasar el mouse */
+    transform: scale(1.1); /* Hace que la imagen se agrande un poco */
+    transition: all 0.3s ease;
+}
+
+.compra {
+    display: flex;
+    gap: 10px; /* Espaciado entre los botones */
+    justify-content: center; /* Centra los botones */
+}
+
