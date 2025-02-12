@@ -1,3 +1,9 @@
+/**
+ * Actividad 05: Emojis
+ * Fecha: 12/02/2024
+ * Autor: Roberto Sanchez Leiva
+ */
+
 function ejercicio1() {
     /**
      * Defino un vector donde carlo los emogies
