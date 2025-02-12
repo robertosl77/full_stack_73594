@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .sudoku-container {
+            display: grid;
+            grid-template-columns: repeat(9, 40px);
+            gap: 2px;
+            margin-bottom: 20px;
+        }
+        .cell {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 20px;
+            border: 1px solid black;
+            outline: none;
+        }
+        .fixed {
+            background-color: #ddd;
+        }
+        .cell:focus {
+            background-color: #e0f7fa;
+        }
+        .error {
+            background-color: #ffcccc;
+        }
+    </style>
+    <!-- <script src="./sudoku.js"></script> -->
+</head>
+<body>
+    <h1>Sudoku</h1>
+    <div class="sudoku-container" id="sudoku-board"></div>
+    <button onclick="verificarSudoku()">Verificar</button>
+
+    <script>
+        function crearSudoku() {
+            const matriz = Array(9).fill().map(() => Array(9).fill(0));
+            
+            function esValido(fila, col, num) {
+                for (let i = 0; i < 9; i++) {
+                    if (matriz[fila][i] === num || matriz[i][col] === num) return false;
+                }
+                let inicioFila = Math.floor(fila / 3) * 3;
+                let inicioCol = Math.floor(col / 3) * 3;
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        if (matriz[inicioFila + i][inicioCol + j] === num) return false;
+                    }
+                }
+                return true;
+            }
+
+            function llenarTablero(fila, col) {
+                if (fila === 9) return true;
+                let siguienteFila = col === 8 ? fila + 1 : fila;
+                let siguienteCol = (col + 1) % 9;
+                let numeros = Array.from({ length: 9 }, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+                for (let num of numeros) {
+                    if (esValido(fila, col, num)) {
+                        matriz[fila][col] = num;
+                        if (llenarTablero(siguienteFila, siguienteCol)) return true;
+                        matriz[fila][col] = 0;
+                    }
+                }
+                return false;
+            }
+
+            llenarTablero(0, 0);
+            return matriz;
+        }
+
+        function generarTablero() {
+            const sudoku = crearSudoku();
+            const board = document.getElementById("sudoku-board");
+            board.innerHTML = "";
+            
+            for (let i = 0; i < 9; i++) {
+                for (let j = 0; j < 9; j++) {
+                    const cell = document.createElement("input");
+                    cell.type = "text";
+                    cell.classList.add("cell");
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    cell.maxLength = 1;
+                    
+                    if (Math.random() < 0.5) { // Oculta el 50% de los números
+                        cell.value = sudoku[i][j];
+                        cell.classList.add("fixed");
+                        cell.disabled = true;
+                    } else {
+                        cell.addEventListener("input", validarEntrada);
+                        cell.dataset.solution = sudoku[i][j];
+                    }
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        function validarEntrada(event) {
+            const cell = event.target;
+            const valor = parseInt(cell.value, 10);
+            if (isNaN(valor) || valor < 1 || valor > 9) {
+                cell.value = "";
+            }
+        }
+
+        function verificarSudoku() {
+            const cells = document.querySelectorAll(".cell:not(.fixed)");
+            let correcto = true;
+            
+            cells.forEach(cell => {
+                const valorIngresado = parseInt(cell.value, 10);
+                const valorCorrecto = parseInt(cell.dataset.solution, 10);
+                
+                if (valorIngresado !== valorCorrecto) {
+                    cell.classList.add("error");
+                    correcto = false;
+                } else {
+                    cell.classList.remove("error");
+                }
+            });
+            
+            if (correcto) {
+                alert("¡Felicidades! Sudoku completado correctamente.");
+            } else {
+                alert("Hay errores, revisa los números en rojo.");
+            }
+        }
+
+        generarTablero();
+    </script>
+</body>
+</html>
