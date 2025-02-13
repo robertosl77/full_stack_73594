@@ -39,7 +39,18 @@ function validaNumero(numero){
     return resultado;
 }
 function obtienePatente(numero){
-    return "AAA 000";
+    const contadorNumerico = numero % 1000;
+    let letras = Math.floor(numero / 1000);
+
+    console.log(letras);
+    const a = String.fromCharCode(65 + (letras % 26));
+    letras = Math.floor(letras / 26);
+    const b =String.fromCharCode(65 + (letras % 26));
+    letras = Math.floor(letras / 26);
+    const c = String.fromCharCode(65 + (letras % 26));
+
+    const patente = `${a}${b}${c} ${contadorNumerico.toString().padStart(3, '0')}`;
+    return patente;
 }
 
 // Ejemplo de uso
