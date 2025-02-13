@@ -5,7 +5,6 @@ function bienvenida(){
         "#########################################\n" 
     );
 }
-
 function pideNumero() {
     const readline = require('readline');
     const rl = readline.createInterface({
@@ -20,30 +19,38 @@ function pideNumero() {
         });
     });
 }
-
-function validaNumero(){
-    let numero = 0;
+function validaNumero(numero){
     let resultado = true;
-    do {
-        numero = pideNumero();
-        console.log("pre validacion: "+numero);
-        if (!isNaN(numero)) {
-            resultado = false;
-        } else if (!Number.isInteger(Number(numero))) {
-            resultado = false;
-        } else if (numero.length < 0) {
-            resultado = false;
-        }
-    } while (resultado);
+
+    if (isNaN(numero)) {
+        console.log("No es un número");
+        resultado = false;
+    } else if (!Number.isInteger(Number(numero))) {
+        console.log("No es un número entero");
+        resultado = false;
+    } else if (numero < 0) {
+        console.log("No es un número mayor o igual que cero");
+        resultado = false;
+    } else if (numero.length === 0) {
+        console.log("No ingreso ningun número");
+        resultado = false;
+    }
     
-    return numero;
+    return resultado;
+}
+function obtienePatente(numero){
+    return "AAA 000";
 }
 
 // Ejemplo de uso
 async function main() {
     bienvenida();
-    const numero = await validaNumero();
-    console.log("Número ingresado: " + numero);
+    let numero = 0;
+    do {
+        numero = await pideNumero();
+    } while (!validaNumero(numero));
+
+    console.log(obtienePatente(numero));
 }
 
 main();
