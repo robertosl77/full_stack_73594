@@ -1,10 +1,3 @@
-function bienvenida(){
-    console.log(
-        "#########################################\n" +
-        "--- Bienvenido al juego de la patente ---\n" +
-        "#########################################\n" 
-    );
-}
 function pideNumero() {
     const readline = require('readline');
     const rl = readline.createInterface({
@@ -54,7 +47,11 @@ function obtienePatente(numero){
 
 // Ejemplo de uso
 async function main() {
-    bienvenida();
+    console.log(
+        "#########################################\n" +
+        "--- Bienvenido al juego de la patente ---\n" +
+        "#########################################\n" 
+    );
     let numero = 0;
     while (true) {
         do {
