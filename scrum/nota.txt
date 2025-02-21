@@ -1,0 +1,15 @@
+FECHA DE ENTREGA: 5/3
+CODIGO NATIVO: html, css y js
+
+FRONT - FORMAS DE TRABAJO ACTUALES: 
+    1. codigo nativo: codigo puro
+    2. plantillas
+    3. react
+
+
+DESARROLLO: 
+    index.html
+    alta.html
+    contacto.html
+    nosotros.html
+

@@ -1,0 +1,17 @@
+Sprint 1 - 21/02/2025
+
+Historias de Usuario Incluidas:
+
+HU001: Implementar un header con el logo y barra de navegación accesible en todas las páginas.
+
+HU002: Crear un footer con información relevante y enlaces adicionales.
+
+HU003: Asegurar la funcionalidad de los enlaces de navegación para acceder a index.html, alta.html, contacto.html y nosotros.html.
+
+Objetivos del Sprint:
+
+Definir y aplicar una estructura HTML uniforme en todas las páginas.
+
+Diseñar y estilizar el header y footer con CSS nativo.
+
+Configurar correctamente los enlaces para garantizar la navegación.
