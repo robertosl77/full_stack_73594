@@ -15,8 +15,15 @@
     position: relative;
 }
 
+/* .producto-altura {
+    height: 300px;
+} */
+
 .producto-card img {
-    width: 100%;
+    width: auto;
+    max-width: 90%;
+    height: 300px; 
+    object-fit: contain;
     border-radius: 5px;
 }
 
