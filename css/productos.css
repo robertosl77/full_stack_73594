@@ -16,9 +16,9 @@
 }
 
 .producto-card img {
-    width: auto;
+    /* width: auto; */
     max-width: 90%;
-    height: 300px; 
+    height: 250px; 
     object-fit: contain;
     border-radius: 5px;
 }
