@@ -1,0 +1,15 @@
+Sprint 2 - 22/02/2025
+
+Historias de Usuario Incluidas:
+
+HU004: Como usuario, quiero que el sitio sea responsive para visualizarlo correctamente en dispositivos móviles y de escritorio.
+
+HU005: Como usuario, quiero que el diseño tenga tipografías y colores atractivos sin perder legibilidad.
+
+Objetivos del Sprint:
+
+Aplicar media queries en CSS para adaptar el diseño a distintas resoluciones.
+
+Definir una paleta de colores y tipografías que aseguren una buena experiencia visual.
+
+Implementar ajustes de tamaño y distribución para mejorar la usabilidad en distintos dispositivos.

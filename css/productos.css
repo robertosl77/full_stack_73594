@@ -1,0 +1,80 @@
+#productos {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.producto-card {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    width: 250px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.producto-card img {
+    width: 100%;
+    border-radius: 5px;
+}
+
+.descuento {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: gold;
+    color: black;
+    padding: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.bodega, .tipo-vino {
+    font-size: 14px;
+    color: gray;
+}
+
+.precio {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.precio-antiguo {
+    text-decoration: line-through;
+    color: red;
+    font-size: 14px;
+}
+
+.stock {
+    font-size: 14px;
+    color: green;
+    margin-bottom: 10px;
+}
+
+.cantidad {
+    margin: 10px 0;
+}
+
+.cantidad input {
+    width: 50px;
+    text-align: center;
+}
+
+.agregar-carrito {
+    background: black;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.agregar-carrito:hover {
+    background: darkgray;
+}
