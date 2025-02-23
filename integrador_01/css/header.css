@@ -56,3 +56,26 @@ nav {
         display: flex; /* Muestra el menú cuando se activa */
     }
 }
+
+/* Carrito de Comrpas */
+#cart-container {
+    position: relative;
+}
+
+#cart-count {
+    padding: 2px 6px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: gold;
+    color: black;
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    align-items: center;
+    transform: translate(50%, -50%);
+}
+
+
