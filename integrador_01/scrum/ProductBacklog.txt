@@ -12,6 +12,8 @@ Historias de usuario (Ejemplo)
         •HU001: Como usuario, quiero que todas las páginas tengan un header con el logo y una barra de navegación para moverme fácilmente por el sitio.
         •HU002: Como usuario, quiero un footer en todas las páginas con información relevante y enlaces adicionales.
         •HU003: Como usuario, quiero que los enlaces de navegación sean funcionales y me permitan moverme entre index.html, alta.html, contacto.html y nosotros.html.
+        •HU016: Como usuario, cuando estoy en index.html, quiero ver un buscador de productos en el menú, ubicado entre "Inicio" y "Contacto".
+        •HU017: Como usuario, cuando estoy en index.html, quiero ver una campanita de compra en el menú, ubicada junto al buscador, que me indique cuántos productos agregué.
     2. Diseño responsivo y estético
         •HU004: Como usuario, quiero que el sitio sea responsive para visualizarlo correctamente en dispositivos móviles y de escritorio.
         •HU005: Como usuario, quiero que el diseño tenga tipografías y colores atractivos sin perder legibilidad.
