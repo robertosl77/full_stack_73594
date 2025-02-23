@@ -6,6 +6,8 @@ HU004: Como usuario, quiero que el sitio sea responsive para visualizarlo correc
 
 HU005: Como usuario, quiero que el diseño tenga tipografías y colores atractivos sin perder legibilidad.
 
+HU006: Como usuario, quiero que las imágenes de los productos se muestren correctamente sin distorsionarse y manteniendo proporciones adecuadas.
+
 Objetivos del Sprint:
 
 Aplicar media queries en CSS para adaptar el diseño a distintas resoluciones.
@@ -13,6 +15,8 @@ Aplicar media queries en CSS para adaptar el diseño a distintas resoluciones.
 Definir una paleta de colores y tipografías que aseguren una buena experiencia visual.
 
 Implementar ajustes de tamaño y distribución para mejorar la usabilidad en distintos dispositivos.
+
+Asegurar que las imágenes de productos mantengan su relación de aspecto sin distorsiones.
 
 
 
