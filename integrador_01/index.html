@@ -5,19 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio</title>
     <link rel="stylesheet" href="css/general.css">
+    <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/productos.css">
+    <link rel="stylesheet" href="css/banner.css">
 </head>
 <body>
 
     <script src="js/header.js" defer></script>
 
     <main>
-        <h1>Bienvenido a nuestra tienda</h1>
-        <section id="productos">
-
-            <script src="js/productos.js" defer></script>
-
+        <section id="productos-vinos">
+            <div class="banner">
+                <img src="categoria/vinos2.avif" alt="Categoría Vinos">
+                <h2 class="titulo-banner">Sección de Vinos</h2>
+            </div>
+            <script src="js/vinos.js" defer></script>
         </section>
+        
+        <br/><br/>
+        
+        <section id="productos-spirits">
+            <div class="banner">
+                <img src="categoria/spirits.jpg" alt="Categoría Spirits">
+                <h2 class="titulo-banner">Sección Spirits</h2>
+            </div>
+            <script src="js/spirits.js" defer></script>
+        </section>
+        
+    
+        <br/><br/>
     </main>
 
     <script src="js/footer.js" defer></script>
