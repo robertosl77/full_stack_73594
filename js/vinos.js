@@ -8,7 +8,7 @@ function vinos() {
             bodega: "El Esteco",
             tipo_vino: "Blend",
             precio_original: 69614.00,
-            stock: 10
+            stock: 0
         },
         {
             id: 2,

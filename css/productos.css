@@ -17,6 +17,15 @@
     position: relative;
 }
 
+/* Agrega un margen inferior a la última fila de productos para separarlos del banner */
+#productos-container section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 50px; /* Agrega espacio solo antes del siguiente banner */
+}
+
 .producto-card img {
     /* width: auto; */
     max-width: 90%;
