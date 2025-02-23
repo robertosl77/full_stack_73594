@@ -98,7 +98,7 @@ function vinos() {
 function spirits() { // Antes era vinos(), ahora es spirits()
     return [
         {
-            id: 1,
+            id: 10,
             descuento: 30,
             imagen: "productos/1_combo_dulzura_.webp",
             nombre: "Combo Dulzura",
@@ -108,7 +108,7 @@ function spirits() { // Antes era vinos(), ahora es spirits()
             stock: 5
         },
         {
-            id: 2,
+            id: 11,
             descuento: 30,
             imagen: "productos/whatsapp_image_2024-05-29_at_15.39.54.webp",
             nombre: "Gordon´s Pink Gin",
@@ -118,7 +118,7 @@ function spirits() { // Antes era vinos(), ahora es spirits()
             stock: 19
         },
         {
-            id: 3,
+            id: 12,
             descuento: 0,
             imagen: "productos/30008_8.webp",
             nombre: "Johnnie Walker Swing",
@@ -131,61 +131,87 @@ function spirits() { // Antes era vinos(), ahora es spirits()
 }
 
 // Función para cargar una categoría con su banner y productos
-function cargarSeccion(tipo, obtenerProductos, imagenBanner, tituloBanner) {
-    document.addEventListener("DOMContentLoaded", function () {
-        const productosContainer = document.getElementById("productos-container");
+document.addEventListener("DOMContentLoaded", function () {
+    inicializarProductos();
+});
 
-        // Crear la sección con banner
-        const seccion = document.createElement("section");
-        seccion.id = `productos-${tipo}`;
-        seccion.innerHTML = `
-            <div class="banner">
-                <img src="${imagenBanner}" alt="Categoría ${tituloBanner}">
-                <h2 class="titulo-banner">${tituloBanner}</h2>
-            </div>
-        `;
+function inicializarProductos() {
+    cargarSeccion("vinos", vinos, "categorias/vinos.avif", "Sección de Vinos");
+    cargarSeccion("spirits", spirits, "categorias/spirits.jpg", "Sección Spirits");
+}
+
+// Función para cargar una sección de productos
+function cargarSeccion(tipo, obtenerProductos, imagenBanner, tituloBanner) {
+    const productosContainer = document.getElementById("productos-container");
+
+    if (!document.getElementById(`productos-${tipo}`)) {
+        const seccion = crearSeccion(tipo, imagenBanner, tituloBanner);
         productosContainer.appendChild(seccion);
 
-        // Obtener los productos
-        const productos = obtenerProductos();
-        productos.forEach(producto => {
-            // Si no hay stock, se muestra pero con botón deshabilitado
-            const sinStock = producto.stock <= 0;
-            const precio_descuento = producto.descuento > 0 
-                ? producto.precio_original * (1 - producto.descuento / 100)
-                : producto.precio_original;
-            const nombreCorto = producto.nombre.length > 14 
-                ? producto.nombre.substring(0, 14) + "..." 
-                : producto.nombre;
-            
-            // Crear la card de producto
-            const div = document.createElement("div");
-            div.classList.add("producto-card");
-            div.innerHTML = `
-                ${producto.descuento > 0 ? `<div class="descuento">${producto.descuento}% OFF</div>` : ''}
-                <img src="${producto.imagen}" alt="${producto.nombre}">
-                <h2>${nombreCorto}</h2>
-                <p class="bodega">${producto.bodega}</p>
-                <p class="tipo">${producto.tipo_vino}</p>
-                <p class="precio">
-                    ${producto.descuento > 0 
-                        ? `<span class="precio-antiguo">$${producto.precio_original.toLocaleString()}</span> $${precio_descuento.toLocaleString()}`
-                        : `$${precio_descuento.toLocaleString()}`}
-                </p>
-                <p class="stock">Disponibles: ${producto.stock}</p>
-                <div class="cantidad">
-                    <label for="cantidad${producto.id}">Cantidad:</label>
-                    <input type="number" id="cantidad${producto.id}" min="1" max="${producto.stock}" value="1" ${sinStock ? "disabled" : ""}>
-                </div>
-                <button class="agregar-carrito" ${sinStock ? "disabled style='background:gray;cursor:not-allowed;'" : ""}>
-                    ${sinStock ? "Sin stock" : "AGREGAR"}
-                </button>
-            `;
-            seccion.appendChild(div);
-        });
+        renderizarProductos(seccion, obtenerProductos());
+    }
+}
+
+// Función para crear una sección con banner
+function crearSeccion(tipo, imagenBanner, tituloBanner) {
+    const seccion = document.createElement("section");
+    seccion.id = `productos-${tipo}`;
+    seccion.innerHTML = `
+        <div class="banner">
+            <img src="${imagenBanner}" alt="Categoría ${tituloBanner}">
+            <h2 class="titulo-banner">${tituloBanner}</h2>
+        </div>
+    `;
+    return seccion;
+}
+
+// Función para renderizar productos dentro de una sección
+function renderizarProductos(seccion, productos) {
+    productos.forEach(producto => {
+        seccion.appendChild(crearCardProducto(producto));
     });
 }
 
-// Cargar vinos y spirits automáticamente al cargar la página
-cargarSeccion("vinos", vinos, "categorias/vinos.avif", "Sección de Vinos");
-cargarSeccion("spirits", spirits, "categorias/spirits.jpg", "Sección Spirits");
+// Función para crear una card de producto
+function crearCardProducto(producto) {
+    const div = document.createElement("div");
+    div.classList.add("producto-card");
+
+    const sinStock = producto.stock <= 0;
+    const precio_descuento = calcularPrecioDescuento(producto);
+    const nombreCorto = truncarNombre(producto.nombre);
+
+    div.innerHTML = `
+        ${producto.descuento > 0 ? `<div class="descuento">${producto.descuento}% OFF</div>` : ''}
+        <img src="${producto.imagen}" alt="${producto.nombre}">
+        <h2>${nombreCorto}</h2>
+        <p class="bodega">${producto.bodega}</p>
+        <p class="tipo">${producto.tipo_vino}</p>
+        <p class="precio">
+            ${producto.descuento > 0 
+                ? `<span class="precio-antiguo">$${producto.precio_original.toLocaleString()}</span> $${precio_descuento.toLocaleString()}`
+                : `$${precio_descuento.toLocaleString()}`}
+        </p>
+        <p class="stock">Disponibles: ${producto.stock}</p>
+        <div class="cantidad">
+            <label for="cantidad${producto.id}">Cantidad:</label>
+            <input type="number" id="cantidad${producto.id}" min="1" max="${producto.stock}" value="1" ${sinStock ? "disabled" : ""}>
+        </div>
+        <button class="agregar-carrito" ${sinStock ? "disabled style='background:gray;cursor:not-allowed;'" : ""}>
+            ${sinStock ? "Sin stock" : "AGREGAR"}
+        </button>
+    `;
+    return div;
+}
+
+// Función para calcular el precio con descuento
+function calcularPrecioDescuento(producto) {
+    return producto.descuento > 0 
+        ? producto.precio_original * (1 - producto.descuento / 100)
+        : producto.precio_original;
+}
+
+// Función para truncar el nombre del producto si es muy largo
+function truncarNombre(nombre) {
+    return nombre.length > 14 ? nombre.substring(0, 14) + "..." : nombre;
+}
