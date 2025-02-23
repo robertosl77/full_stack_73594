@@ -1,58 +1,58 @@
 nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #4a4a4a;
-    padding: 10px 20px;
-    position: relative;
+    display: flex; /* Alinea los elementos en una fila */
+    justify-content: space-between; /* Separa los elementos a los extremos */
+    align-items: center; /* Centra los elementos verticalmente */
+    background: #4a4a4a; /* Color de fondo del navbar */
+    padding: 10px 20px; /* Espaciado interno */
+    position: relative; /* Necesario para controlar el orden de apilamiento con z-index */
     z-index: 1000; /* Asegura que el nav esté por encima de otros elementos */
 }
 
 .nav-menu {
-    list-style: none;
-    display: flex;
-    gap: 15px;
+    list-style: none; /* Elimina los estilos de lista por defecto */
+    display: flex; /* Alinea los elementos del menú en una fila */
+    gap: 15px; /* Espaciado entre los elementos del menú */
 }
 
 .nav-menu li a {
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
+    text-decoration: none; /* Elimina el subrayado de los enlaces */
+    color: white; /* Color del texto */
+    font-weight: bold; /* Hace que el texto sea más grueso */
 }
 
 .menu-toggle {
-    display: none;
+    display: none; /* Oculta el botón de menú en pantallas grandes */
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 24px; /* Tamaño del icono del menú hamburguesa */
     color: white;
-    cursor: pointer;
+    cursor: pointer; /* Cambia el cursor a una mano al pasar sobre él */
 }
 
 .logo {
     display: flex;
-    width: 100px;
+    width: 100px; /* Establece el ancho del logo */
 }
 
 @media (max-width: 768px) {
     .menu-toggle {
-        display: block;
+        display: block; /* Muestra el botón hamburguesa en pantallas pequeñas */
     }
 
     .nav-menu {
-        display: none;
-        flex-direction: column;
-        background: #4a4a4a;
-        position: absolute;
-        top: 50px;
+        display: none; /* Oculta el menú inicialmente en pantallas pequeñas */
+        flex-direction: column; /* Hace que los elementos del menú se apilen en columna */
+        background: #4a4a4a; /* Color de fondo del menú desplegable */
+        position: absolute; /* Permite que el menú se superponga a otros elementos */
+        top: 50px; /* Posiciona el menú justo debajo del navbar */
         left: 0;
-        width: 100%;
+        width: 100%; /* Hace que el menú ocupe todo el ancho */
         padding: 10px 0;
-        text-align: center;
+        text-align: center; /* Centra los elementos dentro del menú */
         z-index: 1000; /* Asegura que el menú esté por encima de la imagen */
     }
 
     .nav-menu.nav-menu-visible {
-        display: flex;
+        display: flex; /* Muestra el menú cuando se activa */
     }
 }

@@ -16,52 +16,6 @@ body {
     min-height: 100vh;
 }
 
-/* Header */
-/*
-header {
-    background-color: #6c7d87;
-    color: white;
-    padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-nav {
-    display: flex;
-    align-items: center;
-}
-
-nav ul {
-    list-style: none;
-    display: flex;
-    align-items: center;
-}
-
-nav ul li {
-    margin: 0 10px;
-}
-
-nav ul li a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    padding: 10px;
-    transition: background 0.3s;
-}
-
-nav ul li a:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
-}
-
-.logo {
-    display: flex;
-    width: 100px;
-}
-*/
-
-
 /* Footer */
 footer {
     background-color: #222;
