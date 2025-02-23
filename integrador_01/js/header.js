@@ -10,7 +10,7 @@ function crearHeader() {
     const header = document.createElement("header");
     header.innerHTML = `
         <nav>
-            <a href="index.html"><img class="logo" src="img/logo.png" alt="Logo"></a>
+            <a href="index.html"><img class="logo" src="img_logo/logo.png" alt="Logo"></a>
             <button class="menu-toggle" aria-label="Abrir menú">☰</button>
             <ul class="nav-menu" id="nav-menu">
                 <li><a href="index.html">Inicio</a></li>

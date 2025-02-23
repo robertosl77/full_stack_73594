@@ -4,7 +4,7 @@ function vinos() {
         {
             id: 1,
             descuento: 30,
-            imagen: "productos/cha_ar_punco_sc_1370x2400_1.webp",
+            imagen: "img_productos/cha_ar_punco_sc_1370x2400_1.webp",
             nombre: "Chañar Punco",
             bodega: "El Esteco",
             tipo_vino: "Blend",
@@ -14,7 +14,7 @@ function vinos() {
         {
             id: 2,
             descuento: 40,
-            imagen: "productos/mascota_estuche_x_2_botellas_1.webp",
+            imagen: "img_productos/mascota_estuche_x_2_botellas_1.webp",
             nombre: "Estuche Unánime",
             bodega: "Mascota Vineyards",
             tipo_vino: "Mix",
@@ -24,7 +24,7 @@ function vinos() {
         {
             id: 3,
             descuento: 0,
-            imagen: "productos/altimus_sc_1370x2400_1.webp",
+            imagen: "img_productos/altimus_sc_1370x2400_1.webp",
             nombre: "Altimus",
             bodega: "El Esteco",
             tipo_vino: "Blend",
@@ -34,7 +34,7 @@ function vinos() {
         {
             id: 4,
             descuento: 0,
-            imagen: "productos/15_-_trapiche_tesoro_bolsa_inter_miami.webp",
+            imagen: "img_productos/15_-_trapiche_tesoro_bolsa_inter_miami.webp",
             nombre: "Trapiche Tesoro",
             bodega: "Trapiche",
             tipo_vino: "Malbec",
@@ -44,7 +44,7 @@ function vinos() {
         {
             id: 5,
             descuento: 30,
-            imagen: "productos/dada_caramel.webp",
+            imagen: "img_productos/dada_caramel.webp",
             nombre: "DADÁ #9 Caramel",
             bodega: "Finca Las Moras",
             tipo_vino: "Blend",
@@ -54,7 +54,7 @@ function vinos() {
         {
             id: 6,
             descuento: 35,
-            imagen: "productos/3_combo_degustacion_blancos.webp",
+            imagen: "img_productos/3_combo_degustacion_blancos.webp",
             nombre: "Combo Degustación Blancos",
             bodega: "Caja Combinada",
             tipo_vino: "Mix",
@@ -64,7 +64,7 @@ function vinos() {
         {
             id: 7,
             descuento: 35,
-            imagen: "productos/combo_inter_campeon.webp",
+            imagen: "img_productos/combo_inter_campeon.webp",
             nombre: "Combo Inter Campeón",
             bodega: "Trapiche",
             tipo_vino: "Malbec",
@@ -74,7 +74,7 @@ function vinos() {
         {
             id: 8,
             descuento: 45,
-            imagen: "productos/51943.webp",
+            imagen: "img_productos/51943.webp",
             nombre: "La Mascota",
             bodega: "Mascota Vineyards",
             tipo_vino: "Malbec",
@@ -84,7 +84,7 @@ function vinos() {
         {
             id: 9,
             descuento: 40,
-            imagen: "productos/coleccion_privada_chardonnay_80020_1.webp",
+            imagen: "img_productos/coleccion_privada_chardonnay_80020_1.webp",
             nombre: "Colección Privada",
             bodega: "Navarro Correas",
             tipo_vino: "Chardonnay",
@@ -100,7 +100,7 @@ function spirits() { // Antes era vinos(), ahora es spirits()
         {
             id: 10,
             descuento: 30,
-            imagen: "productos/1_combo_dulzura_.webp",
+            imagen: "img_productos/1_combo_dulzura_.webp",
             nombre: "Combo Dulzura",
             bodega: "Caja Combinada",
             tipo_vino: "Mix",
@@ -110,7 +110,7 @@ function spirits() { // Antes era vinos(), ahora es spirits()
         {
             id: 11,
             descuento: 30,
-            imagen: "productos/whatsapp_image_2024-05-29_at_15.39.54.webp",
+            imagen: "img_productos/whatsapp_image_2024-05-29_at_15.39.54.webp",
             nombre: "Gordon´s Pink Gin",
             bodega: "Gordon’s",
             tipo_vino: "Gin",
@@ -120,7 +120,7 @@ function spirits() { // Antes era vinos(), ahora es spirits()
         {
             id: 12,
             descuento: 0,
-            imagen: "productos/30008_8.webp",
+            imagen: "img_productos/30008_8.webp",
             nombre: "Johnnie Walker Swing",
             bodega: "Johnnie Walker",
             tipo_vino: "Whisky",
@@ -136,8 +136,8 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function inicializarProductos() {
-    cargarSeccion("vinos", vinos, "categorias/vinos.avif", "Sección de Vinos");
-    cargarSeccion("spirits", spirits, "categorias/spirits.jpg", "Sección Spirits");
+    cargarSeccion("vinos", vinos, "img_categorias/vinos.avif", "Sección de Vinos");
+    cargarSeccion("spirits", spirits, "img_categorias/spirits.jpg", "Sección Spirits");
 }
 
 // Función para cargar una sección de productos
