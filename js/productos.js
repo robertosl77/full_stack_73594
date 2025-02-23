@@ -166,7 +166,7 @@ function cargarSeccion(tipo, obtenerProductos, imagenBanner, tituloBanner) {
                 <img src="${producto.imagen}" alt="${producto.nombre}">
                 <h2>${nombreCorto}</h2>
                 <p class="bodega">${producto.bodega}</p>
-                <p class="tipo-vino">${producto.tipo_vino}</p>
+                <p class="tipo">${producto.tipo_vino}</p>
                 <p class="precio">
                     ${producto.descuento > 0 
                         ? `<span class="precio-antiguo">$${producto.precio_original.toLocaleString()}</span> $${precio_descuento.toLocaleString()}`
