@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     inicializarBuscador();
     actualizarEstadoSesion();
     verificarAccesoAlta();
+    actualizarCarrito();
 });
 
 function crearHeader() {
@@ -17,8 +18,8 @@ function crearHeader() {
                 <li id="search-container" style="display: none;">
                     <input type="text" id="search-bar" placeholder="Buscar productos...">
                 </li>
-                <li id="cart-container" style="display: none;">
-                    <a href="#"><span id="cart-icon">🛒</span><span id="cart-count">0</span></a>
+                <li id="cart-container" style="display: none; position: relative;">
+                    <a href="#"><span id="cart-icon">🛒</span><span id="cart-count" class="cart-count" style="display: none;">0</span></a>
                 </li>
                 <li><a href="contacto.html">Contacto</a></li>
                 <li><a href="nosotros.html">Nosotros</a></li>
@@ -68,6 +69,7 @@ function cerrarSesion() {
     sessionStorage.removeItem("usuario");
     sessionStorage.removeItem("rol");
     actualizarEstadoSesion();
+    actualizarCarrito();
 }
 
 function actualizarEstadoSesion() {
@@ -105,4 +107,17 @@ function inicializarBuscador() {
         sessionStorage.setItem("busqueda", searchBar.value.toLowerCase());
         filtrarProductos(); // Llamamos a la función en productos.js
     });
+}
+
+function actualizarCarrito() {
+    const cartCount = document.getElementById("cart-count");
+    const carrito = JSON.parse(sessionStorage.getItem("carrito")) || [];
+    const totalProductos = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+
+    if (totalProductos > 0) {
+        cartCount.textContent = totalProductos > 9 ? "9+" : totalProductos;
+        cartCount.style.display = "block";
+    } else {
+        cartCount.style.display = "none";
+    }
 }
