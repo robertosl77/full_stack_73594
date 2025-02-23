@@ -94,14 +94,15 @@ function verificarAccesoAlta() {
 function inicializarBuscador() {
     const searchContainer = document.getElementById("search-container");
     const searchBar = document.getElementById("search-bar");
+    const cartContainer = document.getElementById("cart-container");
 
     if (!window.location.pathname.includes("index.html")) return;
 
     searchContainer.style.display = "block";
+    cartContainer.style.display = "block";
 
     searchBar.addEventListener("input", function () {
         sessionStorage.setItem("busqueda", searchBar.value.toLowerCase());
         filtrarProductos(); // Llamamos a la función en productos.js
     });
 }
-
