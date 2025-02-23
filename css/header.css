@@ -1,0 +1,58 @@
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #4a4a4a;
+    padding: 10px 20px;
+    position: relative;
+    z-index: 1000; /* Asegura que el nav esté por encima de otros elementos */
+}
+
+.nav-menu {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+.nav-menu li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+}
+
+.logo {
+    display: flex;
+    width: 100px;
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-menu {
+        display: none;
+        flex-direction: column;
+        background: #4a4a4a;
+        position: absolute;
+        top: 50px;
+        left: 0;
+        width: 100%;
+        padding: 10px 0;
+        text-align: center;
+        z-index: 1000; /* Asegura que el menú esté por encima de la imagen */
+    }
+
+    .nav-menu.nav-menu-visible {
+        display: flex;
+    }
+}

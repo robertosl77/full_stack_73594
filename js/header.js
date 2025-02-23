@@ -3,7 +3,8 @@ document.addEventListener("DOMContentLoaded", function () {
     header.innerHTML = `
         <nav>
             <a href="index.html"><img class="logo" src="img/logo.png" alt="Logo"></a>
-            <ul>
+            <button class="menu-toggle" aria-label="Abrir menú">☰</button>
+            <ul class="nav-menu">
                 <li><a href="index.html">Inicio</a></li>
                 <li><a href="alta.html">Alta de Productos</a></li>
                 <li><a href="contacto.html">Contacto</a></li>
@@ -14,8 +15,14 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
     document.body.insertBefore(header, document.body.firstChild);
 
-    // Simulación de cambio en el botón al iniciar sesión
+    const menuToggle = document.querySelector(".menu-toggle");
+    const navMenu = document.querySelector(".nav-menu");
+    
+    menuToggle.addEventListener("click", function () {
+        navMenu.classList.toggle("nav-menu-visible");
+    });
+
     document.getElementById("login-button").addEventListener("click", function () {
-        this.innerText = "Usuario: Nombre"; // En el futuro esto cambiará con autenticación real
+        this.innerText = "Usuario: Nombre";
     });
 });

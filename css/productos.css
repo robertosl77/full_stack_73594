@@ -1,8 +1,10 @@
-#productos {
+#productos-vinos,
+#productos-spirits {
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
     justify-content: center;
+    /* margin-top: 20px; */
 }
 
 .producto-card {
@@ -81,3 +83,4 @@
 .agregar-carrito:hover {
     background: darkgray;
 }
+
