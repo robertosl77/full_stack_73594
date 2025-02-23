@@ -97,6 +97,13 @@
     display: none; /* Oculta el producto sin afectar la estructura */
 }
 
+/* Oculta completamente la sección cuando no hay productos */
 .oculto-todo {
-    display: none; /* Oculta categorías sin productos */
+    display: none;
 }
+
+/* Elimina el margen cuando la sección está oculta */
+.oculto-todo {
+    margin-bottom: 0 !important;
+}
+
