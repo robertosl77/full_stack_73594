@@ -1,0 +1,94 @@
+Proyecto Integrador
+
+Etapa 1:
+*** Consideraciones generales
+En esta primera etapa se requiere desarrollar un proyecto
+web. Se permite el uso de herramientas como Google Fonts o
+Font Awesome, y la incorporación de elementos como
+imágenes, videos o archivos de tipografías. Todos los
+archivos deben pasar las validaciones de la W3C y no se
+permite el uso de Bootstrap. Es necesario un diseño
+responsive en todas las páginas, cuidando las proporciones
+y la estética en todas las resoluciones. El proyecto debe
+funcionar con o sin Live Server y debe utilizarse
+JavaScript sin librerías externas. Se sugiere utilizar Git
+para el desarrollo y la elección de estilos de CSS queda a
+elección de cada alumno, cumpliendo con las
+especificaciones planteadas en el documento.
+*** Descripción de lo que se debe desarrollar en esta
+primera etapa
+El proyecto web a desarrollar debe tener una estructura
+HTML y clases de CSS que se definieron en clase, y se deben
+agregar elementos necesarios. Todas las páginas del sitio
+deben tener el mismo header, barra de navegación y footer,
+con un diseño coherente en todas las páginas. Se deben
+emprolijar el header y la barra de navegación, agregar un
+logo, formulario de búsqueda y cualquier otro elemento 
+necesario. El footer debe tener contenido elegido por el
+alumno. Se deben generar los archivos "alta.html",
+"contacto.html" y "nosotros.html" y asegurarse de que los
+vínculos de la barra de navegación permitan acceder a los
+mismos y al archivo "index.html" ya existente. En el
+archivo index.html, se deben personalizar y mejorar los
+estilos CSS y agregar todos los elementos HTML necesarios
+para presentar los productos en formato de cards. Cada card
+debe tener un diseño moderno, funcional y agradable a la
+vista, presentando la información de forma clara. Las cards
+deben adecuarse a todas las resoluciones. El archivo
+"alta.html" debe contener un formulario con los campos
+necesarios para agregar productos, y el archivo
+"contacto.html" debe contener un formulario de contacto con
+los campos necesarios. En ambos formularios se deben
+
+definir las validaciones necesarias, utilizando expresiones
+regulares. El archivo "nosotros.html" es una página de
+contenido libre.
+***** index.html *****
+Se deberá definir para cada card un diseño cuidado,
+moderno, funcional y agradable a la vista, presentando la
+información de forma clara. Deberá mostrar, como mínimo, la
+imagen del producto en un elemento <img>, título, precio,
+descripción corta y un link de comprar, que a futuro
+servirá para agregar el producto al carrito (no es un
+requisito de momento, si bien pueden agregar ya esta
+funcionalidad).
+Pueden mostrar en cada card más información y otros
+elementos (botones, etc.), los cuales pueden figurar de
+forma fija, o mediante algún tipo de interacción con la
+card. En este último caso, podrán mostrar dicha información
+y elementos en la misma card o en alguna ubicación en la
+misma página o en otros archivos HTML adicionales, siempre
+que sean archivos internos al proyecto, es decir, URLs
+relativas.
+Las cards deberán adecuarse a todas las resoluciones,
+modificando su composición interna (horizontal, con su
+imagen al costado o vertical, con la misma arriba o abajo)
+en los momentos en los que su espacio disponible se
+aproveche mejor así. Podrán mostrar más o menos información
+en distintas resoluciones, dejando a la vista en todo
+momento, como mínimo, los elementos definidos como
+obligatorios, pudiendo ocultar o mostrar los optativos, si
+así lo desean, en diferentes resoluciones.
+***** alta.html *****
+Deberá contener un formulario con los siguientes campos:
+“nombre”, “precio”, “stock”, “marca”, “categoría”,
+“descripción corta”, “descripción larga”, “envío sin
+cargo”, “edad desde”, “edad hasta” y “foto”.
+***** contacto.html *****
+Deberá contener un formulario con los siguientes campos:
+“nombre”, “e-mail” y “comentarios”.
+alta.html y contacto.html
+
+Además de los requeridos, podrán agregar otros campos a los
+formularios, si lo desean.
+Definir qué tipo de elementos HTML y validaciones debe
+tener cada campo del formulario (campos obligatorios u
+optativos, números, textos, largos mínimos y máximos,
+etc.), realizando las validaciones mediante el uso de
+expresiones regulares. Si se produce algún error de
+validación, el formulario no debe enviarse, indicando el
+detalle de lo sucedido.
+Al igual que en el archivo index.html, podrán agregar otros
+elementos a las páginas libremente.
+***** nosotros.html *****
+Página con contenido libre.
