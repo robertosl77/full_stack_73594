@@ -215,3 +215,38 @@ function calcularPrecioDescuento(producto) {
 function truncarNombre(nombre) {
     return nombre.length > 14 ? nombre.substring(0, 14) + "..." : nombre;
 }
+
+function filtrarProductos() {
+    const filtro = sessionStorage.getItem("busqueda") || "";
+    const categorias = document.querySelectorAll("section[id^='productos-']");
+
+    categorias.forEach((categoria) => {
+        let productos = categoria.querySelectorAll(".producto-card");
+        let hayProductosVisibles = false;
+
+        productos.forEach((producto) => {
+            if (productoCoincide(producto, filtro)) {
+                producto.classList.remove("oculto"); // Solo agregamos una clase
+                hayProductosVisibles = true;
+            } else {
+                producto.classList.add("oculto");
+            }
+        });
+
+        // Ocultar la categoría si no tiene productos visibles
+        if (hayProductosVisibles) {
+            categoria.classList.remove("oculto-todo");
+        } else {
+            categoria.classList.add("oculto-todo");
+        }
+    });
+}
+
+
+function productoCoincide(producto, filtro) {
+    const nombre = producto.querySelector("h2").textContent.toLowerCase();
+    const bodega = producto.querySelector(".bodega").textContent.toLowerCase();
+    const tipoVino = producto.querySelector(".tipo").textContent.toLowerCase();
+
+    return nombre.includes(filtro) || bodega.includes(filtro) || tipoVino.includes(filtro);
+}

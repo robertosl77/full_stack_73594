@@ -93,3 +93,10 @@
     background: darkgray;
 }
 
+.oculto {
+    display: none; /* Oculta el producto sin afectar la estructura */
+}
+
+.oculto-todo {
+    display: none; /* Oculta categorías sin productos */
+}
