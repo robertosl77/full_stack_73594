@@ -4,7 +4,8 @@ document.addEventListener("DOMContentLoaded", function () {
     inicializarBuscador();
     actualizarEstadoSesion();
     verificarAccesoAlta();
-    actualizarCarrito();
+    inicializarCarrito();
+    inicializarMenuHamburguesa();
 });
 
 function crearHeader() {
@@ -19,7 +20,10 @@ function crearHeader() {
                     <input type="text" id="search-bar" placeholder="Buscar productos...">
                 </li>
                 <li id="cart-container" style="display: none; position: relative;">
-                    <a href="#"><span id="cart-icon">🛒</span><span id="cart-count" class="cart-count" style="display: none;">0</span></a>
+                    <a href="#">
+                        <span id="cart-icon">🛒</span>
+                        <span id="cart-count">0</span>
+                    </a>
                 </li>
                 <li><a href="contacto.html">Contacto</a></li>
                 <li><a href="nosotros.html">Nosotros</a></li>
@@ -68,8 +72,9 @@ function iniciarSesion() {
 function cerrarSesion() {
     sessionStorage.removeItem("usuario");
     sessionStorage.removeItem("rol");
+    sessionStorage.removeItem("carrito"); // Se limpia el carrito al cerrar sesión
     actualizarEstadoSesion();
-    actualizarCarrito();
+    actualizarContadorCarrito();
 }
 
 function actualizarEstadoSesion() {
@@ -96,12 +101,10 @@ function verificarAccesoAlta() {
 function inicializarBuscador() {
     const searchContainer = document.getElementById("search-container");
     const searchBar = document.getElementById("search-bar");
-    const cartContainer = document.getElementById("cart-container");
 
     if (!window.location.pathname.includes("index.html")) return;
 
     searchContainer.style.display = "block";
-    cartContainer.style.display = "block";
 
     searchBar.addEventListener("input", function () {
         sessionStorage.setItem("busqueda", searchBar.value.toLowerCase());
@@ -109,15 +112,62 @@ function inicializarBuscador() {
     });
 }
 
-function actualizarCarrito() {
-    const cartCount = document.getElementById("cart-count");
-    const carrito = JSON.parse(sessionStorage.getItem("carrito")) || [];
-    const totalProductos = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+function inicializarCarrito() {
+    const cartContainer = document.getElementById("cart-container");
+
+    if (!window.location.pathname.includes("index.html")) {
+        cartContainer.style.display = "none";
+        return;
+    }
+
+    actualizarContadorCarrito(); // Asegura que el carrito se actualice correctamente
+    document.body.addEventListener("click", function (event) {
+        if (event.target.classList.contains("agregar-carrito")) {
+            agregarAlCarrito(event.target);
+        }
+    });
+}
+
+function agregarAlCarrito(boton) {
+    let cantidadInput = boton.parentElement.querySelector("input[type='number']");
+    let cantidad = parseInt(cantidadInput.value, 10);
+    let carrito = JSON.parse(sessionStorage.getItem("carrito")) || [];
+    let productoId = boton.parentElement.querySelector("input").id.replace("cantidad", "");
+
+    let productoEnCarrito = carrito.find(p => p.id === productoId);
+    if (productoEnCarrito) {
+        productoEnCarrito.cantidad += cantidad;
+    } else {
+        carrito.push({ id: productoId, cantidad });
+    }
+
+    sessionStorage.setItem("carrito", JSON.stringify(carrito));
+    actualizarContadorCarrito();
+}
+
+function actualizarContadorCarrito() {
+    let carrito = JSON.parse(sessionStorage.getItem("carrito")) || [];
+    let totalProductos = carrito.reduce((acc, prod) => acc + prod.cantidad, 0);
+    let cartContainer = document.getElementById("cart-container");
+    let cartCount = document.getElementById("cart-count");
 
     if (totalProductos > 0) {
         cartCount.textContent = totalProductos > 9 ? "9+" : totalProductos;
         cartCount.style.display = "block";
+        cartContainer.style.display = "block"; // Asegura que el carrito se muestre
     } else {
         cartCount.style.display = "none";
+        cartContainer.style.display = "none"; // Oculta el carrito si está vacío
+    }
+}
+
+function inicializarMenuHamburguesa() {
+    const menuToggle = document.querySelector(".menu-toggle");
+    const navMenu = document.querySelector(".nav-menu");
+
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener("click", function () {
+            navMenu.classList.toggle("nav-menu-visible");
+        });
     }
 }
