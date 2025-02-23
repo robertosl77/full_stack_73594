@@ -6,19 +6,16 @@ HU007: Como usuario, quiero ver una lista de productos en la página principal c
 
 HU008: Como usuario, quiero que las cards tengan botones interactivos para futuras funcionalidades como "comprar".
 
-HU009: Como usuario administrador, quiero un formulario en alta.html para agregar productos con nombre, precio, stock, categoría, descripción y foto.
+HU016: Como usuario, cuando estoy en index.html, quiero ver un buscador de productos en el menú, ubicado entre "Inicio" y "Contacto".
 
-HU010: Como usuario administrador, quiero que el formulario valide los datos antes de enviarlos, asegurando que la información es correcta.
+HU017: Como usuario, cuando estoy en index.html, quiero ver una campanita de compra en el menú, ubicada junto al buscador, que me indique cuántos productos agregué.
+
 
 Objetivos del Sprint:
 
 Diseñar y estructurar la sección de productos en la página principal con una disposición atractiva.
-
 Implementar cards con información clara y elementos visuales adecuados.
-
 Incorporar botones en las cards para futuras funcionalidades.
-
-Crear un formulario de alta de productos en alta.html con los campos necesarios.
-
-Implementar validaciones en el formulario para asegurar la calidad de los datos ingresados.
+Implementar un buscador de productos en el menú de index.html para facilitar la navegación.
+Agregar una campanita de compra que indique la cantidad de productos agregados.
 

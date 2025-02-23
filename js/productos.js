@@ -216,6 +216,7 @@ function truncarNombre(nombre) {
     return nombre.length > 14 ? nombre.substring(0, 14) + "..." : nombre;
 }
 
+// Función para filtrar productos por nombre, bodega o tipo de vino
 function filtrarProductos() {
     const filtro = sessionStorage.getItem("busqueda") || "";
     const categorias = document.querySelectorAll("section[id^='productos-']");
@@ -226,22 +227,30 @@ function filtrarProductos() {
 
         productos.forEach((producto) => {
             if (productoCoincide(producto, filtro)) {
-                producto.classList.remove("oculto"); // Solo agregamos una clase
+                producto.classList.remove("oculto"); // Mostrar producto
                 hayProductosVisibles = true;
             } else {
-                producto.classList.add("oculto");
+                producto.classList.add("oculto"); // Ocultar producto
             }
         });
 
-        // Ocultar la categoría si no tiene productos visibles
-        if (hayProductosVisibles) {
-            categoria.classList.remove("oculto-todo");
-        } else {
-            categoria.classList.add("oculto-todo");
-        }
+        // Controlar visibilidad del banner y la sección completa
+        controlarVisibilidadCategoria(categoria, hayProductosVisibles);
     });
 }
 
+// Nueva función para ocultar el banner si no hay productos
+function controlarVisibilidadCategoria(categoria, hayProductosVisibles) {
+    const banner = categoria.querySelector(".banner");
+
+    if (hayProductosVisibles) {
+        categoria.classList.remove("oculto-todo");
+        if (banner) banner.classList.remove("oculto");
+    } else {
+        categoria.classList.add("oculto-todo");
+        if (banner) banner.classList.add("oculto");
+    }
+}
 
 function productoCoincide(producto, filtro) {
     const nombre = producto.querySelector("h2").textContent.toLowerCase();
