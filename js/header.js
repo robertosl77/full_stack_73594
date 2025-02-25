@@ -25,8 +25,8 @@ function crearHeader() {
                         <span id="cart-count">0</span>
                     </a>
                 </li>
-                <li><a href="contacto.html">Contacto</a></li>
                 <li><a href="nosotros.html">Nosotros</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
                 <li id="admin-link" style="display: none;"><a href="alta.html">Alta de Productos</a></li>
                 <li><a href="#" id="login-button">Iniciar sesión</a></li>
             </ul>

@@ -38,9 +38,8 @@ deben adecuarse a todas las resoluciones. El archivo
 "alta.html" debe contener un formulario con los campos
 necesarios para agregar productos, y el archivo
 "contacto.html" debe contener un formulario de contacto con
-los campos necesarios. En ambos formularios se deben
-
-definir las validaciones necesarias, utilizando expresiones
+los campos necesarios. En ambos formularios se deben definir 
+las validaciones necesarias, utilizando expresiones
 regulares. El archivo "nosotros.html" es una página de
 contenido libre.
 ***** index.html *****
