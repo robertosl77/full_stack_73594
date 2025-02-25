@@ -1,6 +1,7 @@
-Sprint 4 - 01/03/2025
+Sprint 4 - 24/02/2025
 
 Historias de Usuario Incluidas:
+
 HU014: Como usuario, quiero que la página nosotros.html tenga contenido libre que describa la finalidad del sitio o información relevante.
 HU015: Como usuario, quiero que el sitio no dependa de Live Server para su funcionamiento.
 

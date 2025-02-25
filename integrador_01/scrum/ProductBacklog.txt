@@ -9,24 +9,24 @@ Product Backlog - Proyecto Web
 
 Historias de usuario (Ejemplo)
     1. Estructura y navegación del sitio
-        ✔HU001: Como usuario, quiero que todas las páginas tengan un header con el logo y una barra de navegación para moverme fácilmente por el sitio.
-        ✔HU002: Como usuario, quiero un footer en todas las páginas con información relevante y enlaces adicionales.
-        ✔HU003: Como usuario, quiero que los enlaces de navegación sean funcionales y me permitan moverme entre index.html, alta.html, contacto.html y nosotros.html.
+        ✔️HU001: Como usuario, quiero que todas las páginas tengan un header con el logo y una barra de navegación para moverme fácilmente por el sitio.
+        ✔️HU002: Como usuario, quiero un footer en todas las páginas con información relevante y enlaces adicionales.
+        ✔️HU003: Como usuario, quiero que los enlaces de navegación sean funcionales y me permitan moverme entre index.html, alta.html, contacto.html y nosotros.html.
     2. Diseño responsivo y estético
-        ✔HU004: Como usuario, quiero que el sitio sea responsive para visualizarlo correctamente en dispositivos móviles y de escritorio.
-        ✔HU005: Como usuario, quiero que el diseño tenga tipografías y colores atractivos sin perder legibilidad.
-        ✔HU006: Como usuario, quiero que las imágenes y elementos visuales se adapten sin perder proporción.
-        ✔HU007: Como usuario, quiero ver una lista de productos en la página principal con imágenes, precios y descripciones en cards bien diseñadas.
-        ✔HU008: Como usuario, quiero que las cards tengan botones interactivos para futuras funcionalidades como "comprar".
-        ✔HU016: Como usuario, cuando estoy en index.html, quiero ver un buscador de productos en el menú, ubicado entre "Inicio" y "Contacto".
-        ✔HU017: Como usuario, cuando estoy en index.html, quiero ver una campanita de compra en el menú, ubicada junto al buscador, que me indique cuántos productos agregué.
+        ✔️HU004: Como usuario, quiero que el sitio sea responsive para visualizarlo correctamente en dispositivos móviles y de escritorio.
+        ✔️HU005: Como usuario, quiero que el diseño tenga tipografías y colores atractivos sin perder legibilidad.
+        ✔️HU006: Como usuario, quiero que las imágenes y elementos visuales se adapten sin perder proporción.
+        ✔️HU007: Como usuario, quiero ver una lista de productos en la página principal con imágenes, precios y descripciones en cards bien diseñadas.
+        ✔️HU008: Como usuario, quiero que las cards tengan botones interactivos para futuras funcionalidades como "comprar".
+        ✔️HU016: Como usuario, cuando estoy en index.html, quiero ver un buscador de productos en el menú, ubicado entre "Inicio" y "Contacto".
+        ✔️HU017: Como usuario, cuando estoy en index.html, quiero ver una campanita de compra en el menú, ubicada junto al buscador, que me indique cuántos productos agregué.
     3. Gestión de productos (alta y visualización)
-        •HU009: Como usuario administrador, quiero un formulario en alta.html para agregar productos con nombre, precio, stock, categoría, descripción y foto.
-        •HU010: Como usuario administrador, quiero que el formulario valide los datos antes de enviarlos, asegurando que la información es correcta.
+        🟢HU009: Como usuario administrador, quiero un formulario en alta.html para agregar productos con nombre, precio, stock, categoría, descripción y foto.
+        🟢HU010: Como usuario administrador, quiero que el formulario valide los datos antes de enviarlos, asegurando que la información es correcta.
     4. Interacción y validaciones en formularios
-        •HU011: Como usuario, quiero completar un formulario de contacto en contacto.html con nombre, e-mail y comentarios.
-        •HU012: Como usuario, quiero recibir mensajes de error si ingreso datos incorrectos en los formularios.
-        •HU013: Como usuario, quiero que los formularios validen los datos con expresiones regulares antes de enviarlos.
+        🟢HU011: Como usuario, quiero completar un formulario de contacto en contacto.html con nombre, e-mail y comentarios.
+        🟢HU012: Como usuario, quiero recibir mensajes de error si ingreso datos incorrectos en los formularios.
+        🟢HU013: Como usuario, quiero que los formularios validen los datos con expresiones regulares antes de enviarlos.
     5. Contenido y estructura interna
-        •HU014: Como usuario, quiero que la página nosotros.html tenga contenido libre que describa la finalidad del sitio o información relevante.
-        •HU015: Como usuario, quiero que el sitio no dependa de Live Server para su funcionamiento.
+        ✔️HU014: Como usuario, quiero que la página nosotros.html tenga contenido libre que describa la finalidad del sitio o información relevante.
+        ✔️HU015: Como usuario, quiero que el sitio no dependa de Live Server para su funcionamiento.
