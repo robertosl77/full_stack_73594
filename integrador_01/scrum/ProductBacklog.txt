@@ -24,9 +24,9 @@ Historias de usuario (Ejemplo)
         🟢HU009: Como usuario administrador, quiero un formulario en alta.html para agregar productos con nombre, precio, stock, categoría, descripción y foto.
         🟢HU010: Como usuario administrador, quiero que el formulario valide los datos antes de enviarlos, asegurando que la información es correcta.
     4. Interacción y validaciones en formularios
-        🟢HU011: Como usuario, quiero completar un formulario de contacto en contacto.html con nombre, e-mail y comentarios.
-        🟢HU012: Como usuario, quiero recibir mensajes de error si ingreso datos incorrectos en los formularios.
-        🟢HU013: Como usuario, quiero que los formularios validen los datos con expresiones regulares antes de enviarlos.
+        ✔️HU011: Como usuario, quiero completar un formulario de contacto en contacto.html con nombre, e-mail y comentarios.
+        ✔️HU012: Como usuario, quiero recibir mensajes de error si ingreso datos incorrectos en los formularios.
+        ✔️HU013: Como usuario, quiero que los formularios validen los datos con expresiones regulares antes de enviarlos.
     5. Contenido y estructura interna
         ✔️HU014: Como usuario, quiero que la página nosotros.html tenga contenido libre que describa la finalidad del sitio o información relevante.
         ✔️HU015: Como usuario, quiero que el sitio no dependa de Live Server para su funcionamiento.
