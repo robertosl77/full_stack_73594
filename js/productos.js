@@ -1,154 +1,171 @@
 // Función que devuelve los productos de vinos
-function vinos() {
+function productos() {
     return [
         {
             id: 1,
-            descuento: 30,
             imagen: "img_productos/cha_ar_punco_sc_1370x2400_1.webp",
-            nombre: "Chañar Punco",
+            categoria: "vinos",
             bodega: "El Esteco",
-            tipo_vino: "Blend",
+            tipo: "Blend",
+            nombre: "Chañar Punco",
             precio_original: 69614.00,
-            stock: 0
+            descuento: 30,
+            stock: 0,
+            estado: true,
         },
         {
             id: 2,
-            descuento: 40,
             imagen: "img_productos/mascota_estuche_x_2_botellas_1.webp",
-            nombre: "Estuche Unánime",
+            categoria: "vinos",
             bodega: "Mascota Vineyards",
-            tipo_vino: "Mix",
+            tipo: "Mix",
+            nombre: "Estuche Unánime",
             precio_original: 81939.00,
-            stock: 2
+            descuento: 40,
+            stock: 2,
+            estado: true,
         },
         {
             id: 3,
-            descuento: 0,
             imagen: "img_productos/altimus_sc_1370x2400_1.webp",
-            nombre: "Altimus",
+            categoria: "vinos",
             bodega: "El Esteco",
-            tipo_vino: "Blend",
+            tipo: "Blend",
+            nombre: "Altimus",
             precio_original: 80254.00,
-            stock: 32
+            descuento: 0,
+            stock: 32,
+            estado: true,
         },
         {
             id: 4,
-            descuento: 0,
             imagen: "img_productos/15_-_trapiche_tesoro_bolsa_inter_miami.webp",
-            nombre: "Trapiche Tesoro",
+            categoria: "vinos",
             bodega: "Trapiche",
-            tipo_vino: "Malbec",
+            tipo: "Malbec",
+            nombre: "Trapiche Tesoro",
             precio_original: 11966.46,
-            stock: 32
+            descuento: 0,
+            stock: 32,
+            estado: true,
         },
         {
             id: 5,
-            descuento: 30,
             imagen: "img_productos/dada_caramel.webp",
-            nombre: "DADÁ #9 Caramel",
+            categoria: "vinos",
             bodega: "Finca Las Moras",
-            tipo_vino: "Blend",
+            tipo: "Blend",
+            nombre: "DADÁ #9 Caramel",
             precio_original: 7140.00,
-            stock: 32
+            descuento: 30,
+            stock: 32,
+            estado: true,
         },
         {
             id: 6,
-            descuento: 35,
             imagen: "img_productos/3_combo_degustacion_blancos.webp",
-            nombre: "Combo Degustación Blancos",
+            categoria: "vinos",
             bodega: "Caja Combinada",
-            tipo_vino: "Mix",
+            tipo: "Mix",
+            nombre: "Combo Degustación Blancos",
             precio_original: 103377.00,
-            stock: 11
+            descuento: 35,
+            stock: 11,
+            estado: true,
         },
         {
             id: 7,
-            descuento: 35,
             imagen: "img_productos/combo_inter_campeon.webp",
-            nombre: "Combo Inter Campeón",
+            categoria: "vinos",
             bodega: "Trapiche",
-            tipo_vino: "Malbec",
+            tipo: "Malbec",
+            nombre: "Combo Inter Campeón",
             precio_original: 81450.00,
-            stock: 1
+            descuento: 35,
+            stock: 1,
+            estado: true,
         },
         {
             id: 8,
-            descuento: 45,
             imagen: "img_productos/51943.webp",
-            nombre: "La Mascota",
+            categoria: "vinos",
             bodega: "Mascota Vineyards",
-            tipo_vino: "Malbec",
+            tipo: "Malbec",
+            nombre: "La Mascota",
             precio_original: 15259.00,
-            stock: 33
+            descuento: 45,
+            stock: 33,
+            estado: true,
         },
         {
             id: 9,
-            descuento: 40,
             imagen: "img_productos/coleccion_privada_chardonnay_80020_1.webp",
-            nombre: "Colección Privada",
+            categoria: "vinos",
             bodega: "Navarro Correas",
-            tipo_vino: "Chardonnay",
+            tipo: "Chardonnay",
+            nombre: "Colección Privada",
             precio_original: 8850.00,
-            stock: 1
-        }
-    ];
-}
-
-// Función que devuelve los productos de spirits
-function spirits() { // Antes era vinos(), ahora es spirits()
-    return [
+            descuento: 40,
+            stock: 1,
+            estado: true,
+        },
         {
             id: 10,
-            descuento: 30,
             imagen: "img_productos/1_combo_dulzura_.webp",
-            nombre: "Combo Dulzura",
+            categoria: "spirits",
             bodega: "Caja Combinada",
-            tipo_vino: "Mix",
+            tipo: "Mix",
+            nombre: "Combo Dulzura",
             precio_original: 77838.00,
-            stock: 5
+            descuento: 30,
+            stock: 5,
+            estado: true,
         },
         {
             id: 11,
-            descuento: 30,
             imagen: "img_productos/whatsapp_image_2024-05-29_at_15.39.54.webp",
-            nombre: "Gordon´s Pink Gin",
+            categoria: "spirits",
             bodega: "Gordon’s",
-            tipo_vino: "Gin",
+            tipo: "Gin",
+            nombre: "Gordon´s Pink Gin",
             precio_original: 17543.00,
-            stock: 19
+            descuento: 30,
+            stock: 19,
+            estado: true,
         },
         {
             id: 12,
-            descuento: 0,
             imagen: "img_productos/30008_8.webp",
-            nombre: "Johnnie Walker Swing",
+            categoria: "spirits",
             bodega: "Johnnie Walker",
-            tipo_vino: "Whisky",
+            tipo: "Whisky",
+            nombre: "Johnnie Walker Swing",
             precio_original: 125226.00,
-            stock: 125
+            descuento: 0,
+            stock: 125,
+            estado: true,
         }
     ];
 }
 
 // Función para cargar una categoría con su banner y productos
 document.addEventListener("DOMContentLoaded", function () {
-    inicializarProductos();
+    // Si no hay productos almacenados en sessionStorage, los guardamos
+    sessionStorage.setItem("productos", JSON.stringify(productos()));
+
+    cargarSeccion("vinos", productos, "img_categorias/vinos.avif", "Sección de Vinos");
+    cargarSeccion("spirits", productos, "img_categorias/spirits.jpg", "Sección Spirits");
 });
 
-function inicializarProductos() {
-    cargarSeccion("vinos", vinos, "img_categorias/vinos.avif", "Sección de Vinos");
-    cargarSeccion("spirits", spirits, "img_categorias/spirits.jpg", "Sección Spirits");
-}
-
 // Función para cargar una sección de productos
-function cargarSeccion(tipo, obtenerProductos, imagenBanner, tituloBanner) {
+function cargarSeccion(categoria, obtenerProductos, imagenBanner, tituloBanner) {
     const productosContainer = document.getElementById("productos-container");
 
-    if (!document.getElementById(`productos-${tipo}`)) {
-        const seccion = crearSeccion(tipo, imagenBanner, tituloBanner);
+    if (!document.getElementById(`productos-${categoria}`)) {
+        const seccion = crearSeccion(categoria, imagenBanner, tituloBanner);
         productosContainer.appendChild(seccion);
 
-        renderizarProductos(seccion, obtenerProductos());
+        renderizarProductos(seccion, categoria, obtenerProductos());
     }
 }
 
@@ -166,9 +183,11 @@ function crearSeccion(tipo, imagenBanner, tituloBanner) {
 }
 
 // Función para renderizar productos dentro de una sección
-function renderizarProductos(seccion, productos) {
+function renderizarProductos(seccion, categoria, productos) {
     productos.forEach(producto => {
-        seccion.appendChild(crearCardProducto(producto));
+        if (producto.categoria===categoria) {
+            seccion.appendChild(crearCardProducto(producto));
+        }        
     });
 }
 
@@ -186,7 +205,7 @@ function crearCardProducto(producto) {
         <img src="${producto.imagen}" alt="${producto.nombre}">
         <h2>${nombreCorto}</h2>
         <p class="bodega">${producto.bodega}</p>
-        <p class="tipo">${producto.tipo_vino}</p>
+        <p class="tipo">${producto.tipo}</p>
         <p class="precio">
             ${producto.descuento > 0 
                 ? `<span class="precio-antiguo">$${producto.precio_original.toLocaleString()}</span> $${precio_descuento.toLocaleString()}`

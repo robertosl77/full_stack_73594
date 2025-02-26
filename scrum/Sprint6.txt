@@ -1,0 +1,15 @@
+Sprint 6 - 02/03/2025
+
+Historias de Usuario Incluidas:
+HU009: Como usuario administrador, quiero un formulario en alta.html para agregar productos con nombre, precio, stock, categoría, descripción y foto.
+HU010: Como usuario administrador, quiero que el formulario valide los datos antes de enviarlos, asegurando que la información es correcta.
+
+Objetivos del Sprint:
+
+Diseñar y estructurar la página alta.html con un formulario claro y funcional.
+
+Implementar los campos requeridos, asegurando que sean intuitivos y fáciles de completar.
+
+Aplicar validaciones en tiempo real y en el submit para evitar errores en la carga de productos.
+
+Asegurar que la estructura de la página sea diferente a la de contacto, según lo requerido.

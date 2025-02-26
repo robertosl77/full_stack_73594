@@ -1,0 +1,283 @@
+/* Estilos generales */
+main {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Botón flotante para alternar entre secciones */
+.boton-flotante {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.boton-flotante:hover {
+    background-color: #388E3C;
+}
+
+/* Sección de alta */
+#seccion-alta {
+    display: none;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+/* Sección de modificación */
+#seccion-modificacion {
+    display: block;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos del formulario de alta */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: left;
+    max-width: 600px;
+    margin: auto;
+}
+
+label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Botones del formulario */
+.botones-form {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+button {
+    background-color: #4a4a4a;
+    color: white;
+    padding: 6px 10px;
+    font-size: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #333;
+}
+
+/* Diseño Mejorado para la Tabla */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+}
+
+th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+}
+
+/* Aumentar tamaño de las imágenes en la tabla */
+td img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+/* Botones dentro de la tabla */
+td button {
+    background-color: #4a4a4a;
+    color: white;
+    padding: 6px 8px;
+    font-size: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 2px;
+    width: auto;
+}
+
+td button:hover {
+    background-color: #333;
+}
+
+/* Compactar filas para menor altura */
+tr {
+    height: 45px;
+}
+
+tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+/* Oculta elementos dinámicamente */
+.oculto {
+    display: none;
+}
+
+/* **Ocultar las filas de la tabla en móviles y mostrar solo tarjetas** */
+@media (max-width: 768px) {
+    main {
+        width: 95%;
+    }
+
+    form {
+        max-width: 100%;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .boton-flotante {
+        top: 80px;
+        right: 10px;
+        font-size: 14px;
+    }
+
+    /* Ocultar la tabla en pantallas pequeñas */
+    table, thead, tr {
+        display: none;
+    }
+
+    /* Mostrar los productos en formato tarjeta en móvil */
+    #tabla-productos {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .producto-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .producto-card img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+
+    .producto-info {
+        flex-grow: 1;
+    }
+
+    .producto-info p {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+    .producto-botones {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .producto-botones button {
+        padding: 4px 6px;
+        font-size: 10px;
+    }
+}
+
+/* Imágenes en la tabla de productos (vista escritorio) */
+.imagen-tabla {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+/* Vista móvil: Tarjetas de producto */
+.producto-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 200px;
+}
+
+.producto-card img {
+    width: 100%;
+    max-height: 120px;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+/* Información del producto en la vista móvil */
+.producto-info {
+    text-align: center;
+    margin-top: 5px;
+}
+
+/* Botones de acción en tarjetas móviles */
+.producto-botones {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 5px;
+}
+
+.producto-botones button {
+    font-size: 12px;
+    padding: 5px;
+    width: auto;
+}
+

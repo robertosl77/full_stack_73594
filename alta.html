@@ -6,29 +6,68 @@
     <title>Alta de Productos</title>
     <link rel="stylesheet" href="css/general.css">
     <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/alta-modificar-grande.css">
+    <link rel="stylesheet" href="css/alta-modificar-pequeño.css">
+    <script src="js/productos.js" defer></script>
 </head>
 <body>
 
     <script src="js/header.js" defer></script>
 
     <main>
-        <h1>Alta de Productos</h1>
-        <form id="form-alta">
-            <label>Nombre: <input type="text" name="nombre" required></label>
-            <label>Precio: <input type="number" name="precio" required></label>
-            <label>Stock: <input type="number" name="stock" required></label>
-            <label>Marca: <input type="text" name="marca" required></label>
-            <label>Categoría: <input type="text" name="categoria" required></label>
-            <label>Descripción Corta: <textarea name="descripcion_corta" required></textarea></label>
-            <label>Descripción Larga: <textarea name="descripcion_larga"></textarea></label>
-            <label>Envío sin cargo: <input type="checkbox" name="envio"></label>
-            <label>Edad desde: <input type="number" name="edad_desde"></label>
-            <label>Edad hasta: <input type="number" name="edad_hasta"></label>
-            <label>Foto: <input type="file" name="foto" accept="image/*"></label>
-            <button type="submit">Agregar Producto</button>
-        </form>
+        <!-- <h1>Alta y Modificación de Productos</h1> -->
+
+        <!-- Botón flotante para alternar entre secciones -->
+        <button id="toggle-alta" class="boton-flotante">+ Nuevo Producto</button>
+
+        <!-- Capa de alta (inicialmente oculta) -->
+        <section id="seccion-alta" class="oculto">
+            <h2>Agregar Nuevo Producto</h2>
+            <form id="form-alta">
+                <label>Imagen: <input type="file" name="imagen" accept="image/*" required></label>
+                <label>Categoría:
+                    <select name="categoria" required>
+                        <option value="vinos">Vinos</option>
+                        <option value="spirits">Spirits</option>
+                    </select>
+                </label>
+                <label>Bodega: <select name="bodega"></select></label>
+                <label>Tipo: <select name="tipo"></select></label>
+                <label>Nombre: <input type="text" name="nombre" required></label>
+                <label>Precio: <input type="number" name="precio" step="0.01" required></label>
+                <label>Descuento: <input type="number" name="descuento" required></label>
+                <label>Stock: <input type="number" name="stock" required></label>
+                <div class="botones-form">
+                    <button type="submit">Agregar Producto</button>
+                    <button type="button" id="cancelar-alta">Cancelar</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Sección de modificación/eliminación (se muestra por defecto) -->
+        <section id="seccion-modificacion">
+            <h2>Modificar/Eliminar Productos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Categoría</th>
+                        <th>Tipo</th>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Descuento</th>
+                        <th>Stock</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-productos">
+                    <!-- Los productos serán insertados dinámicamente desde alta.js -->
+                </tbody>
+            </table>
+        </section>
     </main>
 
+    <script src="js/alta.js" defer></script>
     <script src="js/footer.js" defer></script>
 
 </body>
