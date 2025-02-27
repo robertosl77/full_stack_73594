@@ -1,7 +1,30 @@
 document.addEventListener("DOMContentLoaded", function () {
     inicializarEventos();
-    cargarProductosEnTabla();
+    if (window.innerWidth > 768) {
+        cargarProductosPantallaGrande();
+    } else {
+        cargarProductosPantallaMovil();
+    }
 });
+
+// Detectar cambios en el tamaño de la pantalla y recargar la vista
+window.addEventListener("resize", function () {
+    renderizarProductos();
+});
+
+// Función que decide qué vista cargar según el tamaño de la pantalla
+function renderizarProductos() {
+    const seccionModificacion = document.getElementById("seccion-modificacion");
+    
+    // Limpiar contenido antes de renderizar
+    seccionModificacion.innerHTML = "";
+
+    if (window.innerWidth > 768) {
+        cargarProductosPantallaGrande();
+    } else {
+        cargarProductosPantallaMovil();
+    }
+}
 
 function inicializarEventos() {
     const botonNuevoProducto = document.getElementById("toggle-alta");
@@ -26,35 +49,62 @@ function mostrarSeccionModificacion() {
 }
 
 // Carga los productos activos en la tabla
-function cargarProductosEnTabla() {
-    const tablaProductos = document.getElementById("tabla-productos");
+function cargarProductosPantallaGrande() { 
+    const tablaProductos = document.getElementById("seccion-modificacion");
     const productosActivos = obtenerProductosActivos();
 
-    // Limpiar la tabla antes de volver a cargar
-    tablaProductos.innerHTML = "";
+    // Limpiar y reestructurar la sección
+    tablaProductos.innerHTML = `
+        <h2>Modificar/Eliminar Productos</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Categoría</th>
+                    <th>Tipo</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Descuento</th>
+                    <th>Stock</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-productos">
+                <!-- Productos se insertarán aquí dinámicamente -->
+            </tbody>
+        </table>    
+    `;
 
-    if (window.innerWidth > 768) {
-        // Vista en tabla para escritorio
-        productosActivos.forEach(producto => {
-            const fila = document.createElement("tr");
-            fila.innerHTML = `
-                <td><img src="${producto.imagen}" alt="${producto.nombre}" class="imagen-tabla"></td>
-                <td>${producto.categoria}</td>
-                <td>${producto.tipo}</td>
-                <td>${producto.nombre}</td>
-                <td>$${producto.precio_original.toLocaleString()}</td>
-                <td>${producto.descuento}%</td>
-                <td>${producto.stock}</td>
-                <td>
-                    <button class="modificar-precio" data-id="${producto.id}">Modificar Precio</button>
-                    <button class="modificar-descuento" data-id="${producto.id}">Modificar Descuento</button>
-                    <button class="modificar-stock" data-id="${producto.id}">Modificar Stock</button>
-                    <button class="eliminar-producto" data-id="${producto.id}">Eliminar</button>
-                </td>
-            `;
-            tablaProductos.appendChild(fila);
-        });
-    } else {
+    // Seleccionar el tbody correctamente
+    const tbody = document.getElementById("tabla-productos");
+
+    // Iterar sobre los productos activos y agregar filas al tbody
+    productosActivos.forEach(producto => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+            <td><img src="${producto.imagen}" alt="${producto.nombre}" class="imagen-tabla"></td>
+            <td>${producto.categoria}</td>
+            <td>${producto.tipo}</td>
+            <td>${producto.nombre}</td>
+            <td>$${producto.precio_original.toLocaleString()}</td>
+            <td>${producto.descuento}%</td>
+            <td>${producto.stock}</td>
+            <td>
+                <button class="modificar-precio" data-id="${producto.id}">Modificar Precio</button>
+                <button class="modificar-descuento" data-id="${producto.id}">Modificar Descuento</button>
+                <button class="modificar-stock" data-id="${producto.id}">Modificar Stock</button>
+                <button class="eliminar-producto" data-id="${producto.id}">Eliminar</button>
+            </td>
+        `;
+        tbody.appendChild(fila); // Agregar la fila al tbody
+    });
+}
+
+function cargarProductosPantallaMovil(){
+    console.log("Cargando productos en vista móvil");
+    const tablaProductos = document.getElementById("seccion-modificacion");
+    const productosActivos = obtenerProductosActivos();
+        
         // Vista en tarjetas para móviles
         tablaProductos.classList.add("productos-grid"); // Aplicamos estilos en móviles
 
@@ -77,7 +127,7 @@ function cargarProductosEnTabla() {
             `;
             tablaProductos.appendChild(card);
         });
-    }
+
 }
 
 // Obtiene los productos activos desde productos.js
