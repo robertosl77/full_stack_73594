@@ -51,7 +51,7 @@ function mostrarSeccionModificacion() {
 // Carga los productos activos en la tabla
 function cargarProductosPantallaGrande() { 
     const tablaProductos = document.getElementById("seccion-modificacion");
-    const productosActivos = obtenerProductosActivos();
+    const productosActivos = productos().filter(producto => producto.estado === true);
 
     // Limpiar y reestructurar la sección
     tablaProductos.innerHTML = `
@@ -103,7 +103,7 @@ function cargarProductosPantallaGrande() {
 function cargarProductosPantallaMovil(){
     console.log("Cargando productos en vista móvil");
     const tablaProductos = document.getElementById("seccion-modificacion");
-    const productosActivos = obtenerProductosActivos();
+    const productosActivos = productos().filter(producto => producto.estado === true);
         
         // Vista en tarjetas para móviles
         tablaProductos.classList.add("productos-grid"); // Aplicamos estilos en móviles
@@ -114,9 +114,9 @@ function cargarProductosPantallaMovil(){
             card.innerHTML = `
             <img src="${producto.imagen}" alt="${producto.nombre}" class="imagen-card">
             <div class="producto-info">
-            <h3>${producto.nombre}</h3>
-            <p>Precio: <strong>$${producto.precio_original.toLocaleString()}</strong></p>
-            <p>Stock: <strong>${producto.stock}</strong></p>
+                <h3>${producto.nombre}</h3>
+                <p>Precio: <strong>$${producto.precio_original.toLocaleString()}</strong></p>
+                <p>Stock: <strong>${producto.stock}</strong></p>
             </div>
             <div class="producto-botones">
                 <button class="modificar-precio" data-id="${producto.id}">Precio</button>
@@ -128,9 +128,4 @@ function cargarProductosPantallaMovil(){
             tablaProductos.appendChild(card);
         });
 
-}
-
-// Obtiene los productos activos desde productos.js
-function obtenerProductosActivos() {
-    return productos().filter(producto => producto.estado === true);
 }
