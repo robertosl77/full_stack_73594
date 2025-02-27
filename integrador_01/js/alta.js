@@ -89,10 +89,10 @@ function cargarProductosPantallaGrande() {
             <td>$${producto.precio_original.toLocaleString()}</td>
             <td>${producto.descuento}%</td>
             <td>${producto.stock}</td>
-            <td>
-                <button class="modificar-precio" data-id="${producto.id}">Modificar Precio</button>
-                <button class="modificar-descuento" data-id="${producto.id}">Modificar Descuento</button>
-                <button class="modificar-stock" data-id="${producto.id}">Modificar Stock</button>
+            <td class="acciones">
+                <button class="modificar-precio" data-id="${producto.id}">Precio</button>
+                <button class="modificar-descuento" data-id="${producto.id}">Descuento</button>
+                <button class="modificar-stock" data-id="${producto.id}">Stock</button>
                 <button class="eliminar-producto" data-id="${producto.id}">Eliminar</button>
             </td>
         `;
@@ -112,18 +112,18 @@ function cargarProductosPantallaMovil(){
             const card = document.createElement("div");
             card.classList.add("producto-card");
             card.innerHTML = `
-                <img src="${producto.imagen}" alt="${producto.nombre}" class="imagen-card">
-                <div class="producto-info">
-                    <h3>${producto.nombre}</h3>
-                    <p><strong>${producto.categoria}</strong> - ${producto.tipo}</p>
-                    <p>Precio: <strong>$${producto.precio_original.toLocaleString()}</strong></p>
-                    <p>Stock: <strong>${producto.stock}</strong></p>
-                </div>
-                <div class="producto-botones">
-                    <button class="modificar-precio" data-id="${producto.id}">Precio</button>
-                    <button class="modificar-stock" data-id="${producto.id}">Stock</button>
-                    <button class="eliminar-producto" data-id="${producto.id}">Eliminar</button>
-                </div>
+            <img src="${producto.imagen}" alt="${producto.nombre}" class="imagen-card">
+            <div class="producto-info">
+            <h3>${producto.nombre}</h3>
+            <p>Precio: <strong>$${producto.precio_original.toLocaleString()}</strong></p>
+            <p>Stock: <strong>${producto.stock}</strong></p>
+            </div>
+            <div class="producto-botones">
+                <button class="modificar-precio" data-id="${producto.id}">Precio</button>
+                <button class="modificar-descuento" data-id="${producto.id}">Descuento</button>
+                <button class="modificar-stock" data-id="${producto.id}">Stock</button>
+                <button class="eliminar-producto" data-id="${producto.id}">Eliminar</button>
+            </div>
             `;
             tablaProductos.appendChild(card);
         });
