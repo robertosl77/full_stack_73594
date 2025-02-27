@@ -1,10 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     inicializarEventos();
-    if (window.innerWidth > 768) {
-        cargarProductosPantallaGrande();
-    } else {
-        cargarProductosPantallaMovil();
-    }
+    renderizarProductos();
 });
 
 // Detectar cambios en el tamaño de la pantalla y recargar la vista
@@ -21,8 +17,10 @@ function renderizarProductos() {
 
     if (window.innerWidth > 768) {
         cargarProductosPantallaGrande();
+        atlaProductosPantallaGrande();
     } else {
         cargarProductosPantallaMovil();
+        atlaProductosPantallaMovil();
     }
 }
 
@@ -127,5 +125,36 @@ function cargarProductosPantallaMovil(){
             `;
             tablaProductos.appendChild(card);
         });
+
+}
+
+function atlaProductosPantallaGrande(){
+    const tablaProductos = document.getElementById("seccion-alta");
+
+    tablaProductos.innerHTML = `
+        <h2>Agregar Nuevo Producto</h2>
+        <form id="form-alta">
+            <label>Imagen: <input type="file" name="imagen" accept="image/*" required></label>
+            <label>Categoría:
+                <select name="categoria" required>
+                    <option value="vinos">Vinos</option>
+                    <option value="spirits">Spirits</option>
+                </select>
+            </label>
+            <label>Bodega: <select name="bodega"></select></label>
+            <label>Tipo: <select name="tipo"></select></label>
+            <label>Nombre: <input type="text" name="nombre" required></label>
+            <label>Precio: <input type="number" name="precio" step="0.01" required></label>
+            <label>Descuento: <input type="number" name="descuento" required></label>
+            <label>Stock: <input type="number" name="stock" required></label>
+            <div class="botones-form">
+                <button type="submit">Agregar Producto</button>
+                <button type="button" id="cancelar-alta">Cancelar</button>
+            </div>
+        </form>  
+    `;
+}
+
+function atlaProductosPantallaMovil(){
 
 }

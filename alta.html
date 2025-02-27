@@ -20,26 +20,7 @@
 
         <!-- Capa de alta (inicialmente oculta) -->
         <section id="seccion-alta" class="oculto">
-            <h2>Agregar Nuevo Producto</h2>
-            <form id="form-alta">
-                <label>Imagen: <input type="file" name="imagen" accept="image/*" required></label>
-                <label>Categoría:
-                    <select name="categoria" required>
-                        <option value="vinos">Vinos</option>
-                        <option value="spirits">Spirits</option>
-                    </select>
-                </label>
-                <label>Bodega: <select name="bodega"></select></label>
-                <label>Tipo: <select name="tipo"></select></label>
-                <label>Nombre: <input type="text" name="nombre" required></label>
-                <label>Precio: <input type="number" name="precio" step="0.01" required></label>
-                <label>Descuento: <input type="number" name="descuento" required></label>
-                <label>Stock: <input type="number" name="stock" required></label>
-                <div class="botones-form">
-                    <button type="submit">Agregar Producto</button>
-                    <button type="button" id="cancelar-alta">Cancelar</button>
-                </div>
-            </form>
+            <!-- Aqui se muestra el formulario para el alta de productos -->
         </section>
 
         <!-- Sección de modificación/eliminación (se muestra por defecto) -->
@@ -49,7 +30,6 @@
     </main>
 
     <script src="js/alta.js" defer></script>
-    <script src="js/modifica.js" defer></script>
     <script src="js/footer.js" defer></script>
 
 </body>
