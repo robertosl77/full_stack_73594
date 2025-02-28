@@ -8,7 +8,7 @@ function productos() {
             bodega: "El Esteco",
             tipo: "Blend",
             nombre: "Chañar Punco",
-            precio_original: 69614.00,
+            precio_original: 69614.50,
             descuento: 30,
             stock: 0,
             estado: true,

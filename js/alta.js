@@ -190,9 +190,9 @@ function altaProductos(){
                 </select>
             </label>
             <label>Nombre: <input type="text" name="nombre" required></label>
-            <label>Precio: <input type="number" name="precio" step="0.01" required></label>
-            <label>Descuento: <input type="number" name="descuento" required></label>
-            <label>Stock: <input type="number" name="stock" required></label>
+            <label>Precio: <input type="number" name="precio" step="0.01" min="0" required></label>
+            <label>Descuento: <input type="number" name="descuento" min="0" required></label>
+            <label>Stock: <input type="number" name="stock" min="0" required></label>
             <div class="botones-form">
                 <button type="submit">Agregar Producto</button>
                 <button type="button" id="cancelar-alta">Cancelar</button>
@@ -228,7 +228,7 @@ function validarFormularioAlta(event) {
     mostrarErrores(errores);
 
     if (errores.length === 0) {
-        guardarProducto({ imagen, categoria, bodega, tipo, nombre, precio: precio_original, descuento, stock });
+        guardarProducto({ imagen, categoria, bodega, tipo, nombre, precio_original, descuento, stock });
     }
 }
 
