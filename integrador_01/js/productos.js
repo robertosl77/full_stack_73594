@@ -1,21 +1,26 @@
 // Función para cargar una categoría con su banner y productos
 document.addEventListener("DOMContentLoaded", function () {
-    // Si no hay productos almacenados en sessionStorage, los guardamos
-    sessionStorage.setItem("productos", JSON.stringify(productos()));
+    // Si sessionStorage no tiene productos, los guardamos desde el JSON original
+    if (!sessionStorage.getItem("productos")) {
+        sessionStorage.setItem("productos", JSON.stringify(productos()));
+    }
 
-    cargarSeccion("vinos", productos, "img_categorias/vinos.avif", "Sección de Vinos");
-    cargarSeccion("spirits", productos, "img_categorias/spirits.jpg", "Sección Spirits");
+    // Obtener productos desde sessionStorage
+    const productosGuardados = JSON.parse(sessionStorage.getItem("productos")) || [];
+
+    cargarSeccion("vinos", productosGuardados, "img_categorias/vinos.avif", "Sección de Vinos");
+    cargarSeccion("spirits", productosGuardados, "img_categorias/spirits.jpg", "Sección Spirits");
 });
 
 // Función para cargar una sección de productos
-function cargarSeccion(categoria, obtenerProductos, imagenBanner, tituloBanner) {
+function cargarSeccion(categoria, productos, imagenBanner, tituloBanner) {
     const productosContainer = document.getElementById("productos-container");
 
     if (!document.getElementById(`productos-${categoria}`)) {
         const seccion = crearSeccion(categoria, imagenBanner, tituloBanner);
         productosContainer.appendChild(seccion);
 
-        renderizarProductos(seccion, categoria, obtenerProductos());
+        renderizarProductos(seccion, categoria, productos);
     }
 }
 
@@ -35,9 +40,9 @@ function crearSeccion(tipo, imagenBanner, tituloBanner) {
 // Función para renderizar productos dentro de una sección
 function renderizarProductos(seccion, categoria, productos) {
     productos.forEach(producto => {
-        if (producto.categoria===categoria) {
+        if (producto.categoria === categoria) {
             seccion.appendChild(crearCardProducto(producto));
-        }        
+        }
     });
 }
 
@@ -47,7 +52,10 @@ function crearCardProducto(producto) {
     div.classList.add("producto-card");
 
     const sinStock = producto.stock <= 0;
-    const precio_descuento = calcularPrecioDescuento(producto);
+    
+    // 💡 Verificar si precio_original está definido, sino asignarle 0
+    const precioOriginal = producto.precio_original ? parseFloat(producto.precio_original) : 0;
+    const precioDescuento = calcularPrecioDescuento(producto);
     const nombreCorto = truncarNombre(producto.nombre);
 
     div.innerHTML = `
@@ -58,8 +66,8 @@ function crearCardProducto(producto) {
         <p class="tipo">${producto.tipo}</p>
         <p class="precio">
             ${producto.descuento > 0 
-                ? `<span class="precio-antiguo">$${producto.precio_original.toLocaleString()}</span> $${precio_descuento.toLocaleString()}`
-                : `$${precio_descuento.toLocaleString()}`}
+                ? `<span class="precio-antiguo">$${precioOriginal.toLocaleString()}</span> $${precioDescuento.toLocaleString()}`
+                : `$${precioOriginal.toLocaleString()}`}
         </p>
         <p class="stock">Disponibles: ${producto.stock}</p>
         <div class="cantidad">
@@ -75,9 +83,10 @@ function crearCardProducto(producto) {
 
 // Función para calcular el precio con descuento
 function calcularPrecioDescuento(producto) {
+    const precioOriginal = producto.precio_original ? parseFloat(producto.precio_original) : 0;
     return producto.descuento > 0 
-        ? producto.precio_original * (1 - producto.descuento / 100)
-        : producto.precio_original;
+        ? precioOriginal * (1 - producto.descuento / 100)
+        : precioOriginal;
 }
 
 // Función para truncar el nombre del producto si es muy largo
