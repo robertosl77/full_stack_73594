@@ -10,36 +10,42 @@ window.addEventListener("resize", function () {
 
 // Función que decide qué vista cargar según el tamaño de la pantalla
 function renderizarProductos() {
+    let productosGuardados = JSON.parse(sessionStorage.getItem("productos"));
+
+    if (!productosGuardados || productosGuardados.length === 0) {
+        sessionStorage.setItem("productos", JSON.stringify(productos()));
+    }
+
     const seccionModificacion = document.getElementById("seccion-modificacion");
     const seccionAlta = document.getElementById("seccion-alta");
 
-    if (!seccionModificacion || !seccionAlta) return; // Evitar errores si no se encuentran los elementos
+    if (!seccionModificacion || !seccionAlta) return;
 
-    // Limpiar contenido antes de renderizar
-    seccionModificacion.innerHTML = "";
-    seccionAlta.innerHTML = "";
+    seccionModificacion.innerHTML = ""; 
+    seccionAlta.innerHTML = ""; 
 
-    // Renderizar la vista correspondiente
     if (window.innerWidth > 768) {
         cargarProductosPantallaGrande();
     } else {
         cargarProductosPantallaMovil();
     }
 
-    altaProductos(); // Cargar siempre la sección de alta
+    altaProductos();
 }
 
 function inicializarEventos() {
     const botonNuevoProducto = document.getElementById("toggle-alta");
-    const formAlta = document.getElementById("form-alta");
 
     if (botonNuevoProducto) {
         botonNuevoProducto.addEventListener("click", mostrarSeccionAlta);
     }
 
-    if (formAlta) {
-        formAlta.addEventListener("submit", validarFormularioAlta);
-    }
+    // Delegación de eventos para el formulario de alta
+    document.body.addEventListener("submit", function (event) {
+        if (event.target && event.target.id === "form-alta") {
+            validarFormularioAlta(event);
+        }
+    });
 
     // Delegación de eventos para el botón cancelar dentro de `seccion-alta`
     document.body.addEventListener("click", function (event) {
@@ -54,7 +60,9 @@ function cargarProductosPantallaGrande() {
     const tablaProductos = document.getElementById("seccion-modificacion");
     if (!tablaProductos) return; // Evitar errores si no existe el contenedor
 
-    const productosActivos = productos().filter(producto => producto.estado === true);
+    // Obtener productos desde sessionStorage
+    let productosActivos = JSON.parse(sessionStorage.getItem("productos")) || [];
+    productosActivos = productosActivos.filter(producto => producto.estado === true);
 
     // Limpiar y reestructurar la sección
     tablaProductos.innerHTML = `
@@ -84,12 +92,13 @@ function cargarProductosPantallaGrande() {
     // Iterar sobre los productos activos y agregar filas al tbody
     productosActivos.forEach(producto => {
         const fila = document.createElement("tr");
+
         fila.innerHTML = `
             <td><img src="${producto.imagen}" alt="${producto.nombre}" class="imagen-tabla"></td>
             <td>${producto.categoria}</td>
             <td>${producto.tipo}</td>
             <td>${producto.nombre}</td>
-            <td>$${producto.precio_original.toLocaleString()}</td>
+            <td>$${producto.precio_original}</td>
             <td>${producto.descuento}%</td>
             <td>${producto.stock}</td>
             <td class="acciones">
@@ -104,11 +113,12 @@ function cargarProductosPantallaGrande() {
 }
 
 function cargarProductosPantallaMovil(){
-    console.log("Cargando productos en vista móvil");
     const tablaProductos = document.getElementById("seccion-modificacion");
     if (!tablaProductos) return; // Evitar errores si no existe el contenedor
 
-    const productosActivos = productos().filter(producto => producto.estado === true);
+    // Obtener productos desde sessionStorage
+    let productosActivos = JSON.parse(sessionStorage.getItem("productos")) || [];
+    productosActivos = productosActivos.filter(producto => producto.estado === true);
     
     // Vista en tarjetas para móviles
     tablaProductos.classList.add("productos-grid"); // Aplicamos estilos en móviles
@@ -119,7 +129,7 @@ function cargarProductosPantallaMovil(){
             <img src="${producto.imagen}" alt="${producto.nombre}" class="imagen-card">
             <div class="producto-info">
                 <h3>${producto.nombre}</h3>
-                <p>Precio: <strong>$${producto.precio_original.toLocaleString()}</strong></p>
+                <p>Precio: <strong>$${producto.precio_original}</strong></p>
                 <p>Stock: <strong>${producto.stock}</strong></p>
             </div>
             <div class="producto-botones">
@@ -134,7 +144,6 @@ function cargarProductosPantallaMovil(){
 }
 
 // Sección de alta de productos
-
 function altaProductos(){
     const tablaProductos = document.getElementById("seccion-alta");
     if (!tablaProductos) return; // Evitar errores si no existe el contenedor
@@ -196,14 +205,14 @@ function altaProductos(){
 function validarFormularioAlta(event) {
     event.preventDefault();
 
-    const imagen = document.querySelector("input[name='imagen']").files[0];
+    const imagen = "img_productos/"+document.querySelector("input[name='imagen']").files[0].name;
     const categoria = document.querySelector("select[name='categoria']").value.trim();
     const bodega = document.querySelector("select[name='bodega']").value.trim();
     const tipo = document.querySelector("select[name='tipo']").value.trim();
     const nombre = document.querySelector("input[name='nombre']").value.trim();
-    const precio = document.querySelector("input[name='precio']").value.trim();
-    const descuento = document.querySelector("input[name='descuento']").value.trim();
-    const stock = document.querySelector("input[name='stock']").value.trim();
+    const precio_original = parseFloat(document.querySelector("input[name='precio']").value.trim());
+    const descuento = parseInt(document.querySelector("input[name='descuento']").value.trim());
+    const stock = parseInt(document.querySelector("input[name='stock']").value.trim());
 
     let errores = [];
 
@@ -212,14 +221,14 @@ function validarFormularioAlta(event) {
     if (!bodega) errores.push("Debe seleccionar una bodega.");
     if (!tipo) errores.push("Debe seleccionar un tipo.");
     if (!nombre) errores.push("El nombre no puede estar vacío.");
-    if (!precio || isNaN(precio) || parseFloat(precio) <= 0) errores.push("El precio debe ser un número positivo.");
+    if (!precio_original || isNaN(precio_original) || parseFloat(precio_original) <= 0) errores.push("El precio debe ser un número positivo.");
     if (descuento && (isNaN(descuento) || parseInt(descuento) < 0 || parseInt(descuento) > 100)) errores.push("El descuento debe estar entre 0 y 100.");
     if (!stock || isNaN(stock) || parseInt(stock) < 0) errores.push("El stock debe ser un número entero positivo.");
 
     mostrarErrores(errores);
 
     if (errores.length === 0) {
-        guardarProducto({ imagen, categoria, bodega, tipo, nombre, precio, descuento, stock });
+        guardarProducto({ imagen, categoria, bodega, tipo, nombre, precio: precio_original, descuento, stock });
     }
 }
 
@@ -240,11 +249,34 @@ function mostrarErrores(errores) {
     }
 }
 
-// Guardar producto (simulación, se puede adaptar para enviar a backend)
 function guardarProducto(producto) {
-    console.log("Producto guardado:", producto);
+    // Obtener los productos actuales de sessionStorage o usar un array vacío si no existen
+    let productosActuales = JSON.parse(sessionStorage.getItem("productos")) || [];
+
+    // Asignar un nuevo ID único
+    producto.id = productosActuales.length + 1;
+
+    // Definir el estado en función del stock
+    producto.estado = producto.stock > 0;
+
+    // Agregar el nuevo producto
+    productosActuales.push(producto);
+
+    // Guardar en sessionStorage
+    sessionStorage.setItem("productos", JSON.stringify(productosActuales));
+
+    // Verificar si se guardó correctamente
+    console.log("Productos en sessionStorage:", JSON.parse(sessionStorage.getItem("productos")));
+
+    // Mostrar mensaje y resetear formulario
     alert("Producto agregado correctamente.");
     document.getElementById("form-alta").reset();
+
+    // **FORZAR ACTUALIZACIÓN DEL DOM**
+    setTimeout(() => {
+        renderizarProductos();
+    }, 100);
+    
     mostrarSeccionModificacion();
 }
 
