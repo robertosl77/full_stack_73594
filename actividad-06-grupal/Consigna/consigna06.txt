@@ -1,0 +1,46 @@
+
+	Encontrarán, junto con este archivo, varias imágenes de referencias del resultado que tienen que lograr, 
+	así como también un video en donde se ven muchos detalles y hasta les muestro cómo quedaría si desactivamos el CSS, 
+	algo que es importante que revisen.
+
+
+	Se busca que realicen un único HTML, pero esta vez serán 3 archivos CSS.
+
+
+	- El primero deberá nombrarse "estilos.css", y allí deberán incorporar las reglas de estilo para lograr que la página se vea como 
+	la diseñé yo para el Bootcamp y cuyas imágenes y video les paso de referencia.
+
+	- Adicionalmente a esto, deberán crear otros 2 archivos CSS vacíos y aplicar en ellos otros estilos para lograr 2 diseños adicionales totalmente distintos, 
+	basados en 2 de las siguientes 4 temáticas:
+
+	Retro (estilos-retro.css)
+	Futuro (estilos-futuro.css)
+	Películas (estilos-peliculas.css)
+	Urbano (estilos-urbano.css)
+
+	- De allí deberán elegir 2 temáticas y generar los 2 archivos de CSS adicionales con los nombres que se indican entre paréntesis.
+
+	- Para hacer esto les sugiero navegar por distintos sitios, buscando ideas.
+
+	- Elegir o generar una paleta de colores desde el sitio https://coolors.co/. Copiar en el CSS los colores de la paleta, 
+	a modo de comentarios, con el código hexadecimal y nombre de cada color. Ej:
+
+	#252525 gris oscuro
+	#401515 rojo oscuro
+	#fdedd8 naranja claro
+
+	- Deben utilizar, como mínimo, las propiedades de CSS necesarias para establecer:
+		- imágenes de fondo
+		- sombras de texto y/o caja
+		- bordes redondeados
+
+	- Los 3 diseños (el que harán basado en el mío, y los otros dos) tienen que ser muy distintos. 
+	Esto es mucho más que simplemente cambiar colores de bordes o de la tipografía. 
+	Es momento de jugar, abrir la mente, utilizar la creatividad. 
+
+	- Bonus 1: Adicionar un botón que ejecute algún evento de JS.
+
+	- Bonus 2: Agregar un botón con el texto "Recordar" que, al ser presionado, 
+	tome dos o tres datos del formulario y lo muestre en un alert al usuario. 
+	
+	

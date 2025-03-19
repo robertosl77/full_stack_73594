@@ -1,0 +1,6 @@
+Las tipografías utilizadas fueron:
+
+- 'Roboto', sans-serif
+- 'Poppins', sans-serif
+
+Roboto y Poppins se encuentran en Google Fonts
