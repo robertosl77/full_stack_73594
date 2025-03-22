@@ -1,0 +1,48 @@
+/* CONFIGURACION DE LOS BORDES DEL TITULO */
+.borde-superior, .borde-inferior {
+    position: relative;
+    height: 12px;
+    background-color: #4c6b61; /* Verde oscuro */
+}
+
+.punta {
+    position: absolute;
+    width: 15px;
+    height: 12px;
+    background-color: #1f1f1f; /* Gris oscuro, igual que el banner */
+    z-index: 1;
+}
+
+/* Borde superior: triángulos que apuntan hacia abajo */
+.izquierda-superior {
+    left: 0;
+    /* -webkit-clip-path: polygon(0 0, 100% 0, 50% 100%); */
+    clip-path: polygon(0% 0%, 0% 100%, 100% 100%);
+}
+
+.derecha-superior {
+    right: 0;
+    /* -webkit-clip-path: polygon(0 0, 100% 0, 50% 100%); */
+    clip-path: polygon(100% 0%, 0% 100%, 100% 100%);
+}
+
+/* Borde inferior: triángulos que apuntan hacia afuera */
+.izquierda-inferior {
+    left: 0;
+    /* -webkit-clip-path: polygon(0 50%, 100% 0, 100% 100%); */
+    clip-path: polygon(0% 0%, 100% 0%, 0% 100%);
+}
+
+.derecha-inferior {
+    right: 0;
+    /* -webkit-clip-path: polygon(0 0, 100% 50%, 0 100%); */
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%);
+}
+
+.banner {
+    background-color: #1f1f1f; /* Fondo del banner */
+    color: white;
+    text-align: center;
+    padding: 40px 0;
+    font-size: 3rem;
+}

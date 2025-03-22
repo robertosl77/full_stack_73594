@@ -5,42 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Afiliación</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <style>
-      .decoracion {
-          display: flex;
-          justify-content: center;
-          gap: 15px;
-          margin: 30px 0;
-      }
-      
-      .decoracion div {
-          width: 10px;
-          height: 10px;
-          background-color: white;
-          border-radius: 50%;
-      }
-
-      fieldset {
-          position: relative;
-          padding-top: 20px; /* Para que el legend no se solape */
-      }
-      
-      legend {
-          position: absolute;
-          top: -10px;
-          left: 10px;
-          padding: 5px 10px;
-          border-radius: 5px;
-          /* width:30%; */
-      }
-      
-      
-    </style>
+    <link href="separador.css" rel="stylesheet">
+    <link href="banner.css" rel="stylesheet">
 </head>
-<body class="container ml-5 mr-5 bg-dark text-white">
-    <h1 class="text-center p-2 mt-4 mb-4 bg-primary">Vení al Gym! 💪</h1>
+<body class="container bg-dark text-white">
 
-  <fieldset class="bg-success">
+  <div class="container banner">
+    <div class="borde-superior">
+        <div class="punta izquierda-superior"></div>
+        <div class="punta derecha-superior"></div>
+    </div>
+    <h1 class="text-center">Vení al Gym! 💪</h1>
+    <div class="borde-inferior">
+        <div class="punta izquierda-inferior"></div>
+        <div class="punta derecha-inferior"></div>
+    </div>
+  </div>
+
+  <fieldset class="container bg-success">
     <legend class="bg-warning text-center w-auto">🙋‍♂️ Datos Personales 👀</legend>
     <div class="container text-center p-4 w-75">
         <div class="row m-2">
