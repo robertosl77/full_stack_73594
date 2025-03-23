@@ -133,3 +133,8 @@ fieldset:has(textarea:focus),
 fieldset:has(select:focus) {
   background-color: #a6c1b9;
 }
+
+input {
+    text-align: right;
+}
+  
