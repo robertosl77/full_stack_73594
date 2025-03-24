@@ -5,7 +5,7 @@ const estilos = [
     "estilo-propio1"
 ];
 
-let indiceEstilo = 0;
+let indice = 0;
 
 window.addEventListener("load", () => {
     const btn = document.createElement("button");
@@ -27,7 +27,8 @@ window.addEventListener("load", () => {
         });
 
         // Activar el siguiente
-        indiceEstilo = (indiceEstilo + 1) % estilos.length;
-        document.getElementById(estilos[indiceEstilo]).disabled = false;
+        indice = (indice + 1) % estilos.length;
+        // console.log("indice: "+indice);
+        document.getElementById(estilos[indice]).disabled = false;
     });
 });

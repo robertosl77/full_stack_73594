@@ -21,7 +21,8 @@ window.addEventListener("load", () => {
 
         // Activar el siguiente
         let random = Math.floor(Math.random() * estilos.length);
-        console.log("aleatorio: "+random);
+        indice=random; //Se actualiza indice con el valor aleatorio para que el botón cíclico continúe desde ahí y no arranque de cero.
+        // console.log("aleatorio: "+random);
         document.getElementById(estilos[random]).disabled = false;
     });
 });
