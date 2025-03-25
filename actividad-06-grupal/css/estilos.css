@@ -176,3 +176,11 @@ h5 {
     border: 1px solid #2B3D37;
     background-color: #A6C1B9 ;
 }
+
+
+
+/* para el boton recordar */
+#recordarEstilo.activo {
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5);
+    opacity: 0.7;
+}

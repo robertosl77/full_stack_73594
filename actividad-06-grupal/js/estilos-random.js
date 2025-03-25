@@ -4,14 +4,10 @@ window.addEventListener("load", () => {
     const btn = document.createElement("button");
     btn.id = "cambiarRandom";
     btn.textContent = "Cambiar Random";
-    btn.style.position = "fixed";
-    btn.style.top = "60px";
-    btn.style.right = "10px";
-    btn.style.width = "180px";
     btn.style.zIndex = "9999";
     btn.className="btn";
     
-    document.body.prepend(btn);
+    document.getElementById("botonesAqui").appendChild(btn);
 
     btn.addEventListener("click", () => {
         // Desactivar todos

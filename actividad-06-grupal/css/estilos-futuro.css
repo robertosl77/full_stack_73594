@@ -53,3 +53,9 @@ h1, h2, h3 {
     text-shadow: 0px 0px 12px #ff6600;
     font-weight: bold;
 }
+
+/* para el boton recordar */
+#recordarEstilo.activo {
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5);
+    opacity: 0.7;
+}

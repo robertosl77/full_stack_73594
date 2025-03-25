@@ -76,3 +76,11 @@ button:hover {
     text-shadow: 0 0 10px #00ffff;
     color: #ff00ff;
 }
+
+
+
+/* para el boton recordar */
+#recordarEstilo.activo {
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5);
+    opacity: 0.7;
+}
