@@ -12,7 +12,6 @@ function change_disabled(inputs, botones, estado){
 }
 
 function agregar_contenido(cant, valor) {
-    console.log("dentro de agregar_contenido", cant, valor);
     let contenido = '';
     for (let i = 0; i < cant; i++) {
         contenido += valor;
@@ -74,6 +73,33 @@ window.addEventListener('load', function() {
             alert('Ingresá un número válido mayor que 0.');
         }
     });
+
+    // Ejercicio punto 6a - Botón Vaciar
+    const btnVaciar = document.getElementsByClassName('btn-vaciar')[0];
+    btnVaciar.addEventListener('click', function() {
+        document.getElementById('destino').innerHTML = '';
+    });
+
+    // Ejercicio punto 6b - Botón Mayusculas
+    const btnMayusculas = document.getElementsByClassName('btn-convertir-a-mayusculas')[0];
+    btnMayusculas.addEventListener('click', function() {
+        const destino = document.getElementById('destino');
+        destino.innerHTML = destino.innerHTML.toUpperCase();
+    });
+
+    // Ejercicio punto 6c - Botón Minusculas
+    const btnMinusculas = document.getElementsByTagName('button')[0];
+    btnMinusculas.addEventListener('click', function() {
+        const destino = document.getElementById('destino');
+        destino.innerHTML = destino.innerHTML.toLowerCase();
+    });
+
+    // Ejercicio punto 7
+    const listaItems = document.getElementsByTagName('li');
+
+    for (let i = 0; i < listaItems.length; i++) {
+        listaItems[i].innerHTML = '[Ok] ' + listaItems[i].innerHTML;
+    }
     
 
 });
