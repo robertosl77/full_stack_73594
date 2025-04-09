@@ -1,0 +1,47 @@
+npm init: crea json de inicio de proyecto
+npm init -y: similar pero con yes por defecto
+
+
+node --watch index.js
+
+
+-----------------------------
+
+nodemon 
+
+npm i nodemon
+
+
+------------------------
+
+mode developer solo para local!!!!
+
+
+npm i nodemon -D
+
+npm i mongoose -D
+
+npm i path -D
+
+
+uninstal 
+
+npm uninstal mongoose
+
+
+-----------------
+
+npm i express
+
+npm i express@4.19.0
+
+
+
+---------------------
+
+instalacion global para todos los proyectos
+
+npm install -g nodemon
+
+
+
