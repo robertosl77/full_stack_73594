@@ -44,4 +44,10 @@ instalacion global para todos los proyectos
 npm install -g nodemon
 
 
+lista dependencias globales
+
+npm list -g
+
+
+
 
