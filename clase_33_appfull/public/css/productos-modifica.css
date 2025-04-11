@@ -1,0 +1,199 @@
+/* Estilos generales */
+main {
+    max-width: 90%;
+    margin: auto;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Botón flotante para alternar entre secciones */
+.boton-flotante {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.boton-flotante:hover {
+    background-color: #388E3C;
+}
+
+/* Sección de modificación */
+#seccion-modificacion {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Diseño Mejorado para la Tabla */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+}
+
+th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+}
+
+/* Botones dentro de la tabla */
+/* Establecer ancho uniforme para los botones */
+td button {
+    width: 80px; /* Ajusta este valor según necesites */
+    background-color: #4a4a4a;
+    color: white;
+    padding: 6px 8px;
+    font-size: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 2px;
+    text-align: center;
+}
+
+td button:hover {
+    background-color: #333;
+}
+
+/* Compactar filas para menor altura */
+tr {
+    height: 45px;
+}
+
+tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+/* Oculta elementos dinámicamente */
+.oculto {
+    display: none;
+}
+
+/* Imágenes en la tabla de productos (vista escritorio) */
+.imagen-tabla {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+
+@media (max-width: 768px) {
+    #seccion-modificacion {
+        padding: 10px;
+    }
+
+    /* Ocultamos la tabla en pantallas pequeñas */
+    table {
+        display: none;
+    }
+
+    /* Contenedor para las tarjetas de productos */
+    #productos-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    /* Contenedor de todas las tarjetas */
+    .productos-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        gap: 15px;
+        align-items: stretch; /* Asegura que todas las tarjetas tengan la misma altura */
+    }
+
+    /* Tarjeta de producto */
+    .producto-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: white;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        max-width: 160px;
+        text-align: center;
+        box-shadow: #333;
+        height: auto; /* Ajusta dinámicamente la altura */
+        min-height: 250px; /* Asegura que todas tengan al menos esta altura */
+    }
+
+    /* Imágenes dentro de las tarjetas */
+    .producto-card img {
+        width: auto;
+        max-width: 90%;
+        height: 100px;
+        object-fit: contain;
+        border-radius: 5px;
+    }
+
+    /* Información del producto */
+    .producto-info {
+        flex-grow: 1; /* Hace que esta sección se expanda y equilibre la altura */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* Contenedor de botones */
+    .producto-botones {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+        margin-top: auto; /* Empuja los botones hacia abajo */
+    }
+
+    /* Botones de acciones */
+    .producto-botones button {
+        width: 60px;
+        font-size: 10px;
+        padding: 5px;
+        background-color: #4a4a4a;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .producto-botones button:hover {
+        background-color: #333;
+    }
+
+    .boton-flotante {
+        /* position: fixed; */
+        top: 80px;
+        border-radius: 50%;
+        background-color: #971d38;
+    }
+}

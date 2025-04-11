@@ -1,0 +1,111 @@
+/* Estilos generales para la página de Contacto */
+main {
+    max-width: 600px;
+    text-align: center;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 75px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-height: calc(100vh - 125px);
+    overflow: auto;
+}
+
+/* Título */
+h1 {
+    font-size: 28px;
+    color: #4a4a4a;
+    margin-bottom: 20px;
+}
+
+/* Estilos del formulario */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: left;
+}
+
+/* Etiquetas */
+label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Campos de entrada */
+input,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Ajuste de textarea */
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Botón de envío */
+button {
+    background-color: #4a4a4a;
+    color: white;
+    padding: 10px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #333;
+}
+
+/* Diseño responsivo */
+@media (max-width: 768px) {
+    main {
+        width: 95%;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    input,
+    textarea {
+        font-size: 14px;
+    }
+}
+
+/* Estilos para los mensajes de error */
+.mensaje-error {
+    color: #d9534f; /* Rojo fuerte */
+    font-size: 10px;
+    font-weight: bold;
+    margin-top: 5px;
+    display: block;
+    background-color: #f8d7da; /* Fondo rojo claro */
+    padding: 5px;
+    border-left: 4px solid #c9302c; /* Borde rojo */
+    border-radius: 4px;
+}
+
+/* Espaciado entre inputs y mensajes de error */
+label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Ajuste para que los campos no se desplacen */
+input, textarea {
+    margin-bottom: 5px;
+}

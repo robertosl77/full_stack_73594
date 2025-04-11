@@ -1,0 +1,42 @@
+/* Reset de estilos básicos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Estilos generales */
+body {
+    padding-top: 60px; /* Evita que el contenido quede oculto detrás del header fijo */
+}
+
+/* Footer */
+footer {
+    position: fixed; /* Hace que el footer permanezca fijo en la parte inferior */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #222;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+/* Diseño responsivo */
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    nav ul li {
+        margin: 5px 0;
+    }
+}
+
+#productos-container {
+    flex-grow: 1; /* Permite que el contenido ocupe el espacio entre el header y el footer */
+    overflow-y: auto; /* Permite el desplazamiento del contenido */
+    padding-bottom: 50px; /* Evita que el contenido quede oculto detrás del footer */
+}

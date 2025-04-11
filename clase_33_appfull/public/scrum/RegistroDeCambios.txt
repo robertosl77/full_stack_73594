@@ -1,0 +1,20 @@
+### Registro de Cambios - Proyecto Web
+
+#### Cambio 1 - 21/02/2025
+**Descripción:** Se revisó el Product Backlog y se confirmó que el código debe ser completamente nativo (HTML, CSS y JavaScript sin frameworks ni librerías externas, excepto Google Fonts y Font Awesome).
+
+**Justificación:** El requisito de código nativo afecta el desarrollo y la planificación, asegurando que todo el diseño y funcionalidad se implementen sin dependencias externas.
+
+**Impacto en el proyecto:** No se requiere modificar el Product Backlog por ahora, pero se deberá tener en cuenta este criterio en todas las implementaciones.
+
+---
+
+#### Cambio 2 - 21/02/2025
+**Descripción:** Se definió que la temática del sitio será una **bodega**, especializada en la venta de vinos, espumantes y destilados.
+
+**Justificación:** Elegir un enfoque específico facilita la organización del catálogo de productos, permitiendo una navegación más clara y funcionalidades más específicas.
+
+**Impacto en el proyecto:**
+- Se deberán actualizar las categorías en *alta.html* (vinos tintos, blancos, rosados, espumantes, destilados, accesorios).
+- Ajustar la presentación de productos en *index.html* con información relevante (bodega, añada, tipo de uva, origen).
+- Considerar filtros en futuros sprints para mejorar la búsqueda por características específicas.
