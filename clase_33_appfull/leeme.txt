@@ -1,1 +1,11 @@
 tipo de proyecto: Server-Side Rendering
+
+package-lock.json es un auditor de express
+
+    "engines": version de node que puede correr la app
+
+servidores node
+
+- aws
+- render
+
