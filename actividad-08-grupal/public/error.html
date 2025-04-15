@@ -1,0 +1,28 @@
+<!-- public/error.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Error</title>
+</head>
+<body>
+  <h1 id="titulo"></h1>
+  <nav>
+    <a href="/index.html">Inicio</a> |
+    <a href="/about.html">Acerca de</a> |
+    <a href="/contact.html">Contacto</a> |
+    <a href="/noexiste.html">Error 404</a> |
+    <a href="/forbidden">Error 403</a> |
+    <a href="/crasheo">Error 500</a> |
+    <a href="/teapot">Error 418</a>
+  </nav>
+  <br />  
+  <img id="imagen" src="" alt="Error gato" style="max-width: 400px;">
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code') || 500;
+    document.getElementById('titulo').innerText = `Error ${code}`;
+    document.getElementById('imagen').src = `https://http.cat/${code}`;
+  </script>
+</body>
+</html>

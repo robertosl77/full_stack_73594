@@ -37,13 +37,13 @@ server.use(express.static('public'));
 //     res.status(404).send(`<h1>404: Ruta no encontrada</h1>`);
 // });
 
-server.get('*', (req, res) => {
-    res.status(404).send(`<h1>404: Ruta no encontrada</h1>`);
-});
-
-// server.use((req, res) => {
+// server.get('*', (req, res) => {
 //     res.status(404).send(`<h1>404: Ruta no encontrada</h1>`);
 // });
+
+server.use((req, res) => {
+    res.status(404).send(`<h1>404: Ruta no encontrada</h1>`);
+});
 
 const PORT= 3000; //definimos el puerto del servidor
 
