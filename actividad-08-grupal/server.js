@@ -2,80 +2,75 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
+function manejaPaginas(pagina, res, codigo = 200) {
+  const filePath = path.join(__dirname, 'public', pagina);
+
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      res.writeHead(302, { 'Location': '/error.html?code=500' });
+      res.end();
+    } else {
+      // console.log(`Leyendo ${codigo} ${filePath}`);
+      res.writeHead(codigo, { 'Content-Type': 'text/html' });
+      res.end(data);
+    }
+  });
+}
+
 // Crear un servidor HTTP
 const server = http.createServer((req, res) => {
 
+  // obtengo la ruta solicitada, ej "/index.html"
   let ruta = req.url;
-  let filePath;
-  console.log(ruta);
-
-  // Si la ruta incluye un archivo real (como error.html), servirlo directo
-  const nombreArchivo = ruta.split('?')[0]; // elimina el query string
-  const rutaArchivo = path.join(__dirname, 'public', nombreArchivo);
 
   switch (ruta) {
     case '/':
     case '/index':
     case '/index.html':
-      filePath = path.join(__dirname, 'public', 'index.html');
-      fs.readFile(filePath, (err, data) => {
-          if (err) {
-              res.writeHead(500);
-              res.end("Error al leer index.html");
-          } else {
-              res.writeHead(200, { 'Content-Type': 'text/html' });
-              res.end(data);
-          }
-      });
+      manejaPaginas('index.html', res);
       break;
 
     case '/about':
     case '/about.html':
-      filePath = path.join(__dirname, 'public', 'about.html');
-      fs.readFile(filePath, (err, data) => {
-        if (err) {
-            res.writeHead(500);
-            res.end("Error al leer about.html");
-        } else {
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(data);
-        }
-      });
+      manejaPaginas('about.html', res);
       break;
 
     case '/contact':
     case '/contact.html':
-      filePath = path.join(__dirname, 'public', 'contact.html');
-      fs.readFile(filePath, (err, data) => {
-        if (err) {
-            res.writeHead(500);
-            res.end("Error al leer contact.html");
-        } else {
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(data);
-        }
-      });
+      manejaPaginas('contact.html', res);
       break;    
 
     case '/forbidden':
       res.writeHead(302, { 'Location': '/error.html?code=403' });
       res.end();
       break;
-    
-    case '/crasheo':
-      res.writeHead(302, { 'Location': '/error.html?code=500' });
-      res.end();
-      break;
-    
+      
     case '/teapot':
       res.writeHead(302, { 'Location': '/error.html?code=418' });
+      res.end();
+      break;
+        
+    case '/crasheo':
+      res.writeHead(302, { 'Location': '/error.html?code=500' });
       res.end();
       break;
       
 
     default:
-      // Verifica si el archivo existe y es un archivo real
+      /**
+       * Analizaremos: 
+       *  - rutas no analizadas por el switch (ej: /pagina.html)
+       *  - rutas con parametros (ej: /index.html?parametro=valor)
+       *  - rutas con errores (ej: /pagina.html?error=404)
+       */
+      
+      // busca si el archivo existe en el directorio, la separacion del ? y al tomar el primer indice [0], hace que tome la pagina real sin parametros
+      const nombreArchivo = ruta.split('?')[0];
+      // construye la ruta al archivo, simulando que el archivo exista (eso se verifica despues)
+      const rutaArchivo = path.join(__dirname, 'public', nombreArchivo);      
+      // verifica si el archivo existe
       if (fs.existsSync(rutaArchivo)) {
+        // si existe el archivo, lo lee y lo devuelve
         fs.readFile(rutaArchivo, (err, data) => {
           if (err) {
             res.writeHead(500);
@@ -85,12 +80,13 @@ const server = http.createServer((req, res) => {
             res.end(data);
           }
         });
-        return; // salta el resto del código
+        return;
+      } else {
+        // si no existe el archivo, redirecciona (302) al navegador a la pagina de error.html con el codigo 404
+        res.writeHead(302, { 'Location': `/error.html?code=404` });
+        res.end();
       }
-
-      res.writeHead(302, { 'Location': `/error.html?code=404` });
-      res.end();
-        break;
+      break;
   }
 
 });
@@ -105,4 +101,8 @@ const PORT = 3000;
 
 server.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Error no capturado:', err.message);
 });
