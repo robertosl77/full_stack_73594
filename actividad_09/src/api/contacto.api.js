@@ -41,4 +41,13 @@ router.delete('/baja_contactos/:id', async (req, res) => {
     }
 });
 
+router.get('/listar_contactos', async (req, res) => {
+    try {
+      const contactos = await contactoCollection.find({}).toArray();
+      res.json(contactos);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
 export default router;
