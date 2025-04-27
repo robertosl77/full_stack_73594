@@ -23,7 +23,7 @@ async function setup() {
         }
       }
     });
-    console.log('Colección contactos creada con validación.');
+    console.info('Colección contactos creada con validación.');
   } catch (error) {
     console.error('Error creando la colección:', error.message);
   } finally {

@@ -5,26 +5,35 @@ import { ObjectId } from 'mongodb';
 const router = express.Router();
 
 router.post('/alta_contactos', async (req, res) => {
-  try {
-    console.log('POST /contactos', req.body);
-    const { nombre, email, fechaNacimiento } = req.body;
-
-    if (!nombre || !email || !fechaNacimiento) {
-      return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+    try {
+      const { nombre, email, fechaNacimiento } = req.body;
+  
+      if (!nombre || !email || !fechaNacimiento) {
+        return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+      }
+  
+      // Validación de email duplicado
+      const verificarEmailDuplicado = true; // Cambiá a false si querés desactivarlo
+  
+      if (verificarEmailDuplicado) {
+        const existe = await contactoCollection.findOne({ email });
+        if (existe) {
+          return res.status(400).json({ error: 'El email ya está registrado' });
+        }
+      }
+  
+      const nuevoContacto = {
+        nombre,
+        email,
+        fechaNacimiento: new Date(fechaNacimiento)
+      };
+  
+      const result = await contactoCollection.insertOne(nuevoContacto);
+      res.json({ mensaje: 'Contacto agregado', id: result.insertedId });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
-
-    const nuevoContacto = {
-      nombre,
-      email,
-      fechaNacimiento: new Date(fechaNacimiento)
-    };
-
-    const result = await contactoCollection.insertOne(nuevoContacto);
-    res.json({ mensaje: 'Contacto agregado', id: result.insertedId });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+});  
 
 router.delete('/baja_contactos/:id', async (req, res) => {
     try {
