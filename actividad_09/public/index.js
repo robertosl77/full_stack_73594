@@ -106,7 +106,9 @@ async function cargarContactos() {
   
         divContactos.appendChild(fila);
       });
-  
+      
+      localStorage.setItem('contactos', JSON.stringify(contactos));
+
       agregarEventosEliminar(); // importante después de crear la lista
   
     } catch (error) {
