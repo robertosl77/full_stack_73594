@@ -48,6 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cargarContactos();
 
+    const inputBuscar = document.querySelector('input[type="search"]');
+    inputBuscar.addEventListener('input', () => {
+    filtrarContactos(inputBuscar.value.trim().toLowerCase());
+});
+
 });
 
 function mostrarAlerta(mensaje, tipo = 'primary') {
@@ -75,7 +80,7 @@ async function cargarContactos() {
       const contactos = await response.json();
   
       const divContactos = document.getElementById('divContactos');
-      divContactos.innerHTML = ''; // Limpiamos antes
+      divContactos.innerHTML = '';
   
       contactos.forEach(contacto => {
         const { _id, nombre, email, fechaNacimiento } = contacto;
@@ -92,7 +97,7 @@ async function cargarContactos() {
               <button class="btn btn-sm btn-warning me-2">
                 <i class="bi bi-pencil-fill"></i>
               </button>
-              <button class="btn btn-sm btn-danger">
+              <button class="btn btn-sm btn-danger btn-eliminar" data-id="${_id}">
                 <i class="bi bi-trash-fill"></i>
               </button>
             </div>
@@ -101,13 +106,14 @@ async function cargarContactos() {
   
         divContactos.appendChild(fila);
       });
-      
+  
+      agregarEventosEliminar(); // importante después de crear la lista
+  
     } catch (error) {
       console.error('Error al cargar contactos:', error);
       mostrarAlerta('Error al cargar la lista de contactos.', 'secondary');
     }
 }
-  
     
 function formatearFecha(fechaISO) {
     const fecha = new Date(fechaISO);
@@ -117,3 +123,50 @@ function formatearFecha(fechaISO) {
     return `${dia}/${mes}/${anio}`;
 }
   
+function agregarEventosEliminar() {
+    const botonesEliminar = document.querySelectorAll('.btn-eliminar');
+  
+    botonesEliminar.forEach(boton => {
+      boton.addEventListener('click', (e) => {
+        const id = boton.getAttribute('data-id');
+  
+        if (confirm('¿Estás seguro que quieres eliminar este contacto?')) {
+          eliminarContacto(id); // separás la operación pesada
+        }
+      });
+    });
+}
+  
+async function eliminarContacto(id) {
+    try {
+      const response = await fetch(`/tp9/baja_contactos/${id}`, {
+        method: 'DELETE'
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        mostrarAlerta('Contacto eliminado exitosamente.', 'success');
+        cargarContactos();
+      } else {
+        mostrarAlerta('Error al eliminar contacto: ' + (data.error || 'Error desconocido.'), 'danger');
+      }
+    } catch (error) {
+      console.error('Error al eliminar contacto:', error);
+      mostrarAlerta('Error de conexión al eliminar.', 'secondary');
+    }
+}
+  
+function filtrarContactos(termino) {
+    const filas = document.querySelectorAll('#divContactos .list-group-item');
+  
+    filas.forEach(fila => {
+      const texto = fila.innerText.toLowerCase();
+  
+      if (texto.includes(termino)) {
+        fila.style.display = '';
+      } else {
+        fila.style.display = 'none';
+      }
+    });
+}  
