@@ -57,6 +57,43 @@ router.get('/listar_contactos', async (req, res) => {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  });
+});
+
+router.post('/actualizar_contacto', async (req, res) => {
+    try {
+      const { id, nombre, email, fechaNacimiento } = req.body;
+  
+      if (!id || !nombre || !email || !fechaNacimiento) {
+        return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+      }
+  
+      // Validar que no haya otro contacto con el mismo email
+      const existe = await contactoCollection.findOne({ email, _id: { $ne: new ObjectId(String(id))
+      } });
+      if (existe) {
+        return res.status(400).json({ error: 'El email ya está registrado en otro contacto' });
+      }
+  
+      const result = await contactoCollection.updateOne(
+        { _id: new ObjectId(String(id)) }
+,
+        { $set: {
+            nombre,
+            email,
+            fechaNacimiento: new Date(fechaNacimiento)
+          }
+        }
+      );
+  
+      if (result.matchedCount === 0) {
+        return res.status(404).json({ error: 'Contacto no encontrado' });
+      }
+  
+      res.json({ mensaje: 'Contacto actualizado' });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+  
 
 export default router;
