@@ -1,6 +1,6 @@
 // Script de configuración inicial, y por unica vez, de la base de datos
 // Ejecutar manualmente desde la terminal con:
-// node src/config/setupDB.js
+// node src\mongodb\validations\contacto.validaciones.js
 // Solo debe ejecutarse una vez para crear la colección 'contactos' con validaciones.
 // Luego, la colección ya queda disponible y MongoDB gestiona su estructura.
 

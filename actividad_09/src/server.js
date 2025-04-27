@@ -1,5 +1,5 @@
 import app from './app.js';
-import bd from './config/db.js';
+import bd from './mongodb/db.js';
 
 const PORT = process.env.PORT || 8080;
 
