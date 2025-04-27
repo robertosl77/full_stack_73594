@@ -10,6 +10,8 @@ import dbValidationRouter from './healthcheck/hc.dbValidation.js';
 
 const app = express();
 
+app.use(express.static('public'));
+
 app.use(express.json());
 
 app.use(BASE_PATH, testRouter);
@@ -21,8 +23,9 @@ app.use(BASE_PATH, contactoRouter);
 app.get('/', redirectMiddleware);
 
 // Ruta principal dentro de carpeta base
-app.get(BASE_PATH+'/', (req, res) => {
-    res.send('Hola, mundo');
+app.get(BASE_PATH, (req, res) => {
+    // res.send('Hola, mundo');
+    res.sendFile('index.html', { root: './public' });
 });
 
 
