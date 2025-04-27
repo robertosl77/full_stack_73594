@@ -45,6 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
             mostrarAlerta('Error al conectar con el servidor.', 'secondary');
         }
     });
+
+    cargarContactos();
+
 });
 
 function mostrarAlerta(mensaje, tipo = 'primary') {
@@ -66,5 +69,51 @@ function mostrarAlerta(mensaje, tipo = 'primary') {
     }, 3000);
 }
   
+async function cargarContactos() {
+    try {
+      const response = await fetch('/tp9/listar_contactos');
+      const contactos = await response.json();
   
-
+      const divContactos = document.getElementById('divContactos');
+      divContactos.innerHTML = ''; // Limpiamos antes
+  
+      contactos.forEach(contacto => {
+        const { _id, nombre, email, fechaNacimiento } = contacto;
+  
+        const fila = document.createElement('div');
+        fila.className = 'list-group-item';
+  
+        fila.innerHTML = `
+          <div class="row align-items-center">
+            <div class="col-md-3">${nombre}</div>
+            <div class="col-md-3">${email}</div>
+            <div class="col-md-2">${formatearFecha(fechaNacimiento)}</div>
+            <div class="col-md-4 text-end">
+              <button class="btn btn-sm btn-warning me-2">
+                <i class="bi bi-pencil-fill"></i>
+              </button>
+              <button class="btn btn-sm btn-danger">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </div>
+          </div>
+        `;
+  
+        divContactos.appendChild(fila);
+      });
+      
+    } catch (error) {
+      console.error('Error al cargar contactos:', error);
+      mostrarAlerta('Error al cargar la lista de contactos.', 'secondary');
+    }
+}
+  
+    
+function formatearFecha(fechaISO) {
+    const fecha = new Date(fechaISO);
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0'); // +1 porque en JS los meses empiezan en 0
+    const anio = fecha.getFullYear();
+    return `${dia}/${mes}/${anio}`;
+}
+  
