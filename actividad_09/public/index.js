@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
 
         if (response.ok) {
-            mostrarAlerta('Contacto agregado con éxito.', 'success');
+            mostrarAlerta('Contacto agregado con éxito.', 'success', 'liveAlertPlaceholder');
             formContacto.reset();
             setTimeout(() => {
               location.reload();
@@ -55,20 +55,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-function mostrarAlerta(mensaje, tipo = 'primary') {
-    const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
-  
+function mostrarAlerta(mensaje, tipo = 'primary', destino = 'liveAlertPlaceholder') {
+    const alertPlaceholder = document.getElementById(destino);
+
     const wrapper = document.createElement('div');
     wrapper.innerHTML = `
       <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
         ${mensaje}
       </div>
     `;
-  
-    alertPlaceholder.innerHTML = ''; // Limpiamos cualquier alerta anterior
+
+    alertPlaceholder.innerHTML = ''; // Limpiamos anterior
     alertPlaceholder.append(wrapper);
-  
-    // Eliminar la alerta automáticamente después de 3 segundos
+
     setTimeout(() => {
       wrapper.remove();
     }, 3000);
@@ -194,3 +193,52 @@ function agregarEventosEditar() {
       });
     });
 }  
+
+document.getElementById('formEditarContacto').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const id = document.getElementById('editarId').value;
+    const nombre = document.getElementById('editarNombre').value.trim();
+    const email = document.getElementById('editarEmail').value.trim();
+    const fechaNacimiento = document.getElementById('editarFechaNacimiento').value;
+
+    if (!id || !nombre || !email || !fechaNacimiento) {
+      mostrarAlerta('Todos los campos son obligatorios.', 'warning', 'liveAlertPlaceholderEditar');
+      return;
+    }
+
+    const contactoActualizado = { id, nombre, email, fechaNacimiento };
+
+    try {
+      const response = await fetch('/tp9/actualizar_contacto', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(contactoActualizado)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        mostrarAlerta('Contacto actualizado con éxito.', 'success', 'liveAlertPlaceholderEditar');
+        document.getElementById('formEditarContacto').reset();
+        cargarContactos();
+
+        // Cerrar el collapse después de 1.5 segundos
+        setTimeout(() => {
+          const collapseEditar = bootstrap.Collapse.getOrCreateInstance(document.getElementById('editar_contactos'));
+          collapseEditar.hide();
+        }, 1500);
+
+      } else {
+        mostrarAlerta('Error al actualizar: ' + (data.error || 'Error desconocido.'), 'danger', 'liveAlertPlaceholderEditar');
+      }
+
+    } catch (error) {
+      console.error('Error al actualizar contacto:', error);
+      mostrarAlerta('Error de conexión al actualizar.', 'secondary', 'liveAlertPlaceholderEditar');
+    }
+});
+
+  
