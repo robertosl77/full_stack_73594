@@ -1,0 +1,21 @@
+
+
+Pasos para agregar un colaborador a un proyecto en GitHub:
+
+1. Accede a tu cuenta de GitHub: Inicia sesión en tu cuenta de GitHub si aún no lo has hecho.
+
+2. Navega al repositorio: Dirígete al repositorio al cual quieres agregar un colaborador. Puedes hacerlo desde tu lista de repositorios o buscando el nombre del repositorio en la barra de búsqueda.
+
+3. Abre la configuración del repositorio: Una vez que estés en la página del repositorio, haz clic en la pestaña "Settings" (Configuración) ubicada en la parte superior de la página.
+
+4. Ir a "Manage Access": En la barra lateral izquierda, dentro de la sección "Settings", selecciona "Manage Access" (Administrar acceso).
+
+5. Invitar a un colaborador: En la sección "Manage Access", haz clic en el botón "Invite a collaborator" (Invitar a un colaborador).
+
+6. Buscar y seleccionar al colaborador: En el campo de búsqueda, escribe el nombre de usuario de GitHub de la persona que quieres agregar como colaborador. Selecciona el usuario correcto de la lista desplegable.
+
+7. Enviar la invitación: Después de seleccionar al colaborador, haz clic en el botón "Add" (Agregar) para enviar la invitación.
+
+8. Colaborador acepta la invitación: El colaborador recibirá una notificación por correo electrónico y una notificación en su cuenta de GitHub. Debe aceptar la invitación para obtener acceso al repositorio.
+
+El colaborador ahora tendrá acceso al repositorio y podrá contribuir según los permisos que le hayas otorgado.

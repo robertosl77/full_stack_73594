@@ -1,0 +1,98 @@
+.contact-form {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f4fa;
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  padding: 40px;
+  display: flex;
+  gap: 80px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form {
+  width: 100%;
+}
+
+.heading {
+  font-size: 35px;
+  font-weight: 600;
+  line-height: 1;
+  color: #801f2c;
+}
+
+.text {
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+form {
+  margin-top: 20px;
+}
+
+.inputBox {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.inputBox input,
+.inputBox textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  color: #333;
+  border: none;
+  outline: none;
+  background-color: #f5f4fa;
+}
+
+.inputBox.error input,
+.inputBox.error textarea {
+  border-bottom: 1px solid red;
+}
+
+.inputBox:not(.error) input:focus,
+.inputBox:not(.error) textarea:focus {
+  border-bottom: 1px solid rgb(90, 222, 90);
+}
+
+.inputBox textarea {
+  resize: none;
+  height: 150px;
+}
+
+.inputBox .error-message {
+  font-size: 12px;
+  color: red;
+}
+
+.btn {
+  width: 100%;
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 6¿500;
+  border: none;
+  color: white;
+  background-color: #333333;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.btn:hover {
+  background-color: #801f2c;
+}
+
+.product_photo {
+ color: #333;
+}

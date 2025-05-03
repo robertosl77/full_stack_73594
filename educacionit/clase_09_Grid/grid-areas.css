@@ -1,0 +1,40 @@
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.grid-container{
+    display: grid;
+    grid-template-areas: 
+        "header header header"
+        "main main sidebar"
+        "main main sidebar"
+        "footer footer footer";
+}
+
+.header{
+    grid-area: header;
+    background-color: aqua;
+    height: 100px;
+}
+
+.sidebar{
+    grid-area: sidebar;
+    background-color: blueviolet;
+    height: 100px;
+}
+
+.main{
+    grid-area: main;
+    background-color: rgb(105, 90, 70);
+    height: 100px
+}
+
+.footer{
+    grid-area: footer;
+    background-color: coral;
+    height: 100px
+}                               

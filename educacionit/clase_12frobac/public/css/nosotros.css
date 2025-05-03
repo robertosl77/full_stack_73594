@@ -1,0 +1,42 @@
+main {
+  padding-right: 32px;
+  padding-left: 32px;
+}
+
+main h1 {
+  color: #801f2c;
+  font-size: 60px;
+  text-align: center;
+  font-weight: lighter;
+  letter-spacing: 7px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+h2 {
+  color: #801f2c;
+  letter-spacing: 10px;
+  font-weight: lighter;
+  margin-top: 20px;
+  margin-bottom: 16px;
+}
+
+p {
+  color: #1F5590;
+  margin-bottom: 1em;
+}
+
+main img {
+  height: 260px;
+  padding-bottom: 8px;
+}
+
+main img.image-right-float {
+  float: right;
+  margin-left: 16px;
+}
+
+main img.image-left-float {
+  float: left;
+  margin-right: 16px;
+}

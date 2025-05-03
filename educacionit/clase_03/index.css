@@ -1,0 +1,45 @@
+
+/* reseteo de css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.titulo{
+    margin-top: 80px;
+    margin-right: 150px;
+    margin-bottom: 100px;
+    margin-left: 120px;
+    border-top: solid 10px black;
+    border-right: solid 5px rgb(169, 4, 4);
+    border-bottom: solid 1px rgb(32, 4, 169);
+    border-left: solid 8px rgb(4, 169, 4);
+    padding-top: 60px;
+    padding-right: 30px;
+    padding-bottom: 50px;
+    padding-left: 40px;
+}
+
+.caja{
+    margin: 80px 90px 120px 150px;
+    padding: 90px 75px;
+    text-align: center; /* centramos el texto en relación al padre */
+}
+
+.cajauno{
+    text-align: right;
+}
+
+.cajados{
+    text-align: left;
+}
+
+.cajatres{
+    text-align: justify;
+    padding: 20px 30px;
+}
+
+button{
+    margin-right: 50px;
+}
