@@ -67,7 +67,7 @@ app.post(`${BASEDIR}/login`, async (req, res) => {
 app.get(`${BASEDIR}/productos`, async (req, res) => {
     try {
         const productos = await obtenerProductosConDescuento();
-        res.render('productos', { productos });
+        res.render('productos', { productos, extraCss: '/css/productos.css' });
     } catch (error) {
         console.error(error);
         res.status(500).send('Error al obtener productos');
