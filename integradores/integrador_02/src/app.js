@@ -50,13 +50,18 @@ app.get(BASEDIR, (req, res) => res.redirect(`${BASEDIR}/login`));
 
 // Login
 app.get(`${BASEDIR}/login`, (req, res) => {
-    res.render('login');
+    res.render('login', { basedir: BASEDIR });
 });
 
 // Validar login
 app.post(`${BASEDIR}/login`, async (req, res) => {
     const { usuario, password } = req.body;
+    console.log('Usuario recibido:', usuario);
+    console.log('Password recibido:', password);
+    // const usuarios = await Usuario.find({});
+    // console.log('Lista de usuarios en la colección:', usuarios);
     const user = await Usuario.findOne({ usuario });
+    // console.log('Resultado findOne:', user);
 
     if (user && await bcrypt.compare(password, user.password)) {
         res.redirect(`${BASEDIR}/productos`);

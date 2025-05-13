@@ -6,34 +6,60 @@ dotenv.config();
 
 const mongoUri = process.env.MONGODB_URI;
 
-mongoose.connect(mongoUri)
-  .then(() => console.log('Conectado a MongoDB'))
-  .catch(err => console.error(err));
-
 const usuarioSchema = new mongoose.Schema({
-    usuario: String,
+    usuario: { type: String, unique: true },
     password: String,
     nombre: String,
     apellido: String,
-    email: String
+    email: { type: String, unique: true }
 });
 
 const Usuario = mongoose.model('Usuario', usuarioSchema, 'usuarios');
 
-async function cargarUsuarios() {
+async function connectDB() {
+    await mongoose.connect(mongoUri);
+    console.log('Conectado a MongoDB');
+}
+
+async function disconnectDB() {
+    await mongoose.disconnect();
+    console.log('Desconectado de MongoDB');
+}
+
+async function resetUsuarios() {
+    await Usuario.deleteMany({});
+    console.log('Colección usuarios eliminada');
+}
+
+async function insertarUsuarios() {
     const usuarios = [
-        { usuario: 'admin', password: 'admin123', nombre: 'Roberto', apellido: 'SL', email: 'admin@example.com' },
-        { usuario: 'user1', password: 'user123', nombre: 'Juan', apellido: 'Perez', email: 'juan@example.com' },
-        { usuario: 'user2', password: 'user456', nombre: 'Maria', apellido: 'Gomez', email: 'maria@example.com' }
+        { usuario: 'admin', password: '12345', nombre: 'Administrador', apellido: 'ROOT', email: 'admin@example.com' },
+        { usuario: 'robertosl77', password: '123', nombre: 'Roberto', apellido: 'SL', email: 'robertosl77@gmail.com' },
+        { usuario: 'angeltano1709', password: '123', nombre: 'Angel Diego', apellido: 'Attaguile', email: 'example@example.com' }
     ];
 
     for (const u of usuarios) {
-        const hash = await bcrypt.hash(u.password, 10);
-        await Usuario.create({ ...u, password: hash });
+        const existente = await Usuario.findOne({ $or: [{ usuario: u.usuario }, { email: u.email }] });
+        if (!existente) {
+            const hash = await bcrypt.hash(u.password, 10);
+            await Usuario.create({ ...u, password: hash });
+            console.log(`Usuario ${u.usuario} insertado`);
+        } else {
+            console.log(`Usuario ${u.usuario} ya existe, no se insertó`);
+        }
     }
-
-    console.log('Usuarios insertados correctamente');
-    mongoose.disconnect();
 }
 
-cargarUsuarios();
+async function main() {
+    try {
+        await connectDB();
+        await resetUsuarios();     // <-- elimina todos los registros primero
+        await insertarUsuarios();  // <-- vuelve a insertar la lista fija
+    } catch (err) {
+        console.error('Error:', err);
+    } finally {
+        await disconnectDB();
+    }
+}
+
+main();
