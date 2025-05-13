@@ -66,7 +66,7 @@ app.post(`${BASEDIR}/login`, async (req, res) => {
     if (user && await bcrypt.compare(password, user.password)) {
         res.redirect(`${BASEDIR}/productos`);
     } else {
-        res.render('login', { error: 'Usuario o contraseña incorrectos' });
+        res.render('login', { basedir: BASEDIR, error: 'Usuario o contraseña incorrectos' });
     }
 });
 
