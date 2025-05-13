@@ -1,10 +1,12 @@
 import express from 'express';
+import Handlebars from 'handlebars';
 import { engine } from 'express-handlebars';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import Usuario from './models/usuario.js';
 import Producto from './models/producto.js';
+import { obtenerProductosConDescuento } from './services/productoService.js';
 
 dotenv.config();
 
@@ -22,16 +24,21 @@ mongoose.connect(process.env.MONGODB_URI)
 app.engine('hbs', engine({
     extname: '.hbs',
     defaultLayout: 'main',
-    layoutsDir: './src/views/layouts',
-    helpers: {
-        descuentoPrecio: (precio_original, descuento) => {
-            const precioFinal = precio_original * (1 - descuento / 100);
-            return precioFinal.toFixed(2);
-        }
-    }
+    layoutsDir: './src/views/layouts'
 }));
 app.set('view engine', 'hbs');
 app.set('views', './src/views');
+
+Handlebars.registerHelper('gt', function(a, b) {
+    return a > b;
+});
+
+
+
+// Registrar helper json
+Handlebars.registerHelper('json', function(context) {
+    return JSON.stringify(context);
+});
 
 // --------------------------------------------------
 // FLUJO inicial a login
@@ -59,7 +66,7 @@ app.post(`${BASEDIR}/login`, async (req, res) => {
 // 👉 Productos (mostrar cards con mongoose)
 app.get(`${BASEDIR}/productos`, async (req, res) => {
     try {
-        const productos = await Producto.find();
+        const productos = await obtenerProductosConDescuento();
         res.render('productos', { productos });
     } catch (error) {
         console.error(error);
