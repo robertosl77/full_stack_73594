@@ -1,9 +1,10 @@
 import express from 'express';
 import { engine } from 'express-handlebars';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import Usuario from './models/usuario.js';
-import dotenv from 'dotenv';
+import Producto from './models/producto.js';
 
 dotenv.config();
 
@@ -17,25 +18,17 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB conectado'))
   .catch(err => console.error(err));
 
-const productoSchema = new mongoose.Schema({
-    imagen: String,
-    categoria: String,
-    bodega: String,
-    tipo: String,
-    nombre: String,
-    precio_original: Number,
-    descuento: Number,
-    stock: Number,
-    estado: Boolean
-});
-
-const Producto = mongoose.model('Producto', productoSchema, 'productos');
-
 // Handlebars
 app.engine('hbs', engine({
     extname: '.hbs',
     defaultLayout: 'main',
-    layoutsDir: './src/views/layouts'
+    layoutsDir: './src/views/layouts',
+    helpers: {
+        descuentoPrecio: (precio_original, descuento) => {
+            const precioFinal = precio_original * (1 - descuento / 100);
+            return precioFinal.toFixed(2);
+        }
+    }
 }));
 app.set('view engine', 'hbs');
 app.set('views', './src/views');
@@ -44,7 +37,6 @@ app.set('views', './src/views');
 // FLUJO inicial a login
 // --------------------------------------------------
 
-// Si entro a raíz o BASEDIR → redirige a login
 app.get('/', (req, res) => res.redirect(`${BASEDIR}/login`));
 app.get(BASEDIR, (req, res) => res.redirect(`${BASEDIR}/login`));
 
@@ -53,15 +45,9 @@ app.get(`${BASEDIR}/login`, (req, res) => {
     res.render('login', { basedir: BASEDIR });
 });
 
-// Validar login
 app.post(`${BASEDIR}/login`, async (req, res) => {
     const { usuario, password } = req.body;
-    console.log('Usuario recibido:', usuario);
-    console.log('Password recibido:', password);
-    // const usuarios = await Usuario.find({});
-    // console.log('Lista de usuarios en la colección:', usuarios);
     const user = await Usuario.findOne({ usuario });
-    // console.log('Resultado findOne:', user);
 
     if (user && await bcrypt.compare(password, user.password)) {
         res.redirect(`${BASEDIR}/productos`);
@@ -70,12 +56,13 @@ app.post(`${BASEDIR}/login`, async (req, res) => {
     }
 });
 
-// Productos
+// 👉 Productos (mostrar cards con mongoose)
 app.get(`${BASEDIR}/productos`, async (req, res) => {
     try {
         const productos = await Producto.find();
-        res.render('index', { productos });
+        res.render('productos', { productos });
     } catch (error) {
+        console.error(error);
         res.status(500).send('Error al obtener productos');
     }
 });
