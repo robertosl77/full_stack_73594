@@ -6,6 +6,7 @@ import session from 'express-session';
 import loginRoutes from './routes/login.routes.js';
 import productosRoutes from './routes/productos.routes.js';
 import nosotrosRoutes from './routes/nosotros.routes.js'
+import contactoRoutes from './routes/contacto.routes.js';
 import registerHandlebarsHelpers from './helpers/handlebarsHelpers.js';
 
 dotenv.config();
@@ -36,6 +37,7 @@ app.get(BASEDIR, (req, res) => res.redirect(`${BASEDIR}/login`));
 app.use(BASEDIR, loginRoutes);
 app.use(BASEDIR, productosRoutes);
 app.use(BASEDIR, nosotrosRoutes);
+app.use(BASEDIR, contactoRoutes);
 
 // Conexion mongoose
 mongoose.connect(process.env.MONGODB_URI)
