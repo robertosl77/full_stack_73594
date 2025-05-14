@@ -60,7 +60,6 @@ app.get(BASEDIR, (req, res) => res.redirect(`${BASEDIR}/login`));
 
 // Login
 app.get(`${BASEDIR}/login`, (req, res) => {
-    // res.render('login', { basedir: BASEDIR });
     res.render('login', { layout: false, basedir: BASEDIR });
 });
 
@@ -77,6 +76,16 @@ app.post(`${BASEDIR}/login`, async (req, res) => {
     } else {
         res.render('login', { basedir: BASEDIR, error: 'Usuario o contraseña incorrectos' });
     }
+});
+
+// --------------------------------------------------
+// ENDPOINT de Logout
+// --------------------------------------------------
+
+app.get(`${BASEDIR}/logout`, (req, res) => {
+    req.session.destroy(() => {
+        res.redirect(`${BASEDIR}/login`);
+    });
 });
 
 // 👉 Productos (mostrar cards con mongoose)
