@@ -8,6 +8,7 @@ import productosRoutes from './routes/productos.routes.js';
 import nosotrosRoutes from './routes/nosotros.routes.js'
 import contactoRoutes from './routes/contacto.routes.js';
 import mensajesRoutes from './routes/mensajes.routes.js';
+import abmRoutes from './routes/abm.routes.js';
 import registerHandlebarsHelpers from './helpers/handlebarsHelpers.js';
 
 dotenv.config();
@@ -40,6 +41,7 @@ app.use(BASEDIR, productosRoutes);
 app.use(BASEDIR, nosotrosRoutes);
 app.use(BASEDIR, contactoRoutes);
 app.use(BASEDIR, mensajesRoutes);
+app.use(BASEDIR, abmRoutes);
 
 // Conexion mongoose
 mongoose.connect(process.env.MONGODB_URI)
