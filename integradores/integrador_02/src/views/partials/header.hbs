@@ -15,17 +15,20 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{basedir}}/productos">Inicio</a>
                     </li>
-                    {{#if (eq user.rol 'ROLE_ADMINISTRADOR')}}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{basedir}}/alta">Alta de Productos</a>
-                    </li>
-                    {{/if}}
                     <li class="nav-item">
                         <a class="nav-link" href="{{basedir}}/nosotros">Nosotros</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{basedir}}/contacto">Contactenos</a>
                     </li>                    
+                    {{#if (eq user.rol 'ROLE_ADMINISTRADOR')}}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{basedir}}/mensajes">Mensajes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{basedir}}/alta">Alta de Productos</a>
+                    </li>
+                    {{/if}}
                 </ul>                
 
                 {{#if user}}

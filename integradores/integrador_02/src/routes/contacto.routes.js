@@ -26,8 +26,6 @@ console.log(req.body);
         return;
     }
 
-    console.log(nombre, email, comentario);
-
     try {
         await Contacto.create({ nombre, email, comentario });
         res.render('contacto', {

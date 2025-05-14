@@ -7,6 +7,7 @@ import loginRoutes from './routes/login.routes.js';
 import productosRoutes from './routes/productos.routes.js';
 import nosotrosRoutes from './routes/nosotros.routes.js'
 import contactoRoutes from './routes/contacto.routes.js';
+import mensajesRoutes from './routes/mensajes.routes.js';
 import registerHandlebarsHelpers from './helpers/handlebarsHelpers.js';
 
 dotenv.config();
@@ -38,6 +39,7 @@ app.use(BASEDIR, loginRoutes);
 app.use(BASEDIR, productosRoutes);
 app.use(BASEDIR, nosotrosRoutes);
 app.use(BASEDIR, contactoRoutes);
+app.use(BASEDIR, mensajesRoutes);
 
 // Conexion mongoose
 mongoose.connect(process.env.MONGODB_URI)
@@ -49,7 +51,11 @@ app.engine('hbs', engine({
     extname: '.hbs',
     defaultLayout: 'main',
     layoutsDir: './src/views/layouts',
-    partialsDir: './src/views/partials'
+    partialsDir: './src/views/partials',
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true
+    }
 }));
 app.set('view engine', 'hbs');
 app.set('views', './src/views');
