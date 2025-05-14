@@ -6,6 +6,12 @@ const router = express.Router();
 
 // GET productos (mostrar cards)
 router.get('/productos', async (req, res) => {
+    const user = req.session.user;
+
+    if (!user) {
+        return res.redirect(`${res.locals.basedir}/login`);
+    }
+
     try {
         const productos = await obtenerProductosConDescuento();
         const user = req.session.user;

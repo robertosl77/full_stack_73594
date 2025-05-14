@@ -10,7 +10,7 @@ router.get('/mensajes', async (req, res) => {
     const user = req.session.user;
 
     if (!user || user.rol !== 'ROLE_ADMINISTRADOR') {
-        return res.redirect(`${res.locals.basedir}/productos`);
+        return res.redirect(`${res.locals.basedir}/login`);
     }
 
     try {
