@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import session from 'express-session';
 import loginRoutes from './routes/login.routes.js';
 import productosRoutes from './routes/productos.routes.js';
+import nosotrosRoutes from './routes/nosotros.routes.js'
 import registerHandlebarsHelpers from './helpers/handlebarsHelpers.js';
 
 dotenv.config();
@@ -27,13 +28,14 @@ app.use((req, res, next) => {
 
 app.use(express.urlencoded({ extended: true }));
 
-// Primero: Redirecciones base
+// Redirecciones base
 app.get('/', (req, res) => res.redirect(`${BASEDIR}/login`));
 app.get(BASEDIR, (req, res) => res.redirect(`${BASEDIR}/login`));
 
 // Routes
 app.use(BASEDIR, loginRoutes);
 app.use(BASEDIR, productosRoutes);
+app.use(BASEDIR, nosotrosRoutes);
 
 // Conexion mongoose
 mongoose.connect(process.env.MONGODB_URI)
@@ -55,6 +57,8 @@ registerHandlebarsHelpers();
 
 // Otros
 app.use(express.static('public'));
+// app.use(BASEDIR, express.static('public'));
+
 
 app.post(`${BASEDIR}/info`, (req, res) => {
     res.render('info', { nombre, edad });
