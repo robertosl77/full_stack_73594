@@ -8,6 +8,7 @@ import session from 'express-session';
 import Usuario from './models/usuario.js';
 import Producto from './models/producto.js';
 import { obtenerProductosConDescuento } from './services/productoService.js';
+import loginRoutes from './routes/login.routes.js';
 
 dotenv.config();
 
@@ -21,7 +22,17 @@ app.use(session({
     saveUninitialized: false
 }));
 
+// Middleware para pasar basedir a todas las vistas
+app.use((req, res, next) => {
+    res.locals.basedir = BASEDIR;
+    next();
+});
+
 app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.use(BASEDIR, loginRoutes);
+
 
 // Conexion mongoose
 mongoose.connect(process.env.MONGODB_URI)
