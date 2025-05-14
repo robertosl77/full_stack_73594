@@ -12,10 +12,14 @@
                     <p class="card-text text-secondary fs-6 mb-1">{{bodega}} - {{tipo}}</p>
                     <p class="card-text fw-bold fs-5 mb-1">
                         {{#if (gt descuento 0)}}
-                            <span class="text-decoration-line-through text-danger fs-6">${{precio_original}}</span> 
+                            {{!-- Precio anterior tachado --}}
+                            <small class="text-decoration-line-through text-danger" style="font-size: 0.75rem;">
+                                ${{precioOriginalFormateado}}
+                            </small>
+                            {{!-- Precio actual con descuento --}}
                             ${{precioDescuento}}
                         {{else}}
-                            ${{precio_original}}
+                            ${{precioOriginalFormateado}}
                         {{/if}}
                     </p>
                     <p class="card-text text-success fs-6">Disponibles: {{stock}}</p>
