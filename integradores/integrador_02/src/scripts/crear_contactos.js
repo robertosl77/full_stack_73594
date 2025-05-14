@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Definir schema y modelo directamente acá
 const contactoSchema = new mongoose.Schema({
     nombre: { type: String, required: true },
     email: { type: String, required: true },
@@ -19,14 +18,18 @@ async function run() {
         await mongoose.connect(process.env.MONGODB_URI);
         console.log('MongoDB conectado');
 
-        // 👉 Datos de ejemplo para insertar (solo de prueba)
+        // 👉 BORRAR TODOS LOS CONTACTOS EXISTENTES
+        await Contacto.deleteMany({});
+        console.log('Colección contactos vaciada');
+
+        // 👉 Insertar contacto de ejemplo (opcional)
         const nuevoContacto = await Contacto.create({
             nombre: 'Roberto',
             email: 'roberto@example.com',
             comentario: 'Este es un mensaje de prueba'
         });
 
-        console.log('Contacto guardado:', nuevoContacto);
+        console.log('Contacto de prueba insertado:', nuevoContacto);
 
     } catch (error) {
         console.error('Error:', error);
