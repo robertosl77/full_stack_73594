@@ -11,7 +11,8 @@ const usuarioSchema = new mongoose.Schema({
     password: String,
     nombre: String,
     apellido: String,
-    email: { type: String, unique: true }
+    email: { type: String, unique: true },
+    rol: { type: String, enum: ['ROLE_ADMINISTRADOR', 'ROLE_CONSULTA'], default: 'ROLE_CONSULTA' }   // 👈 agregado
 });
 
 const Usuario = mongoose.model('Usuario', usuarioSchema, 'usuarios');
@@ -33,9 +34,9 @@ async function resetUsuarios() {
 
 async function insertarUsuarios() {
     const usuarios = [
-        { usuario: 'admin', password: '12345', nombre: 'Administrador', apellido: 'ROOT', email: 'admin@example.com' },
-        { usuario: 'robertosl77', password: '123', nombre: 'Roberto', apellido: 'SL', email: 'robertosl77@gmail.com' },
-        { usuario: 'angeltano1709', password: '123', nombre: 'Angel Diego', apellido: 'Attaguile', email: 'example@example.com' }
+        { usuario: 'admin', password: '12345', nombre: 'Administrador', apellido: 'ROOT', email: 'admin@example.com', rol: 'ROLE_ADMINISTRADOR' },   // 👈 rol admin
+        { usuario: 'robertosl77', password: '123', nombre: 'Roberto', apellido: 'SL', email: 'robertosl77@gmail.com', rol: 'ROLE_CONSULTA' },         // 👈 rol consulta
+        { usuario: 'angeltano1709', password: '123', nombre: 'Angel Diego', apellido: 'Attaguile', email: 'example@example.com', rol: 'ROLE_CONSULTA' } // 👈 rol consulta
     ];
 
     for (const u of usuarios) {

@@ -1,11 +1,13 @@
 import mongoose from 'mongoose';
 
 const usuarioSchema = new mongoose.Schema({
-    usuario: String,
-    password: String,
-    nombre: String,
-    apellido: String,
-    email: String
+    usuario: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    nombre: { type: String },
+    apellido: { type: String },
+    email: { type: String },
+    rol: { type: String, enum: ['ROLE_ADMINISTRADOR', 'ROLE_CONSULTA'], default: 'ROLE_CONSULTA' }
 });
 
+// 👇 importante: tercer parámetro para que respete tu colección 'usuarios'
 export default mongoose.model('Usuario', usuarioSchema, 'usuarios');

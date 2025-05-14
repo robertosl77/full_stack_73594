@@ -4,6 +4,7 @@ import { engine } from 'express-handlebars';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
+import session from 'express-session';
 import Usuario from './models/usuario.js';
 import Producto from './models/producto.js';
 import { obtenerProductosConDescuento } from './services/productoService.js';
@@ -12,6 +13,13 @@ dotenv.config();
 
 const app = express();
 const BASEDIR = process.env.BASEDIR;
+
+// Middleware de Session
+app.use(session({
+    secret: 'tu_clave_secreta_segura',
+    resave: false,
+    saveUninitialized: false
+}));
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -34,7 +42,9 @@ Handlebars.registerHelper('gt', function(a, b) {
     return a > b;
 });
 
-
+Handlebars.registerHelper('eq', function(a, b) {
+    return a === b;
+});
 
 // Registrar helper json
 Handlebars.registerHelper('json', function(context) {
@@ -50,7 +60,8 @@ app.get(BASEDIR, (req, res) => res.redirect(`${BASEDIR}/login`));
 
 // Login
 app.get(`${BASEDIR}/login`, (req, res) => {
-    res.render('login', { basedir: BASEDIR });
+    // res.render('login', { basedir: BASEDIR });
+    res.render('login', { layout: false, basedir: BASEDIR });
 });
 
 app.post(`${BASEDIR}/login`, async (req, res) => {
@@ -58,6 +69,10 @@ app.post(`${BASEDIR}/login`, async (req, res) => {
     const user = await Usuario.findOne({ usuario });
 
     if (user && await bcrypt.compare(password, user.password)) {
+        req.session.user = {
+            usuario: user.usuario,
+            rol: user.rol
+        };    
         res.redirect(`${BASEDIR}/productos`);
     } else {
         res.render('login', { basedir: BASEDIR, error: 'Usuario o contraseña incorrectos' });
@@ -68,7 +83,8 @@ app.post(`${BASEDIR}/login`, async (req, res) => {
 app.get(`${BASEDIR}/productos`, async (req, res) => {
     try {
         const productos = await obtenerProductosConDescuento();
-        res.render('productos', { productos, extraCss: '/css/productos.css' });
+        const user = req.session.user;
+        res.render('productos', { productos, extraCss: '/css/productos.css', user });
     } catch (error) {
         console.error(error);
         res.status(500).send('Error al obtener productos');
@@ -79,7 +95,6 @@ app.get(`${BASEDIR}/productos`, async (req, res) => {
 app.use(express.static('public'));
 
 app.post(`${BASEDIR}/info`, (req, res) => {
-    const { nombre, edad } = req.body;
     res.render('info', { nombre, edad });
 });
 
