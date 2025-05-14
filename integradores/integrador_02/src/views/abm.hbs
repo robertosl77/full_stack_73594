@@ -1,59 +1,100 @@
-{{!-- src/views/abmProductos.hbs --}}
+{{!-- src/views/abm.hbs --}}
 <div class="container mt-4">
-    <h2 class="mb-4">Gestión de Productos</h2>
+    <h2 class="text-center mb-4">Gestión de Productos</h2>
 
-    <table class="table table-hover table-striped align-middle">
-        <thead>
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
             <tr>
                 <th>Imagen</th>
                 <th>Nombre</th>
                 <th>Bodega</th>
                 <th>Tipo</th>
-                <th>Categoría</th>
                 <th>Precio</th>
                 <th>Descuento</th>
                 <th>Stock</th>
                 <th>Estado</th>
-                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
             {{#each productos}}
-            <tr>
-                <td><img src="/{{imagen}}" alt="{{nombre}}" style="height: 50px;"></td>
+            <tr class="fila-producto" data-producto-id="{{_id}}" 
+                data-nombre="{{nombre}}" 
+                data-bodega="{{bodega}}" 
+                data-tipo="{{tipo}}" 
+                data-imagen="{{imagen}}" 
+                data-precio="{{precio_original}}" 
+                data-descuento="{{descuento}}" 
+                data-stock="{{stock}}" 
+                data-estado="{{estado}}">
+                <td><img src="/{{imagen}}" alt="imagen" style="height: 50px;"></td>
                 <td>{{nombre}}</td>
                 <td>{{bodega}}</td>
                 <td>{{tipo}}</td>
-                <td>{{categoria}}</td>
                 <td>${{precio_original}}</td>
                 <td>{{descuento}}%</td>
                 <td>{{stock}}</td>
-                <td>
-                    {{#if estado}}
-                        <span class="badge bg-success">Activo</span>
-                    {{else}}
-                        <span class="badge bg-secondary">Inactivo</span>
-                    {{/if}}
-                </td>
-                <td>
-                    <div class="btn-group">
-                        {{#if estado}}
-                        <form action="{{../basedir}}/admin/productos/{{_id}}/deshabilitar" method="POST" style="display:inline;">
-                            <button class="btn btn-warning btn-sm">Deshabilitar</button>
-                        </form>
-                        {{else}}
-                        <form action="{{../basedir}}/admin/productos/{{_id}}/habilitar" method="POST" style="display:inline;">
-                            <button class="btn btn-success btn-sm">Habilitar</button>
-                        </form>
-                        {{/if}}
-
-                        <button class="btn btn-primary btn-sm ms-1 btn-editar-descuento" data-id="{{_id}}" data-descuento="{{descuento}}">Descuento</button>
-                        <button class="btn btn-info btn-sm ms-1 btn-editar-stock" data-id="{{_id}}" data-stock="{{stock}}">Stock</button>
-                        <button class="btn btn-secondary btn-sm ms-1 btn-editar-precio" data-id="{{_id}}" data-precio="{{precio_original}}">Precio</button>
-                    </div>
-                </td>
+                <td>{{#if estado}}Habilitado{{else}}Deshabilitado{{/if}}</td>
             </tr>
             {{/each}}
         </tbody>
     </table>
 </div>
+
+{{!-- 👉 Offcanvas para edición --}}
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasProducto" aria-labelledby="offcanvasProductoLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasProductoLabel">Editar Producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form id="formEditarProducto">
+            <input type="hidden" name="productoId" id="productoId">
+
+            <div class="mb-3 text-center">
+                <img id="productoImagen" src="" alt="imagen producto" style="max-height: 120px;">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="productoNombre" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Bodega</label>
+                <input type="text" class="form-control" id="productoBodega" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tipo</label>
+                <input type="text" class="form-control" id="productoTipo" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Precio Original</label>
+                <input type="number" class="form-control" name="precio_original" id="productoPrecio">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Descuento (%)</label>
+                <input type="number" class="form-control" name="descuento" id="productoDescuento">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Stock</label>
+                <input type="number" class="form-control" name="stock" id="productoStock">
+            </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" name="estado" id="productoEstado">
+                <label class="form-check-label" for="productoEstado">Habilitado</label>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{!-- 👉 JS para manejar el click en las filas (lo hacemos después) --}}
+<script src="/js/abm.js"></script>
