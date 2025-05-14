@@ -1,33 +1,4 @@
-#productos-vinos,
-#productos-spirits {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-    /* margin-top: 20px; */
-}
-
-.producto-card {
-    background: white;
-    border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-    width: 250px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    position: relative;
-}
-
-/* Agrega un margen inferior a la última fila de productos para separarlos del banner */
-#productos-container section {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 50px; /* Agrega espacio solo antes del siguiente banner */
-}
-
 .card-img-top {
-    /* width: auto; */
     max-width: 90%;
     height: 250px; 
     object-fit: contain;
@@ -46,38 +17,13 @@
     border-radius: 5px;
 }
 
-.bodega, .tipo {
-    font-size: 14px;
-    color: gray;
-}
 
-.precio {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 10px 0;
-}
 
-.precio-antiguo {
-    text-decoration: line-through;
-    color: red;
-    font-size: 14px;
-}
 
-.stock {
-    font-size: 14px;
-    color: green;
-    margin-bottom: 10px;
-}
 
-.cantidad {
-    margin: 10px 0;
-}
 
-.cantidad input {
-    width: 50px;
-    text-align: center;
-}
 
+/* Agrega un margen inferior a la última fila de productos para separarlos del banner */
 .agregar-carrito {
     background: black;
     color: white;

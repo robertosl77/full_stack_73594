@@ -1,30 +1,30 @@
-<div class="container mt-3">
-    <div class="row">
+<div class="container-sm mt-3">
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5 g-3">
         {{#each productos}}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
+        <div class="col">
+            <div class="card h-100 rounded-3 p-3 text-center shadow position-relative">
                 {{#if (gt descuento 0)}}
-                    <div class="descuento position-absolute bg-danger text-white px-2 py-1">{{descuento}}% OFF</div>
+                    <div class="descuento position-absolute bg-warning text-black px-2 py-1">{{descuento}}% OFF</div>
                 {{/if}}
                 <img src="/{{imagen}}" class="card-img-top" alt="{{nombre}}">
-                <div class="card-body">
-                    <h5 class="card-title">{{nombre}}</h5>
-                    <p class="card-text">{{bodega}} - {{tipo}}</p>
-                    <p class="card-text fw-bold">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title mb-0">{{nombre}}</h5>
+                    <p class="card-text text-secondary fs-6 mb-1">{{bodega}} - {{tipo}}</p>
+                    <p class="card-text fw-bold fs-5 mb-1">
                         {{#if (gt descuento 0)}}
-                            <span class="text-decoration-line-through">${{precio_original}}</span> 
+                            <span class="text-decoration-line-through text-danger fs-6">${{precio_original}}</span> 
                             ${{precioDescuento}}
                         {{else}}
                             ${{precio_original}}
                         {{/if}}
                     </p>
-                    <p class="card-text">Disponibles: {{stock}}</p>
+                    <p class="card-text text-success fs-6">Disponibles: {{stock}}</p>
                     <div class="mb-2">
                         <label for="cantidad{{_id}}">Cantidad:</label>
                         <input type="number" id="cantidad{{_id}}" min="1" max="{{stock}}" value="1" 
                             {{#unless (gt stock 0)}}disabled{{/unless}}>
                     </div>
-                    <button class="btn btn-primary agregar-carrito w-100"
+                    <button class="btn btn-primary agregar-carrito w-100 mt-auto"
                         {{#unless (gt stock 0)}}disabled style="background:gray;cursor:not-allowed;"{{/unless}}>
                         {{#unless (gt stock 0)}}Sin stock{{else}}AGREGAR{{/unless}}
                     </button>
