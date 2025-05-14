@@ -5,24 +5,6 @@
     border-radius: 5px;
 }
 
-.descuento {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: gold;
-    color: black;
-    padding: 5px;
-    font-size: 14px;
-    font-weight: bold;
-    border-radius: 5px;
-}
-
-
-
-
-
-
-
 /* Agrega un margen inferior a la última fila de productos para separarlos del banner */
 .agregar-carrito {
     background: black;
@@ -41,15 +23,5 @@
 
 .oculto {
     display: none; /* Oculta el producto sin afectar la estructura */
-}
-
-/* Oculta completamente la sección cuando no hay productos */
-.oculto-todo {
-    display: none;
-}
-
-/* Elimina el margen cuando la sección está oculta */
-.oculto-todo {
-    margin-bottom: 0 !important;
 }
 
