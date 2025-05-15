@@ -1,0 +1,43 @@
+{{!-- src/views/altaProducto.hbs --}}
+
+<div class="container mt-5">
+  <h2 class="mb-4">Alta de Producto</h2>
+  <form action="{{basedir}}/alta" method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="nombre" class="form-label">Nombre del producto</label>
+      <input type="text" class="form-control" id="nombre" name="nombre" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="imagen" class="form-label">Imagen del producto</label>
+      <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="bodega" class="form-label">Bodega</label>
+      <input type="text" class="form-control" id="bodega" name="bodega" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="tipo" class="form-label">Tipo</label>
+      <input type="text" class="form-control" id="tipo" name="tipo" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="precio" class="form-label">Precio</label>
+      <input type="number" class="form-control" id="precio_original" name="precio_original" step="0.01" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="descuento" class="form-label">Descuento (%)</label>
+      <input type="number" class="form-control" id="descuento" name="descuento" min="0" max="100" value="0">
+    </div>
+
+    <div class="mb-3">
+      <label for="stock" class="form-label">Stock disponible</label>
+      <input type="number" class="form-control" id="stock" name="stock" min="0" value="0">
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar producto</button>
+  </form>
+</div>
