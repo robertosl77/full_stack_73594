@@ -25,12 +25,15 @@ router.get('/alta', async (req, res) => {
   try {
     const nombresExistentes = await getProductos('nombre');
     const bodegasExistentes = await getProductos('bodega');
+    const tiposExistentes = await getProductos('tipo');
     res.render('altaProducto', {
         basedir: process.env.BASEDIR,
         extraCss: '/css/alta.css',
         nombresExistentes: JSON.stringify(nombresExistentes),
         bodegasExistentes, // Para el select
-        bodegasJSON: JSON.stringify(bodegasExistentes) // Para el script    
+        bodegasJSON: JSON.stringify(bodegasExistentes), // Para el script    
+        tiposExistentes, // Para el select
+        tiposJSON: JSON.stringify(tiposExistentes) // Para el script
     });
   } catch (err) {
     console.error('Error cargando nombres:', err);
