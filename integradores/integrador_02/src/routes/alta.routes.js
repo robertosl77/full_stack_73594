@@ -74,10 +74,13 @@ router.post('/alta', (req, res, next) => {
         }
     }
 
+    const bodegaFinal = obtenerCampoFinal(bodega, req.body.bodegaOtro);
+    const tipoFinal = obtenerCampoFinal(tipo, req.body.tipoOtro);    
+
     const nuevoProducto = new Producto({
       nombre,
-      bodega,
-      tipo,
+      bodega: bodegaFinal,
+      tipo: tipoFinal,
       precio_original: parseFloat(precio_original),
       descuento: parseFloat(descuento),
       stock: parseInt(stock),

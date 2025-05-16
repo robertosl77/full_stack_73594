@@ -16,4 +16,12 @@ export default function registerHandlebarsHelpers() {
     Handlebars.registerHelper('json', function(context) {
         return JSON.stringify(context);
     });
+
+    // Pasa el valor a formato Tipo Titulo
+    Handlebars.registerHelper('titleCase', function (str) {
+    if (!str) return '';
+        return str.replace(/\w\S*/g, function (txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+    });    
 }

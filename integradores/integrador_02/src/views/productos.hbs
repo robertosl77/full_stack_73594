@@ -6,10 +6,10 @@
                 {{#if (gt descuento 0)}}
                     <div class="descuento position-absolute bg-warning rounded-2 text-black fw-bold fs-6 px-2 py-1">{{descuento}}% OFF</div>
                 {{/if}}
-                <img src="/{{imagen}}" class="card-img-top" alt="{{nombre}}">
+                <img src="/{{imagen}}" class="card-img-top" alt="{{titleCase nombre}}">
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title mb-0">{{nombre}}</h5>
-                    <p class="card-text text-secondary fs-6 mb-1">{{bodega}} - {{tipo}}</p>
+                    <h5 class="card-title mb-0">{{titleCase nombre}}</h5>
+                    <p class="card-text text-secondary fs-6 mb-1">{{titleCase bodega}} - {{titleCase tipo}}</p>
                     <p class="card-text fw-bold fs-5 mb-1">
                         {{#if (gt descuento 0)}}
                             {{!-- Precio anterior tachado --}}

@@ -55,7 +55,7 @@
           <select class="form-select" id="bodega" name="bodega" required>
             <option value="" selected disabled>Seleccione una bodega</option>
             {{#each bodegasExistentes}}
-              <option value="{{this}}">{{this}}</option>
+              <option value="{{this}}">{{titleCase this}}</option>
             {{/each}}
             <option value="otro">Otro...</option>
           </select>
@@ -76,7 +76,7 @@
           <select class="form-select" id="tipo" name="tipo" required>
             <option value="" selected disabled>Seleccione un tipo</option>
             {{#each tiposExistentes}}
-              <option value="{{this}}">{{this}}</option>
+              <option value="{{this}}">{{titleCase this}}</option>
             {{/each}}
             <option value="otro">Otro...</option>
           </select>
