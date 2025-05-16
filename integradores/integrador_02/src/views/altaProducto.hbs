@@ -49,8 +49,24 @@
     </div>
 
     <div class="mb-3">
-      <label for="bodega" class="form-label">Bodega</label>
-      <input type="text" class="form-control" id="bodega" name="bodega" required>
+      <label for="bodega" class="col-sm-2 col-form-label">Bodega</label>
+      <div class="row">
+        <div class="col-sm-6">
+          <select class="form-select" id="bodega" name="bodega" required>
+            <option value="" selected disabled>Seleccione una bodega</option>
+            {{#each bodegasExistentes}}
+              <option value="{{this}}">{{this}}</option>
+            {{/each}}
+            <option value="otro">Otro...</option>
+          </select>
+        </div>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="bodegaOtro" name="bodegaOtro" placeholder="Ingrese nueva bodega" disabled>
+          <div id="bodegaErrorAlert" class="alert alert-danger mt-2" style="display: none;">
+            Esa bodega ya existe.
+          </div>          
+        </div>
+      </div>
     </div>
 
     <div class="mb-3">
@@ -115,6 +131,44 @@
     } else {
       alertaNombre.style.display = 'none';
       clearTimeout(nombreTimer);
+    }
+  });
+</script>
+
+<script>
+  document.getElementById('bodega').addEventListener('change', function () {
+    const bodegaOtroInput = document.getElementById('bodegaOtro');
+    if (this.value === 'otro') {
+      bodegaOtroInput.disabled = false;
+      bodegaOtroInput.required = true;
+    } else {
+      bodegaOtroInput.disabled = true;
+      bodegaOtroInput.required = false;
+      bodegaOtroInput.value = '';
+    }
+  });
+</script>
+
+<script>
+  const bodegasExistentes = {{{bodegasJSON}}};
+  const inputBodegaOtro = document.getElementById('bodegaOtro');
+  const alertaBodega = document.getElementById('bodegaErrorAlert');
+  let bodegaTimer = null;
+
+  inputBodegaOtro.addEventListener('input', function () {
+    const valor = inputBodegaOtro.value.trim().toLowerCase();
+    const existe = bodegasExistentes.includes(valor);
+
+    if (existe) {
+      alertaBodega.style.display = 'block';
+
+      clearTimeout(bodegaTimer);
+      bodegaTimer = setTimeout(() => {
+        alertaBodega.style.display = 'none';
+      }, 3000);
+    } else {
+      alertaBodega.style.display = 'none';
+      clearTimeout(bodegaTimer);
     }
   });
 </script>

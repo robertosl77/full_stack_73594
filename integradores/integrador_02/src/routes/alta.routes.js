@@ -23,13 +23,14 @@ const upload = multer({
 // GET form alta
 router.get('/alta', async (req, res) => {
   try {
-    const productos = await Producto.find({}, 'nombre');
-    const nombres = productos.map(p => p.nombre.toLowerCase());
-
+    const nombresExistentes = await getProductos('nombre');
+    const bodegasExistentes = await getProductos('bodega');
     res.render('altaProducto', {
-      basedir: process.env.BASEDIR,
-      extraCss: '/css/alta.css',
-      nombresExistentes: JSON.stringify(nombres)
+        basedir: process.env.BASEDIR,
+        extraCss: '/css/alta.css',
+        nombresExistentes: JSON.stringify(nombresExistentes),
+        bodegasExistentes, // Para el select
+        bodegasJSON: JSON.stringify(bodegasExistentes) // Para el script    
     });
   } catch (err) {
     console.error('Error cargando nombres:', err);
@@ -88,6 +89,13 @@ router.post('/alta', (req, res, next) => {
     res.status(500).send('Error interno');
   }
 });
+
+async function getProductos(campo) {
+  const productos = await Producto.find({}, campo);
+  const nombres = productos.map(p => p[campo]?.toLowerCase()).filter(Boolean);
+  const unicos = [...new Set(nombres)].sort();
+  return unicos;
+}
 
 
 
