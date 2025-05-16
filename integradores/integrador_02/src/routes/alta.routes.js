@@ -22,54 +22,56 @@ const upload = multer({
 
 // GET form alta
 router.get('/alta', async (req, res) => {
-  const user = req.session.user;
+    const user = req.session.user;
 
-  if (!user || user.rol !== 'ROLE_ADMINISTRADOR') {
-    return res.redirect(`${res.locals.basedir}/login`);
-  }
+    if (!user || user.rol !== 'ROLE_ADMINISTRADOR') {
+        return res.redirect(`${res.locals.basedir}/login`);
+    }
 
-  try {
-    const nombresExistentes = await getProductos('nombre');
-    const bodegasExistentes = await getProductos('bodega');
-    const tiposExistentes = await getProductos('tipo');
-    res.render('altaProducto', {
-      basedir: process.env.BASEDIR,
-      extraCss: '/css/alta.css',
-      nombresExistentes: JSON.stringify(nombresExistentes),
-      bodegasExistentes,
-      bodegasJSON: JSON.stringify(bodegasExistentes),
-      tiposExistentes,
-      tiposJSON: JSON.stringify(tiposExistentes),
-      user // también podés pasar el usuario a la vista
-    });
-  } catch (err) {
+    try {
+    const context = await getAltaProductoContext({ user });
+    res.render('altaProducto', context);
+    } catch (err) {
     console.error('Error cargando datos:', err);
     res.status(500).send('Error interno');
-  }
+    }
 });
 
 // POST guardar producto
 router.post('/alta', (req, res, next) => {
-  upload.single('imagen')(req, res, function (err) {
+    upload.single('imagen')(req, res, async function (err) {
     if (err) {
-      return res.render('altaProducto', {
-        basedir: process.env.BASEDIR,
-        errorImagen: err.message // ejemplo: "Solo se permiten imágenes (jpeg, png, webp)"
-      });
+        try {
+        const context = await getAltaProductoContext({
+            errorImagen: err.message,
+            user: req.session.user
+        });
+        return res.render('altaProducto', context);
+        } catch (e) {
+        console.error('Error preparando formulario tras fallo de imagen:', e);
+        return res.status(500).send('Error interno al preparar el formulario');
+        }
     }
-    next();
-  });
+
+    next(); // sigue al handler final si no hubo error
+    });
+
 }, async (req, res) => {
   try {
     const { nombre, bodega, tipo, precio_original, descuento = 0, stock = 0 } = req.body;
 
     const existente = await Producto.findOne({ nombre });
     if (existente) {
-      return res.render('altaProducto', {
-        basedir: process.env.BASEDIR,
-        extraCss: '/css/alta.css',
-        errorImagen: 'El nombre del producto ya existe'
-      });
+        try {
+            const context = await getAltaProductoContext({
+            errorImagen: 'El nombre del producto ya existe',
+            user: req.session.user
+            });
+            return res.render('altaProducto', context);
+        } catch (e) {
+            console.error('Error al preparar el formulario tras nombre duplicado:', e);
+            return res.status(500).send('Error interno');
+        }
     }
 
     const nuevoProducto = new Producto({
@@ -106,6 +108,42 @@ async function getProductos(campo) {
   const unicos = [...new Set(nombres)].sort();
   return unicos;
 }
+
+function obtenerCampoFinal(valorSeleccionado, valorOtro) {
+  if (valorSeleccionado === 'otro' && valorOtro?.trim()) {
+    return valorOtro.trim();
+  }
+  return valorSeleccionado?.trim();
+}
+
+function validarNumero(valor, nombreCampo, { min = null, max = null } = {}) {
+  const num = parseFloat(valor);
+  if (isNaN(num)) throw new Error(`${nombreCampo} debe ser un número válido`);
+
+  if (min !== null && num < min) throw new Error(`${nombreCampo} no puede ser menor que ${min}`);
+  if (max !== null && num > max) throw new Error(`${nombreCampo} no puede ser mayor que ${max}`);
+
+  return num;
+}
+
+async function getAltaProductoContext(extra = {}) {
+  const nombresExistentes = await getProductos('nombre');
+  const bodegasExistentes = await getProductos('bodega');
+  const tiposExistentes = await getProductos('tipo');
+
+  return {
+    basedir: process.env.BASEDIR,
+    extraCss: '/css/alta.css',
+    nombresExistentes: JSON.stringify(nombresExistentes),
+    bodegasExistentes,
+    bodegasJSON: JSON.stringify(bodegasExistentes),
+    tiposExistentes,
+    tiposJSON: JSON.stringify(tiposExistentes),
+    ...extra
+  };
+}
+
+
 
 
 
