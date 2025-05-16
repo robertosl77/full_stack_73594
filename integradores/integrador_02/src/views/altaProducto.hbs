@@ -35,6 +35,9 @@
     <div class="mb-3">
       <label for="nombre" class="form-label">Nombre del producto</label>
       <input type="text" class="form-control" id="nombre" name="nombre" required>
+      <div id="nombreErrorAlert" class="alert alert-danger mt-2" style="display: none;">
+        El nombre del producto ya existe.
+      </div>      
     </div>
 
     <div class="mb-3">
@@ -88,6 +91,30 @@
       }, 3000);
     } else {
       alertBox.style.display = 'none'; // Oculta si todo está bien
+    }
+  });
+</script>
+
+<script>
+  const nombresExistentes = {{{nombresExistentes}}};
+  const inputNombre = document.getElementById('nombre');
+  const alertaNombre = document.getElementById('nombreErrorAlert');
+  let nombreTimer = null;
+
+  inputNombre.addEventListener('input', function () {
+    const valor = inputNombre.value.trim().toLowerCase();
+    const existe = nombresExistentes.includes(valor);
+
+    if (existe) {
+      alertaNombre.style.display = 'block';
+
+      clearTimeout(nombreTimer); // Reinicia si sigue escribiendo
+      nombreTimer = setTimeout(() => {
+        alertaNombre.style.display = 'none';
+      }, 3000);
+    } else {
+      alertaNombre.style.display = 'none';
+      clearTimeout(nombreTimer);
     }
   });
 </script>

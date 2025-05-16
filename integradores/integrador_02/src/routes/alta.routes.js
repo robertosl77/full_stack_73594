@@ -21,11 +21,20 @@ const upload = multer({
 });
 
 // GET form alta
-router.get('/alta', (req, res) => {
-  res.render('altaProducto', {
-    basedir: process.env.BASEDIR,
-    extraCss: '/css/alta.css'
-  });
+router.get('/alta', async (req, res) => {
+  try {
+    const productos = await Producto.find({}, 'nombre');
+    const nombres = productos.map(p => p.nombre.toLowerCase());
+
+    res.render('altaProducto', {
+      basedir: process.env.BASEDIR,
+      extraCss: '/css/alta.css',
+      nombresExistentes: JSON.stringify(nombres)
+    });
+  } catch (err) {
+    console.error('Error cargando nombres:', err);
+    res.status(500).send('Error interno');
+  }
 });
 
 // POST guardar producto
@@ -47,6 +56,7 @@ router.post('/alta', (req, res, next) => {
     if (existente) {
       return res.render('altaProducto', {
         basedir: process.env.BASEDIR,
+        extraCss: '/css/alta.css',
         errorImagen: 'El nombre del producto ya existe'
       });
     }
