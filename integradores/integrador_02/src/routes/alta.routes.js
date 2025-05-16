@@ -22,21 +22,28 @@ const upload = multer({
 
 // GET form alta
 router.get('/alta', async (req, res) => {
+  const user = req.session.user;
+
+  if (!user || user.rol !== 'ROLE_ADMINISTRADOR') {
+    return res.redirect(`${res.locals.basedir}/login`);
+  }
+
   try {
     const nombresExistentes = await getProductos('nombre');
     const bodegasExistentes = await getProductos('bodega');
     const tiposExistentes = await getProductos('tipo');
     res.render('altaProducto', {
-        basedir: process.env.BASEDIR,
-        extraCss: '/css/alta.css',
-        nombresExistentes: JSON.stringify(nombresExistentes),
-        bodegasExistentes, // Para el select
-        bodegasJSON: JSON.stringify(bodegasExistentes), // Para el script    
-        tiposExistentes, // Para el select
-        tiposJSON: JSON.stringify(tiposExistentes) // Para el script
+      basedir: process.env.BASEDIR,
+      extraCss: '/css/alta.css',
+      nombresExistentes: JSON.stringify(nombresExistentes),
+      bodegasExistentes,
+      bodegasJSON: JSON.stringify(bodegasExistentes),
+      tiposExistentes,
+      tiposJSON: JSON.stringify(tiposExistentes),
+      user // también podés pasar el usuario a la vista
     });
   } catch (err) {
-    console.error('Error cargando nombres:', err);
+    console.error('Error cargando datos:', err);
     res.status(500).send('Error interno');
   }
 });
