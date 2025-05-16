@@ -1,0 +1,44 @@
+/* body {
+  background-color: #f8f9fa;
+  background-image: url('/img/pattern-bg.png');
+  background-size: contain;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+} */
+
+.container {
+  background: rgba(255, 255, 255, 0.9); /* ❄️ blanco con transparencia */
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #343a40;
+}
+
+label {
+  font-weight: 500;
+}
+
+input.form-control,
+button.btn {
+  border-radius: 0.5rem;
+}
+
+button.btn-success {
+  background-color: #198754;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+button.btn-success:hover {
+  background-color: #157347;
+}
+
+.alert {
+  border-radius: 0.5rem;
+}

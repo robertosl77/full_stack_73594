@@ -1,3 +1,7 @@
+body {
+  background-color: #f8f9fa;
+  background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+}
 /* --- Estructura sticky footer universal --- */
 html, body {
     height: 100%;
