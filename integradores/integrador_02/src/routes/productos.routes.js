@@ -1,6 +1,7 @@
 // src/routes/productos.routes.js
 import express from 'express';
 import { obtenerProductosConDescuento } from '../services/productoService.js';
+import { validaImagenProductos } from '../utils/funciones.js';
 
 const router = express.Router();
 
@@ -13,7 +14,8 @@ router.get('/productos', async (req, res) => {
     }
 
     try {
-        const productos = await obtenerProductosConDescuento();
+        let productos = await obtenerProductosConDescuento();
+        productos= validaImagenProductos(productos);
         const user = req.session.user;
         res.render('productos', {
             productos,

@@ -1,6 +1,7 @@
 // src/routes/abm.routes.js
 import express from 'express';
 import Producto from '../models/producto.js';
+import { validaImagenProductos } from '../utils/funciones.js';
 
 const router = express.Router();
 
@@ -14,7 +15,9 @@ router.get('/admin/abm', async (req, res) => {
     }
 
     try {
-        const productos = await Producto.find().sort({ nombre: 1 }).lean();
+        let productos = await Producto.find().sort({ nombre: 1 }).lean();
+        productos = validaImagenProductos(productos);
+
         res.render('abm', {
             productos,
             user,

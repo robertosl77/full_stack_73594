@@ -27,6 +27,7 @@
                 data-stock="{{stock}}" 
                 data-estado="{{estado}}">
                 <td><img src="/{{imagen}}" alt="imagen" style="height: 50px;"></td>
+                {{!-- <td><img src="/{{imagen}}" alt="imagen" style="height: 50px;" onerror="this.onerror=null; this.src='/img_productos/Imagen_no_disponible.svg.png';"></td> --}}
                 <td>{{nombre}}</td>
                 <td>{{bodega}}</td>
                 <td>{{tipo}}</td>
@@ -51,12 +52,21 @@
             <input type="hidden" name="productoId" id="productoId">
 
             <div class="mb-3 text-center">
-                <img id="productoImagen" src="" alt="imagen producto" style="max-height: 120px;">
+            <img id="productoImagen" src="" alt="imagen actual" style="max-height: 120px;">
+            {{!-- <img id="productoImagen" src="" onerror="imagenNoDisponible(this)" style="max-height: 120px;"> --}}
+            </div>
+
+            <div class="mb-3">
+            <label class="form-label">Imagen del producto</label>
+            <input type="file" class="form-control" id="nuevaImagen" name="nuevaImagen" accept="image/*">
+            <div id="imagenErrorABM" class="alert alert-danger mt-2" style="display: none;">
+                Solo se permiten archivos de imagen.
+            </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Nombre</label>
-                <input type="text" class="form-control" id="productoNombre" readonly>
+                <input type="text" class="form-control" id="productoNombre">
             </div>
 
             <div class="mb-3">

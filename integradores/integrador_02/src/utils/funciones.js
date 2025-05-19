@@ -1,4 +1,6 @@
 // src/utils/funciones.js
+import fs from 'fs';
+import path from 'path';
 
 export function tiempoTranscurrido(fecha) {
     if (!fecha) return '';
@@ -21,4 +23,41 @@ export function tiempoTranscurrido(fecha) {
     if (diffMeses < 12) return `${diffMeses} meses`;
     const diffAnios = Math.floor(diffDias / 365);
     return `${diffAnios} años`;
+}
+
+// public/js/funciones.js
+
+export function imagenNoDisponible(img) {
+  img.style.display = 'none';
+
+  const aviso = document.createElement('div');
+  aviso.className = 'text-danger text-center small mt-2';
+  aviso.innerText = 'La imagen no está disponible o fue movida.';
+
+  // Evitar múltiples avisos si ya fue insertado
+  if (!img.parentElement.querySelector('.text-danger')) {
+    img.parentElement.appendChild(aviso);
+  }
+}
+
+
+/**
+ * Asegura que cada producto tenga una imagen válida.
+ * Si no existe o está vacía, se asigna una imagen por defecto.
+ */
+export function validaImagenProductos(productos) {
+
+  const rutaImagenes = path.join(process.cwd(), 'public', 'img_productos');
+  const imagenFallback = 'img_productos/Imagen_no_disponible.svg.png';
+
+  return productos.map(producto => {
+    const archivo = path.basename(producto.imagen || '');
+    const rutaCompleta = path.join(rutaImagenes, archivo);
+
+    if (!producto.imagen || !fs.existsSync(rutaCompleta)) {
+      return { ...producto, imagen: imagenFallback };
+    }
+
+    return producto;
+  });
 }
