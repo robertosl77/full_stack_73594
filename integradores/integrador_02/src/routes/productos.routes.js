@@ -2,6 +2,7 @@
 import express from 'express';
 import { obtenerProductosConDescuento } from '../services/productoService.js';
 import { validaImagenProductos } from '../utils/funciones.js';
+import Carrito from '../models/carrito.js';
 
 const router = express.Router();
 
@@ -15,12 +16,22 @@ router.get('/productos', async (req, res) => {
 
     try {
         let productos = await obtenerProductosConDescuento();
-        productos= validaImagenProductos(productos);
-        const user = req.session.user;
+        productos = validaImagenProductos(productos);
+
+        const carrito = await Carrito.findOne({ usuario: user._id });
+        const productosActivos = carrito
+            ? carrito.productos.filter(p => p.estado === 1 || p.estado === 2)
+            : [];
+
+        const tieneCarrito = productosActivos.length > 0;
+        const cantidadCarrito = productosActivos.length;
+
         res.render('productos', {
             productos,
             extraCss: '/css/productos.css',
-            user
+            user,
+            tieneCarrito,
+            cantidadCarrito
         });
     } catch (error) {
         console.error(error);

@@ -7,7 +7,8 @@ const router = express.Router();
 
 // Agregar producto al carrito
 router.post('/carrito', async (req, res) => {
-  const { usuarioId, productoId, cantidad } = req.body;
+  const usuarioId = req.session.user?._id;
+  const { productoId, cantidad } = req.body;
 
   if (!usuarioId || !productoId || !cantidad) {
     return res.status(400).json({ error: 'Faltan datos requeridos.' });
@@ -357,6 +358,22 @@ router.put('/carrito/comprar', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al procesar la compra' });
+  }
+});
+
+// src/routes/carrito.routes.js
+router.get('/carrito/cantidad', async (req, res) => {
+  try {
+    const userId = req.session.user?._id;
+    const carrito = await Carrito.findOne({ usuario: userId });
+    const cantidad = carrito
+      ? carrito.productos.filter(p => p.estado === 1 || p.estado === 2).length
+      : 0;
+
+    res.json({ cantidad });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'No se pudo obtener cantidad' });
   }
 });
 

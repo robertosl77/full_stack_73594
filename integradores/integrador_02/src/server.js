@@ -6,6 +6,6 @@ dotenv.config();
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}${process.env.BASEDIR}`);
+    console.info(`Servidor corriendo en http://localhost:${PORT}${process.env.BASEDIR}`);
 });
   

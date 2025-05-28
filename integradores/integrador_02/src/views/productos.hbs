@@ -28,9 +28,14 @@
                         <input type="number" id="cantidad{{_id}}" min="1" max="{{stock}}" value="1" 
                             {{#unless (gt stock 0)}}disabled{{/unless}}>
                     </div>
-                    <button class="btn btn-primary agregar-carrito w-100 mt-auto"
-                        {{#unless (gt stock 0)}}disabled style="background:gray;cursor:not-allowed;"{{/unless}}>
-                        {{#unless (gt stock 0)}}Sin stock{{else}}AGREGAR{{/unless}}
+                    <button
+                    class="btn btn-primary agregar-carrito w-100 mt-auto btn-agregar-carrito"
+                    data-id="{{_id}}"
+                    data-nombre="{{nombre}}"
+                    data-precio="{{precio}}"
+                    {{#unless (gt stock 0)}}disabled style="background:gray;cursor:not-allowed;"{{/unless}}>
+                    
+                    {{#unless (gt stock 0)}}Sin stock{{else}}AGREGAR{{/unless}}
                     </button>
                 </div>
             </div>
@@ -38,3 +43,49 @@
         {{/each}}
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const botonesAgregar = document.querySelectorAll(".btn-agregar-carrito");
+
+  botonesAgregar.forEach(boton => {
+    boton.addEventListener("click", async () => {
+      const id = boton.dataset.id;
+      const nombre = boton.dataset.nombre;
+      const precio = boton.dataset.precio;
+
+      const cantidadInput = document.querySelector(`#cantidad${id}`);
+      const cantidad = parseInt(cantidadInput?.value || "1", 10);
+
+      try {
+        const res = await fetch("/integrador2/carrito", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ productoId: id, cantidad })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          // Obtener nueva cantidad real desde el backend
+          const r = await fetch("/integrador2/carrito/cantidad");
+          const json = await r.json();
+
+          const cartContainer = document.querySelector("#cart-container");
+          const cartCount = document.querySelector("#cart-count");
+
+          if (cartContainer) cartContainer.style.display = "inline-block";
+          if (cartCount) cartCount.textContent = json.cantidad;
+        }
+
+      } catch (error) {
+        console.error("Fallo al agregar al carrito", error);
+      }
+    });
+  });
+});
+
+</script>
+

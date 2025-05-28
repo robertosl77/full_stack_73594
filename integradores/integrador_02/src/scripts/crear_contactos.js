@@ -17,7 +17,7 @@ const Contacto = mongoose.model('Contacto', contactoSchema, 'contactos');
 async function run() {
     try {
         await mongoose.connect(process.env.MONGODB_URI);
-        console.log('MongoDB conectado');
+        console.info('MongoDB conectado');
 
         // 👉 BORRAR TODOS LOS CONTACTOS EXISTENTES
         await Contacto.deleteMany({});

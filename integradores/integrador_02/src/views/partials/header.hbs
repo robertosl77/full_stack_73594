@@ -40,11 +40,40 @@
                 {{#if user}}
                 <ul class="navbar-nav">
                     <!-- 🛒 Carrito -->
-                    <li class="nav-item" id="cart-container" style="display: none; position: relative;">
-                        <a href="#">
-                            <span id="cart-icon">🛒</span>
-                            <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
-                        </a>
+                    {{!-- {{#if tieneCarrito}}
+                    <li class="nav-item d-flex align-items-center" id="cart-container" style="position: relative;">
+                    <a href="{{basedir}}/carrito" class="nav-link position-relative px-2">
+                        🛒
+                        <span id="cart-count"
+                            class="position-absolute top-10 start-70 translate-middle badge rounded-pill bg-danger"
+                            style="font-size: 0.7rem;">
+                        {{cantidadCarrito}}
+                        </span>
+                    </a>
+                    </li>
+                    {{/if}} --}}
+
+                    {{!-- <li class="nav-item d-flex align-items-center me-3" id="cart-container" style="position: relative; {{#unless tieneCarrito}}display: none;{{/unless}}">
+                    <a href="{{basedir}}/carrito">
+                        <span id="cart-icon">🛒</span>
+                        <span id="cart-count" class="position-absolute top-10 start-70 translate-middle badge rounded-pill bg-danger">
+                        {{cantidadCarrito}}
+                        </span>
+                    </a>
+                    </li> --}}
+
+                    <li class="nav-item d-flex align-items-center me-3" id="cart-container"
+                        style="position: relative; {{#unless tieneCarrito}}display: none;{{/unless}}">
+                    <a href="{{basedir}}/carrito" class="nav-link position-relative px-2">
+                        🛒
+                        {{#if tieneCarrito}}
+                        <span id="cart-count"
+                            class="position-absolute top-10 start-70 translate-middle badge rounded-pill bg-danger"
+                            style="font-size: 0.7rem;">
+                        {{cantidadCarrito}}
+                        </span>
+                        {{/if}}
+                    </a>
                     </li>
 
                     <!-- Usuario + logout -->

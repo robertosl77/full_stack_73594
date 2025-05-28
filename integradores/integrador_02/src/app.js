@@ -50,7 +50,7 @@ app.use(BASEDIR, carritoRoutes);
 
 // Conexion mongoose
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB conectado'))
+  .then(() => console.info('MongoDB conectado'))
   .catch(err => console.error(err));
 
 // Handlebars

@@ -15,6 +15,7 @@ router.post('/login', async (req, res) => {
 
     if (user && await bcrypt.compare(password, user.password)) {
         req.session.user = {
+            _id: user._id,
             usuario: user.usuario,
             rol: user.rol
         };

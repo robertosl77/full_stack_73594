@@ -14,7 +14,7 @@ router.get('/contacto', (req, res) => {
 
 // Guardar contacto enviado
 router.post('/contacto', async (req, res) => {
-console.log(req.body);
+
     const { nombre, email, comentario } = req.body;
 
     if (!nombre || !email || !comentario) {

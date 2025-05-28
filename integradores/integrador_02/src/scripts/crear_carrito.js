@@ -33,7 +33,6 @@ const crearCarrito = async () => {
   });
 
   await nuevoCarrito.save();
-  console.log('Carrito creado correctamente');
   await mongoose.disconnect();
 };
 
