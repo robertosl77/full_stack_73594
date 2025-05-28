@@ -10,6 +10,7 @@ import contactoRoutes from './routes/contacto.routes.js';
 import mensajesRoutes from './routes/mensajes.routes.js';
 import abmRoutes from './routes/abm.routes.js';
 import altaRoutes from './routes/alta.routes.js';
+import carritoRoutes from './routes/carrito.routes.js';
 import registerHandlebarsHelpers from './helpers/handlebarsHelpers.js';
 
 dotenv.config();
@@ -31,6 +32,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Redirecciones base
 app.get('/', (req, res) => res.redirect(`${BASEDIR}/login`));
@@ -44,6 +46,7 @@ app.use(BASEDIR, contactoRoutes);
 app.use(BASEDIR, mensajesRoutes);
 app.use(BASEDIR, abmRoutes);
 app.use(BASEDIR, altaRoutes);
+app.use(BASEDIR, carritoRoutes);
 
 // Conexion mongoose
 mongoose.connect(process.env.MONGODB_URI)
