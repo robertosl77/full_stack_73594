@@ -73,11 +73,13 @@ document.addEventListener("DOMContentLoaded", function () {
           // Obtener nueva cantidad real desde el backend
           const r = await fetch("/integrador2/carrito/cantidad");
           const json = await r.json();
-
-          const cartContainer = document.querySelector("#cart-container");
+          
+          const cartContainer = document.querySelector("#cart-wrapper");
           const cartCount = document.querySelector("#cart-count");
 
-          if (cartContainer) cartContainer.style.display = "inline-block";
+          if (cartContainer) {
+            cartContainer.style.display = "inline-block";
+          }
           if (cartCount) cartCount.textContent = json.cantidad;
         }
 

@@ -63,19 +63,34 @@
                     </a>
                     </li> --}}
 
-                    <li class="nav-item d-flex align-items-center me-3" id="cart-container"
+                    {{!-- <li class="nav-item d-flex align-items-center me-3" id="cart-container"
                         style="position: relative; {{#unless tieneCarrito}}display: none;{{/unless}}">
-                    <a href="{{basedir}}/carrito" class="nav-link position-relative px-2">
-                        🛒
-                        {{#if tieneCarrito}}
-                        <span id="cart-count"
-                            class="position-absolute top-10 start-70 translate-middle badge rounded-pill bg-danger"
-                            style="font-size: 0.7rem;">
-                        {{cantidadCarrito}}
-                        </span>
-                        {{/if}}
-                    </a>
+                        <a href="{{basedir}}/carrito" class="nav-link position-relative px-2">
+                            🛒
+                            {{#if tieneCarrito}}
+                            <span id="cart-count"
+                                class="position-absolute top-10 start-70 translate-middle badge rounded-pill bg-danger"
+                                style="font-size: 0.7rem;">
+                            {{cantidadCarrito}}
+                            </span>
+                            {{/if}}
+                        </a>
+                    </li> --}}
+
+                    <li class="nav-item d-flex align-items-center me-3" style="position: relative;">
+                        <div id="cart-wrapper" style="{{#unless tieneCarrito}}display: none;{{/unless}}">
+                            <a href="{{basedir}}/carrito" class="nav-link position-relative px-2">
+                            🛒
+                            <span id="cart-count"
+                                    class="position-absolute top-10 start-70 translate-middle badge rounded-pill bg-danger"
+                                    style="font-size: 0.7rem;">
+                                {{cantidadCarrito}}
+                            </span>
+                            </a>
+                        </div>
                     </li>
+
+
 
                     <!-- Usuario + logout -->
                     <li class="nav-item">
