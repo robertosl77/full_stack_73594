@@ -18,3 +18,7 @@ body {
 main {
     flex: 1;
 }
+
+#main-content {
+  padding-bottom: 30px; /* o el alto del footer */
+}
