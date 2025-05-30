@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const id = boton.dataset.id;
       const nombre = boton.dataset.nombre;
       const precio = boton.dataset.precio;
+      console.log(`Agregando al carrito: ${nombre} (ID: ${id}, Precio: $${precio})`);
 
       const cantidadInput = document.querySelector(`#cantidad${id}`);
       const cantidad = parseInt(cantidadInput?.value || "1", 10);

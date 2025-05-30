@@ -46,7 +46,7 @@ router.post('/carrito', async (req, res) => {
       });
     } else {
       const existente = carrito.productos.find(p =>
-        p.producto.toString() === productoId
+        p.producto.toString() === productoId && p.estado !== 0 && p.estado !== 3
       );
 
       if (!existente || existente.estado === 0 || existente.estado === 3) {
