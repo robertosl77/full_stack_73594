@@ -79,7 +79,8 @@
 
                     <li class="nav-item d-flex align-items-center me-3" style="position: relative;">
                         <div id="cart-wrapper" style="{{#unless tieneCarrito}}display: none;{{/unless}}">
-                            <a href="{{basedir}}/carrito" class="nav-link position-relative px-2">
+                            {{!-- <a href="{{basedir}}/carrito" class="nav-link position-relative px-2"> --}}
+                            <a href="#" class="nav-link position-relative px-2" data-bs-toggle="modal" data-bs-target="#modalCarrito">
                             🛒
                             <span id="cart-count"
                                     class="position-absolute top-10 start-70 translate-middle badge rounded-pill bg-danger"

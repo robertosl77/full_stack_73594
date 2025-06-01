@@ -2,6 +2,7 @@ import express from 'express';
 import Carrito from '../models/carrito.js';
 import Producto from '../models/producto.js';
 import Usuario from '../models/usuario.js';
+import { validaImagenProductos } from '../utils/funciones.js';
 
 const router = express.Router();
 
@@ -388,10 +389,10 @@ router.get('/carrito/:idUsuario', async (req, res) => {
       return res.json({ productos: [] });
     }
 
-    const productosValidados = await Promise.all(carrito.productos.map(async p => {
+    const productosPreparados = carrito.productos.map(p => {
       const prod = p.producto;
 
-      let validaciones = {
+      return {
         idProducto: prod?._id?.toString() || null,
         nombre: prod?.nombre || "Producto no disponible",
         imagen: prod?.imagen || null,
@@ -401,24 +402,23 @@ router.get('/carrito/:idUsuario', async (req, res) => {
         stock_maximo: prod?.stock || 0,
         stock_insuficiente: p.cantidad > (prod?.stock || 0),
         cantidad_solicitada: p.cantidad,
-        precio_original: p.precio || 0,
-        descuento_original: p.descuento || 0,
+        precio_original: prod?.precio_original || 0,
+        descuento_original: prod?.descuento || 0,
         estado: p.estado,
         fecha_agregado: p.fecha_agregado,
         fecha_eliminado: p.fecha_eliminado
       };
+    });
 
-      return validaciones;
-    }));
+    const productosConImagenes = validaImagenProductos(productosPreparados);
 
-    res.json({ productos: productosValidados });
+    res.json({ productos: productosConImagenes });
 
   } catch (err) {
     console.error('Error al obtener el carrito:', err);
     res.status(500).json({ error: 'Error al obtener el carrito' });
   }
 });
-
 
 
 
