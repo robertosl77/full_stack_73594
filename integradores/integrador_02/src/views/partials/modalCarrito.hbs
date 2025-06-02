@@ -1,6 +1,7 @@
 <!-- Modal de Carrito -->
 <div class="modal fade" id="modalCarrito" tabindex="-1" aria-labelledby="modalCarritoLabel" aria-hidden="true" data-user-id="{{user._id}}">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    {{!-- <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"> --}}
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalCarritoLabel">Carrito de Compras</h5>
@@ -191,13 +192,104 @@
                     });
 
 
+                    // Asignar funcionalidad al botón "Sumar"
+                    item.querySelector(".btn-sumar").addEventListener("click", async () => {
+                        const cantidadSpan = item.querySelector(".cantidad");
+                        let cantidad = parseInt(cantidadSpan.textContent) || 1;
+                        cantidad++;
+
+                        await actualizarCantidad(cantidad);
+                    });
+
+                    // Asignar funcionalidad al botón "Restar"
+                    item.querySelector(".btn-restar").addEventListener("click", async () => {
+                        const cantidadSpan = item.querySelector(".cantidad");
+                        let cantidad = parseInt(cantidadSpan.textContent) || 1;
+                        cantidad--;
+
+                        if (cantidad < 1) {
+                            item.querySelector(".btn-eliminar").click(); // Borra si baja de 1
+                            return;
+                        }
+
+                        await actualizarCantidad(cantidad);
+                    });
+
+                    // Función para actualizar cantidad en backend y recalcular precios
+                    async function actualizarCantidad(nuevaCantidad) {
+                        try {
+                            const productoId = item.getAttribute("data-id");
+                            const res = await fetch("/integrador2/carrito/cantidad", {
+                                method: "PUT",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ usuarioId: userId, productoId, cantidad: nuevaCantidad })
+                            });
+
+                            const data = await res.json();
+
+                            if (res.ok) {
+                                item.querySelector(".cantidad").textContent = nuevaCantidad;
+
+                                const nuevoPrecioTotal = (precioFinal * nuevaCantidad).toFixed(2);
+                                item.querySelector(".precio-total").textContent = nuevoPrecioTotal;
+
+                                // Recalcular total general
+                                const precios = listaActivos.querySelectorAll(".precio-total");
+                                let nuevoTotal = 0;
+                                precios.forEach(el => {
+                                    const valor = parseFloat(el.textContent.replace("$", "").replace(",", ".")) || 0;
+                                    nuevoTotal += valor;
+                                });
+                                totalActivos.textContent = `$${nuevoTotal.toFixed(2)}`;
+                            } else {
+                                alert(data.error || "No se pudo actualizar la cantidad.");
+                            }
+                        } catch (err) {
+                            console.error("Error al actualizar cantidad:", err);
+                        }
+                    }
+
+
+
                 });
 
             totalActivos.textContent = `$${total.toFixed(2)}`;
             } catch (error) {
             console.error("Error al cargar el carrito:", error);
             }
+
+
+
+            
         });
+
+        document.getElementById("btn-eliminar-seleccionados")?.addEventListener("click", async () => {
+        const userId = modal.getAttribute("data-user-id");
+        if (!userId) return;
+
+        if (!confirm("¿Estás seguro de que querés vaciar el carrito?")) return;
+
+        try {
+            const res = await fetch("/integrador2/carrito/vaciar", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ usuarioId: userId })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+            listaActivos.innerHTML = "";
+            totalActivos.textContent = "$0.00";
+            } else {
+            alert(data.error || "No se pudo vaciar el carrito.");
+            }
+        } catch (err) {
+            console.error("Error al vaciar el carrito:", err);
+        }
+        });
+
+
     });
 </script>
 
