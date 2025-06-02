@@ -24,6 +24,8 @@
           </div>
 
           <div class="card-body tab-content" id="tabs-carrito-content">
+
+            {{!-- Panel de Compras --}}
             <div class="tab-pane fade show active" id="contenido-activo" role="tabpanel">
               <div id="lista-activos" class="list-group text-start">
                 <!-- Los productos activos se cargan por JS -->
@@ -40,11 +42,16 @@
               </div>
             </div>
 
+            {{!-- Panel de Reservados --}}
             <div class="tab-pane fade" id="contenido-reserva" role="tabpanel">
-              <p class="text-muted">Productos en espera para una compra futura.</p>
-              <div id="lista-reservados" class="list-group text-start"></div>
+                <div id="lista-reservados" class="list-group text-start">
+                    <!-- Los productos reservados se cargan por JS -->
+                </div>
+                <p class="text-muted mt-3">Productos en espera para una compra futura.</p>
+
             </div>
 
+            {{!-- Panel de Comprados --}}
             <div class="tab-pane fade" id="contenido-comprado" role="tabpanel">
               <p class="text-muted">Historial de productos comprados.</p>
               <div id="lista-comprados" class="list-group text-start"></div>
@@ -64,232 +71,304 @@
 
         if (!modal) return;
 
-        modal.addEventListener("show.bs.modal", async () => {
+        async function cargarActivos() {
             const userId = modal.getAttribute("data-user-id");
             if (!userId) return;
 
             try {
-            const res = await fetch(`/integrador2/carrito/${userId}`);
-            const data = await res.json();
-            const productos = data.productos || [];
+                const res = await fetch(`/integrador2/carrito/${userId}`);
+                const data = await res.json();
+                const productos = data.productos || [];
 
-            listaActivos.innerHTML = "";
-            let total = 0;
+                listaActivos.innerHTML = "";
+                let total = 0;
 
-            productos
-                .filter(p => p.estado === 1)
-                .forEach(p => {
+                productos
+                    .filter(p => p.estado === 1)
+                    .forEach(p => {
+                        const precioFinal = p.descuento_original > 0
+                            ? p.precio_original * (1 - p.descuento_original / 100)
+                            : p.precio_original;
 
-                    console.log(p.precio_original);
+                        const precioTotal = (precioFinal * p.cantidad_solicitada).toFixed(2);
+                        total += parseFloat(precioTotal);
 
-                    const precioFinal = p.descuento_original > 0
-                        ? p.precio_original * (1 - p.descuento_original / 100)
-                        : p.precio_original;
+                        const imagen = p.imagen && p.imagen !== 'null'
+                            ? `/integrador2/${p.imagen}`
+                            : `/integrador2/img_productos/Imagen_no_disponible.svg.png`;
 
-                    const precioTotal = (precioFinal * p.cantidad_solicitada).toFixed(2);
-                    total += parseFloat(precioTotal);
+                        const item = document.createElement("div");
+                        item.className = "list-group-item list-group-item-action d-flex gap-3 py-3 align-items-center position-relative";
+                        item.setAttribute("data-id", p.idProducto);
+                        item.innerHTML = `
+                            <img src="/${p.imagen}" alt="${p.nombre}" class="rounded flex-shrink-0" style="width: 48px; height: 48px; object-fit: contain;">
 
-                    const imagen = p.imagen && p.imagen !== 'null'
-                    ? `/integrador2/${p.imagen}`
-                    : `/integrador2/img_productos/Imagen_no_disponible.svg.png`;
+                            <div class="flex-fill">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">${p.nombre}</h6>
+                                <span class="fw-bold text-success">$${precioFinal.toFixed(2)}</span>
+                            </div>
 
-                    const item = document.createElement("div");
-                    item.className = "list-group-item list-group-item-action d-flex gap-3 py-3 align-items-center position-relative";
-                    item.setAttribute("data-id", p.idProducto);
-                    item.innerHTML = `
-                        <img src="/${p.imagen}" alt="${p.nombre}" class="rounded flex-shrink-0" style="width: 48px; height: 48px; object-fit: contain;">
+                            <div class="d-flex align-items-center mt-2">
+                                <button class="btn btn-sm btn-outline-secondary btn-restar me-2">−</button>
+                                <span class="cantidad fw-bold">${p.cantidad_solicitada}</span>
+                                <button class="btn btn-sm btn-outline-secondary btn-sumar ms-2">+</button>
 
-                        <div class="flex-fill">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0">${p.nombre}</h6>
-                            <span class="fw-bold text-success">$${precioFinal.toFixed(2)}</span>
-                        </div>
+                                <span class="ms-auto fw-bold">Total: $<span class="precio-total">${precioTotal}</span></span>
+                            </div>
+                            </div>
 
-                        <div class="d-flex align-items-center mt-2">
-                            <button class="btn btn-sm btn-outline-secondary btn-restar me-2">−</button>
-                            <span class="cantidad fw-bold">${p.cantidad_solicitada}</span>
-                            <button class="btn btn-sm btn-outline-secondary btn-sumar ms-2">+</button>
+                            <div class="btn-group ms-2">
+                            <button class="btn btn-sm btn-outline-warning btn-reservar" title="Pasar a reservado">⏳</button>
+                            <button class="btn btn-sm btn-outline-danger btn-eliminar" title="Eliminar">🗑️</button>
+                            </div>
+                        `;
+                        listaActivos.appendChild(item);
 
-                            <span class="ms-auto fw-bold">Total: $<span class="precio-total">${precioTotal}</span></span>
-                        </div>
-                        </div>
+                        item.querySelector(".btn-reservar").addEventListener("click", async () => {
+                            try {
+                                const productoId = item.getAttribute("data-id");
 
-                        <div class="btn-group ms-2">
-                        <button class="btn btn-sm btn-outline-warning btn-reservar" title="Pasar a reservado">⏳</button>
-                        <button class="btn btn-sm btn-outline-danger btn-eliminar" title="Eliminar">🗑️</button>
-                        </div>
-                    `;
-                    listaActivos.appendChild(item);
-
-                    // Asignar funcionalidad al botón "Pasar a reservado"
-                    item.querySelector(".btn-reservar").addEventListener("click", async () => {
-                        try {
-                            const productoId = item.getAttribute("data-id");
-
-                            const res = await fetch("/integrador2/carrito/reservar", {
-                                method: "PUT",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ usuarioId: userId, productoId })
-                            });
-
-                            const data = await res.json();
-
-                            if (res.ok) {
-                                item.remove(); // Lo sacamos de la lista actual
-
-                                // Recalcular total
-                                const precios = listaActivos.querySelectorAll(".precio-total");
-                                let nuevoTotal = 0;
-                                precios.forEach(el => {
-                                const valor = parseFloat(el.textContent.replace("$", "").replace(",", ".")) || 0;
-                                nuevoTotal += valor;
+                                const res = await fetch("/integrador2/carrito/reservar", {
+                                    method: "PUT",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ usuarioId: userId, productoId })
                                 });
-                                totalActivos.textContent = `$${nuevoTotal.toFixed(2)}`;
 
-                                // (Opcional) Mostrar un toast o mensaje breve si querés
-                            } else {
-                                alert(data.error || "No se pudo reservar.");
+                                const data = await res.json();
+
+                                if (res.ok) {
+                                    item.remove();
+                                    cargarActivos();
+                                } else {
+                                    alert(data.error || "No se pudo reservar.");
+                                }
+                            } catch (err) {
+                                console.error("Error al reservar:", err);
                             }
-                        } catch (err) {
-                            console.error("Error al reservar:", err);
-                        }
-                    });            
+                        });
 
-                    // Asignar funcionalidad al botón "Borrar Producto"
-                    item.querySelector(".btn-eliminar").addEventListener("click", async () => {
-                        try {
-                            const productoId = item.getAttribute("data-id");
+                        item.querySelector(".btn-eliminar").addEventListener("click", async () => {
+                            try {
+                                const productoId = item.getAttribute("data-id");
 
-                            const res = await fetch("/integrador2/carrito", {
-                                method: "DELETE",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ usuarioId: userId, productoId })
-                            });
-
-                            const data = await res.json();
-
-                            if (res.ok) {
-                                item.remove(); // Eliminar de la vista
-
-                                // Recalcular total
-                                const precios = listaActivos.querySelectorAll(".precio-total");
-                                let nuevoTotal = 0;
-                                precios.forEach(el => {
-                                const valor = parseFloat(el.textContent.replace("$", "").replace(",", ".")) || 0;
-                                nuevoTotal += valor;
+                                const res = await fetch("/integrador2/carrito", {
+                                    method: "DELETE",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ usuarioId: userId, productoId })
                                 });
-                                totalActivos.textContent = `$${nuevoTotal.toFixed(2)}`;
 
-                                // Actualizar el total
-                                total -= parseFloat(precioTotal);
-                                totalActivos.textContent = `$${total.toFixed(2)}`;
-                            } else {
-                                alert(data.error || "No se pudo eliminar.");
+                                const data = await res.json();
+
+                                if (res.ok) {
+                                    item.remove();
+                                    cargarActivos();
+                                } else {
+                                    alert(data.error || "No se pudo eliminar.");
+                                }
+                            } catch (err) {
+                                console.error("Error al eliminar:", err);
                             }
-                        } catch (err) {
-                            console.error("Error al eliminar:", err);
+                        });
+
+                        item.querySelector(".btn-sumar").addEventListener("click", async () => {
+                            const cantidadSpan = item.querySelector(".cantidad");
+                            let cantidad = parseInt(cantidadSpan.textContent) || 1;
+                            cantidad++;
+
+                            await actualizarCantidad(cantidad);
+                        });
+
+                        item.querySelector(".btn-restar").addEventListener("click", async () => {
+                            const cantidadSpan = item.querySelector(".cantidad");
+                            let cantidad = parseInt(cantidadSpan.textContent) || 1;
+                            cantidad--;
+
+                            if (cantidad < 1) {
+                                item.querySelector(".btn-eliminar").click();
+                                return;
+                            }
+
+                            await actualizarCantidad(cantidad);
+                        });
+
+                        async function actualizarCantidad(nuevaCantidad) {
+                            try {
+                                const productoId = item.getAttribute("data-id");
+                                const res = await fetch("/integrador2/carrito/cantidad", {
+                                    method: "PUT",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ usuarioId: userId, productoId, cantidad: nuevaCantidad })
+                                });
+
+                                const data = await res.json();
+
+                                if (res.ok) {
+                                    item.querySelector(".cantidad").textContent = nuevaCantidad;
+
+                                    const nuevoPrecioTotal = (precioFinal * nuevaCantidad).toFixed(2);
+                                    item.querySelector(".precio-total").textContent = nuevoPrecioTotal;
+
+                                    const precios = listaActivos.querySelectorAll(".precio-total");
+                                    let nuevoTotal = 0;
+                                    precios.forEach(el => {
+                                        const valor = parseFloat(el.textContent.replace("$", "").replace(",", ".")) || 0;
+                                        nuevoTotal += valor;
+                                    });
+                                    totalActivos.textContent = `$${nuevoTotal.toFixed(2)}`;
+                                } else {
+                                    alert(data.error || "No se pudo actualizar la cantidad.");
+                                }
+                            } catch (err) {
+                                console.error("Error al actualizar cantidad:", err);
+                            }
                         }
                     });
 
-
-                    // Asignar funcionalidad al botón "Sumar"
-                    item.querySelector(".btn-sumar").addEventListener("click", async () => {
-                        const cantidadSpan = item.querySelector(".cantidad");
-                        let cantidad = parseInt(cantidadSpan.textContent) || 1;
-                        cantidad++;
-
-                        await actualizarCantidad(cantidad);
-                    });
-
-                    // Asignar funcionalidad al botón "Restar"
-                    item.querySelector(".btn-restar").addEventListener("click", async () => {
-                        const cantidadSpan = item.querySelector(".cantidad");
-                        let cantidad = parseInt(cantidadSpan.textContent) || 1;
-                        cantidad--;
-
-                        if (cantidad < 1) {
-                            item.querySelector(".btn-eliminar").click(); // Borra si baja de 1
-                            return;
-                        }
-
-                        await actualizarCantidad(cantidad);
-                    });
-
-                    // Función para actualizar cantidad en backend y recalcular precios
-                    async function actualizarCantidad(nuevaCantidad) {
-                        try {
-                            const productoId = item.getAttribute("data-id");
-                            const res = await fetch("/integrador2/carrito/cantidad", {
-                                method: "PUT",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ usuarioId: userId, productoId, cantidad: nuevaCantidad })
-                            });
-
-                            const data = await res.json();
-
-                            if (res.ok) {
-                                item.querySelector(".cantidad").textContent = nuevaCantidad;
-
-                                const nuevoPrecioTotal = (precioFinal * nuevaCantidad).toFixed(2);
-                                item.querySelector(".precio-total").textContent = nuevoPrecioTotal;
-
-                                // Recalcular total general
-                                const precios = listaActivos.querySelectorAll(".precio-total");
-                                let nuevoTotal = 0;
-                                precios.forEach(el => {
-                                    const valor = parseFloat(el.textContent.replace("$", "").replace(",", ".")) || 0;
-                                    nuevoTotal += valor;
-                                });
-                                totalActivos.textContent = `$${nuevoTotal.toFixed(2)}`;
-                            } else {
-                                alert(data.error || "No se pudo actualizar la cantidad.");
-                            }
-                        } catch (err) {
-                            console.error("Error al actualizar cantidad:", err);
-                        }
-                    }
-
-
-
-                });
-
-            totalActivos.textContent = `$${total.toFixed(2)}`;
+                totalActivos.textContent = `$${total.toFixed(2)}`;
             } catch (error) {
-            console.error("Error al cargar el carrito:", error);
+                console.error("Error al cargar el carrito:", error);
             }
+        }
 
-
-
-            
+        modal.addEventListener("show.bs.modal", () => {
+            cargarActivos();
         });
 
         document.getElementById("btn-eliminar-seleccionados")?.addEventListener("click", async () => {
+            const userId = modal.getAttribute("data-user-id");
+            if (!userId) return;
+
+            if (!confirm("¿Estás seguro de que querés vaciar el carrito?")) return;
+
+            try {
+                const res = await fetch("/integrador2/carrito/vaciar", {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ usuarioId: userId })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    listaActivos.innerHTML = "";
+                    totalActivos.textContent = "$0.00";
+                } else {
+                    alert(data.error || "No se pudo vaciar el carrito.");
+                }
+            } catch (err) {
+                console.error("Error al vaciar el carrito:", err);
+            }
+        });
+
+        document.querySelector('#tab-activo')?.addEventListener("shown.bs.tab", () => {
+            cargarActivos();
+        });
+    });
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("modalCarrito");
+    const listaReservados = document.getElementById("lista-reservados");
+
+    if (!modal) return;
+
+    // Cargar productos reservados
+    async function cargarReservados() {
         const userId = modal.getAttribute("data-user-id");
         if (!userId) return;
 
-        if (!confirm("¿Estás seguro de que querés vaciar el carrito?")) return;
-
         try {
-            const res = await fetch("/integrador2/carrito/vaciar", {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ usuarioId: userId })
+        const res = await fetch(`/integrador2/carrito/${userId}`);
+        const data = await res.json();
+        const productos = data.productos || [];
+
+        listaReservados.innerHTML = "";
+
+        productos
+            .filter(p => p.estado === 2)
+            .forEach(p => {
+            const precioFinal = p.descuento_original > 0
+                ? p.precio_original * (1 - p.descuento_original / 100)
+                : p.precio_original;
+
+            const imagen = p.imagen && p.imagen !== 'null'
+                ? `/integrador2/${p.imagen}`
+                : `/integrador2/img_productos/Imagen_no_disponible.svg.png`;
+
+            const item = document.createElement("div");
+            item.className = "list-group-item d-flex gap-3 py-3 align-items-center";
+            item.setAttribute("data-id", p.idProducto);
+            item.innerHTML = `
+                <img src="/${p.imagen}" alt="${p.nombre}" class="rounded flex-shrink-0" style="width: 48px; height: 48px; object-fit: contain;">
+                <div class="flex-fill">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">${p.nombre}</h6>
+                    <span class="fw-bold text-success">$${precioFinal.toFixed(2)}</span>
+                </div>
+                </div>
+                <div class="btn-group ms-2">
+                <button class="btn btn-sm btn-outline-primary btn-reactivar" title="Volver a activos">🛒</button>
+                <button class="btn btn-sm btn-outline-danger btn-eliminar" title="Eliminar">🗑️</button>
+                </div>
+            `;
+
+            listaReservados.appendChild(item);
+
+            item.querySelector(".btn-reactivar").addEventListener("click", async () => {
+                const productoId = item.getAttribute("data-id");
+                try {
+                const res = await fetch("/integrador2/carrito", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ productoId, cantidad: 1 })
+                });
+
+                if (res.ok) {
+                    item.remove();
+                } else {
+                    alert("No se pudo reactivar el producto.");
+                }
+                } catch (err) {
+                console.error("Error al reactivar:", err);
+                }
             });
 
-            const data = await res.json();
+            item.querySelector(".btn-eliminar").addEventListener("click", async () => {
+                const productoId = item.getAttribute("data-id");
+                try {
+                const res = await fetch("/integrador2/carrito", {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ usuarioId: modal.getAttribute("data-user-id"), productoId })
+                });
 
-            if (res.ok) {
-            listaActivos.innerHTML = "";
-            totalActivos.textContent = "$0.00";
-            } else {
-            alert(data.error || "No se pudo vaciar el carrito.");
-            }
-        } catch (err) {
-            console.error("Error al vaciar el carrito:", err);
+                if (res.ok) {
+                    item.remove();
+                } else {
+                    alert("No se pudo eliminar el producto.");
+                }
+                } catch (err) {
+                console.error("Error al eliminar:", err);
+                }
+            });
+            });
+
+        } catch (error) {
+        console.error("Error al cargar productos reservados:", error);
         }
-        });
+    }
 
+    // Escuchar cambio de tab
+    document.querySelector('#tab-reserva')?.addEventListener("shown.bs.tab", () => {
+        cargarReservados();
+    });
 
+    // Cargar reservados al abrir modal (por si es el tab por defecto)
+    modal.addEventListener("show.bs.modal", cargarReservados);
     });
 </script>
+
 
