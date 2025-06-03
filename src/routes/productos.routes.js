@@ -1,7 +1,6 @@
 // src/routes/productos.routes.js
 import express from 'express';
-import { obtenerProductosConDescuento } from '../services/productoService.js';
-import { validaImagenProductos } from '../utils/funciones.js';
+import { validaImagenProductos, obtenerProductosConDescuento } from '../utils/funciones.js';
 import Carrito from '../models/carrito.js';
 
 const router = express.Router();
