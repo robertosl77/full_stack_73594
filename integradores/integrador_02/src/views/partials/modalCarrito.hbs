@@ -163,6 +163,7 @@
                                 if (res.ok) {
                                     item.remove();
                                     cargarActivos();
+                                    actualizarIconoCarrito();
                                 } else {
                                     alert(data.error || "No se pudo eliminar.");
                                 }
@@ -212,16 +213,11 @@
                                     const precios = listaActivos.querySelectorAll(".precio-total");
                                     let nuevoTotal = 0;
                                     precios.forEach(el => {
-                                        console.log(el.textContent);
-                                        //const valor = parseFloat(el.textContent.replace("$", "").replace(",", ".")) || 0;
-                                        const valor = parseFloat(el.textContent.replace(/\./g, '').replace(',', '.'))  // → 25177.35
-
+                                        const valor = parseFloat(el.textContent.replace(/\./g, '').replace(',', '.'));
                                         nuevoTotal += valor;
                                     });
 
                                     totalActivos.textContent = `$${nuevoTotal.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-
                                 } else {
                                     alert(data.error || "No se pudo actualizar la cantidad.");
                                 }
@@ -232,7 +228,6 @@
                     });
 
                 totalActivos.textContent = `$${total.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
             } catch (error) {
                 console.error("Error al cargar el carrito:", error);
             }
@@ -240,6 +235,10 @@
 
         modal.addEventListener("show.bs.modal", () => {
             cargarActivos();
+        });
+
+        modal.addEventListener("hide.bs.modal", () => {
+            actualizarIconoCarrito();
         });
 
         document.getElementById("btn-eliminar-seleccionados")?.addEventListener("click", async () => {
@@ -260,6 +259,7 @@
                 if (res.ok) {
                     listaActivos.innerHTML = "";
                     totalActivos.textContent = "$0.00";
+                    actualizarIconoCarrito();
                 } else {
                     alert(data.error || "No se pudo vaciar el carrito.");
                 }
@@ -271,6 +271,21 @@
         document.querySelector('#tab-activo')?.addEventListener("shown.bs.tab", () => {
             cargarActivos();
         });
+
+        async function actualizarIconoCarrito() {
+            try {
+                const res = await fetch("/integrador2/carrito/cantidad");
+                const data = await res.json();
+                const cantidad = data.cantidad || 0;
+                const cartWrapper = document.querySelector("#cart-wrapper");
+                const cartCount = document.querySelector("#cart-count");
+
+                if (cartWrapper) cartWrapper.style.display = cantidad > 0 ? "inline-block" : "none";
+                if (cartCount) cartCount.textContent = cantidad;
+            } catch (err) {
+                console.error("Error al actualizar ícono del carrito:", err);
+            }
+        }
     });
 </script>
 
