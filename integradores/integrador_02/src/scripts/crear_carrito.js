@@ -7,7 +7,7 @@ const carritoSchema = new mongoose.Schema({
   productos: [{
     producto: { type: mongoose.Schema.Types.ObjectId, ref: 'productos', required: true },
     cantidad: { type: Number, required: true },
-    estado: { type: Number, enum: [0, 1, 2], default: 1 },
+    estado: { type: Number, enum: [0, 1, 2, 3], default: 1 },
     fecha_agregado: { type: Date, default: Date.now },
     fecha_eliminado: { type: Date }
   }]

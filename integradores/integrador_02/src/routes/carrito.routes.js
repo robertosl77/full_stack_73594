@@ -2,7 +2,7 @@ import express from 'express';
 import Carrito from '../models/carrito.js';
 import Producto from '../models/producto.js';
 import Usuario from '../models/usuario.js';
-import { validaImagenProductos } from '../utils/funciones.js';
+import { validaImagenProductos, tiempoTranscurrido } from '../utils/funciones.js';
 
 const router = express.Router();
 
@@ -288,6 +288,8 @@ router.put('/carrito/comprar', async (req, res) => {
         continue;
       }
 
+      console.log(pCarrito.cantidad);
+      console.log(producto.stock);
       if (pCarrito.cantidad > producto.stock) {
         respuesta.push({
           productoId: pFront.productoId,
@@ -406,7 +408,8 @@ router.get('/carrito/:idUsuario', async (req, res) => {
         descuento_original: prod?.descuento || 0,
         estado: p.estado,
         fecha_agregado: p.fecha_agregado,
-        fecha_eliminado: p.fecha_eliminado
+        fecha_eliminado: p.fecha_eliminado,
+        fecha_compra: tiempoTranscurrido(p.fecha_eliminado)
       };
     });
 

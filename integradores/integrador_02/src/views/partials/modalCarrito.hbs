@@ -53,8 +53,10 @@
 
             {{!-- Panel de Comprados --}}
             <div class="tab-pane fade" id="contenido-comprado" role="tabpanel">
-              <p class="text-muted">Historial de productos comprados.</p>
-              <div id="lista-comprados" class="list-group text-start"></div>
+                <div id="lista-comprados" class="list-group text-start">
+                    <!-- Los productos reservados se cargan por JS -->
+                </div>
+                <p class="text-muted mt-3">Historial de productos comprados.</p>
             </div>
           </div>
         </div>
@@ -63,11 +65,13 @@
   </div>
 </div>
 
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const modal = document.getElementById("modalCarrito");
         const listaActivos = document.getElementById("lista-activos");
         const totalActivos = document.getElementById("total-activos");
+        const listaReservados = document.getElementById("lista-reservados");
 
         if (!modal) return;
 
@@ -104,18 +108,23 @@
                             <img src="/${p.imagen}" alt="${p.nombre}" class="rounded flex-shrink-0" style="width: 48px; height: 48px; object-fit: contain;">
 
                             <div class="flex-fill">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h6 class="mb-0">${p.nombre}</h6>
-                                <span class="fw-bold text-success">$${precioFinal.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                            </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">${p.nombre}</h6>
+                                    <span class="fw-bold text-success">$${precioFinal.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                </div>
 
-                            <div class="d-flex align-items-center mt-2">
-                                <button class="btn btn-sm btn-outline-secondary btn-restar me-2">−</button>
-                                <span class="cantidad fw-bold">${p.cantidad_solicitada}</span>
-                                <button class="btn btn-sm btn-outline-secondary btn-sumar ms-2">+</button>
+                                <div class="d-flex align-items-center mt-2">
+                                    <button class="btn btn-sm btn-outline-secondary btn-restar me-2">−</button>
+                                    <span class="cantidad fw-bold">${p.cantidad_solicitada}</span>
+                                    <button class="btn btn-sm btn-outline-secondary btn-sumar ms-2">+</button>
 
-                                <span class="ms-auto fw-bold">Total: $<span class="precio-total">${parseFloat(precioTotal).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></span>
-                            </div>
+                                    <span class="ms-auto fw-bold">Total: $<span class="precio-total">${parseFloat(precioTotal).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></span>
+                                </div>
+
+                                <div style="display: none;">
+                                    <small class="precio_original">Precio Original: ${p.precio_original}</small>
+                                    <small class="descuento_original">Descuento Original: ${p.descuento_original}</small>
+                                </div>                                
                             </div>
 
                             <div class="btn-group ms-2">
@@ -162,7 +171,8 @@
 
                                 if (res.ok) {
                                     item.remove();
-                                    cargarActivos();
+                                    await cargarActivos();
+                                    await cargarComprados();
                                     actualizarIconoCarrito();
                                 } else {
                                     alert(data.error || "No se pudo eliminar.");
@@ -233,8 +243,146 @@
             }
         }
 
+        // Cargar productos reservados
+        async function cargarReservados() {
+            const userId = modal.getAttribute("data-user-id");
+            if (!userId) return;
+
+            try {
+            const res = await fetch(`/integrador2/carrito/${userId}`);
+            const data = await res.json();
+            const productos = data.productos || [];
+
+            listaReservados.innerHTML = "";
+
+            productos
+                .filter(p => p.estado === 2)
+                .forEach(p => {
+                const precioFinal = p.descuento_original > 0
+                    ? p.precio_original * (1 - p.descuento_original / 100)
+                    : p.precio_original;
+
+                const imagen = p.imagen && p.imagen !== 'null'
+                    ? `/integrador2/${p.imagen}`
+                    : `/integrador2/img_productos/Imagen_no_disponible.svg.png`;
+
+                const item = document.createElement("div");
+                item.className = "list-group-item d-flex gap-3 py-3 align-items-center";
+                item.setAttribute("data-id", p.idProducto);
+                item.innerHTML = `
+                    <img src="/${p.imagen}" alt="${p.nombre}" class="rounded flex-shrink-0" style="width: 48px; height: 48px; object-fit: contain;">
+                    <div class="flex-fill">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">${p.nombre}</h6>
+                        <span class="fw-bold text-success">$${precioFinal.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </div>
+                    </div>
+                    <div class="btn-group ms-2">
+                    <button class="btn btn-sm btn-outline-primary btn-reactivar" title="Volver a activos">🛒</button>
+                    <button class="btn btn-sm btn-outline-danger btn-eliminar" title="Eliminar">🗑️</button>
+                    </div>
+                `;
+
+                listaReservados.appendChild(item);
+
+                item.querySelector(".btn-reactivar").addEventListener("click", async () => {
+                    const productoId = item.getAttribute("data-id");
+                    try {
+                    const res = await fetch("/integrador2/carrito", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ productoId, cantidad: 1 })
+                    });
+
+                    if (res.ok) {
+                        item.remove();
+                    } else {
+                        alert("No se pudo reactivar el producto.");
+                    }
+                    } catch (err) {
+                    console.error("Error al reactivar:", err);
+                    }
+                });
+
+                item.querySelector(".btn-eliminar").addEventListener("click", async () => {
+                    const productoId = item.getAttribute("data-id");
+                    try {
+                    const res = await fetch("/integrador2/carrito", {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ usuarioId: modal.getAttribute("data-user-id"), productoId })
+                    });
+
+                    if (res.ok) {
+                        item.remove();
+                    } else {
+                        alert("No se pudo eliminar el producto.");
+                    }
+                    } catch (err) {
+                    console.error("Error al eliminar:", err);
+                    }
+                });
+                });
+
+            } catch (error) {
+            console.error("Error al cargar productos reservados:", error);
+            }
+        }
+
+        // Cargar comprados
+        async function cargarComprados() {
+            const userId = modal.getAttribute("data-user-id");
+            if (!userId) return;
+
+            const listaComprados = document.getElementById("lista-comprados");
+            listaComprados.innerHTML = "";
+
+            try {
+                const res = await fetch(`/integrador2/carrito/${userId}`);
+                const data = await res.json();
+                const productos = data.productos || [];
+
+                productos
+                    .filter(p => p.estado === 3)
+                    .forEach(p => {
+                        const precioFinal = p.descuento_original > 0
+                            ? p.precio_original * (1 - p.descuento_original / 100)
+                            : p.precio_original;
+
+                        const totalPagado = precioFinal * p.cantidad_solicitada;
+
+                        const imagen = p.imagen && p.imagen !== 'null'
+                            ? `/integrador2/${p.imagen}`
+                            : `/integrador2/img_productos/Imagen_no_disponible.svg.png`;
+
+                        const item = document.createElement("div");
+                        item.className = "list-group-item d-flex gap-3 py-3 align-items-center";
+                        item.innerHTML = `
+                            <img src="/${p.imagen}" alt="${p.nombre}" class="rounded flex-shrink-0" style="width: 48px; height: 48px; object-fit: contain;">
+                            <div class="flex-fill">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-0">${p.nombre}</h6>
+                                    <span class="fw-bold text-success">$${precioFinal.toLocaleString("es-AR", { minimumFractionDigits: 2 })}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mt-1">
+                                    <small>Cantidad: ${p.cantidad_solicitada}</small>
+                                    <small>Total pagado: <strong>$${totalPagado.toLocaleString("es-AR", { minimumFractionDigits: 2 })}</strong> (hace ${p.fecha_compra})</small>
+                                </div>
+                            </div>
+                        `;
+
+                        listaComprados.appendChild(item);
+                    });
+            } catch (err) {
+                console.error("Error al cargar productos comprados:", err);
+            }
+        }
+
+
         modal.addEventListener("show.bs.modal", () => {
             cargarActivos();
+            cargarReservados();
+            cargarComprados();
         });
 
         modal.addEventListener("hide.bs.modal", () => {
@@ -268,8 +416,71 @@
             }
         });
 
+        document.getElementById("btn-confirmar-compra")?.addEventListener("click", async () => {
+            const userId = modal.getAttribute("data-user-id");
+            if (!userId) return;
+
+            if (!confirm("¿Deseás confirmar la compra de los productos en el carrito?")) return;
+
+            try {
+                const productosActivos = [...listaActivos.querySelectorAll(".list-group-item")].map(item => {
+                const productoId = item.getAttribute("data-id");
+                const cantidad = parseInt(item.querySelector(".cantidad")?.textContent || "1");
+                const precio_original = parseInt(
+                    item.querySelector(".precio_original")?.textContent.replace(/[^\d]/g, "") || "0"
+                );
+                const precio = parseFloat(
+                    item.querySelector(".text-success")?.textContent?.replace(/\$/g, '').replace(/\./g, '').replace(',', '.')
+                );
+                const descuento = parseInt(item.querySelector(".text-success")?.getAttribute("data-descuento")) || 0;
+                const descuento_original = parseInt(
+                    item.querySelector(".descuento_original")?.textContent.replace(/[^\d]/g, "") || "0"
+                );
+
+                return {
+                    productoId,
+                    cantidad,
+                    precio: precio_original,
+                    descuento: descuento_original
+                };
+                });
+
+                const res = await fetch("/integrador2/carrito/comprar", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ usuarioId: userId, productos: productosActivos })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    await cargarActivos();
+                    await cargarComprados();
+                    actualizarIconoCarrito();
+                } else {
+                if (data.accion_sugerida === "refresh") {
+                    alert(data.mensaje || "Hubo una inconsistencia, actualizá la página.");
+                    location.reload();
+                } else {
+                    alert(data.error || "No se pudo completar la compra.");
+                    console.warn(data);
+                }
+                }
+            } catch (err) {
+                console.error("Error al confirmar compra:", err);
+            }
+        });
+
         document.querySelector('#tab-activo')?.addEventListener("shown.bs.tab", () => {
             cargarActivos();
+        });
+
+        document.querySelector('#tab-compra')?.addEventListener("shown.bs.tab", () => {
+            cargarComprados();
+        });
+
+        document.querySelector('#tab-reserva')?.addEventListener("shown.bs.tab", () => {
+            cargarReservados();
         });
 
         async function actualizarIconoCarrito() {
@@ -286,121 +497,25 @@
                 console.error("Error al actualizar ícono del carrito:", err);
             }
         }
+
+
     });
+
+
 </script>
 
 
+
+
+
+{{!-- Controla el cierre del Modal --}}
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-    const modal = document.getElementById("modalCarrito");
-    const listaReservados = document.getElementById("lista-reservados");
-
-    if (!modal) return;
-
-    // Cargar productos reservados
-    async function cargarReservados() {
-        const userId = modal.getAttribute("data-user-id");
-        if (!userId) return;
-
-        try {
-        const res = await fetch(`/integrador2/carrito/${userId}`);
-        const data = await res.json();
-        const productos = data.productos || [];
-
-        listaReservados.innerHTML = "";
-
-        productos
-            .filter(p => p.estado === 2)
-            .forEach(p => {
-            const precioFinal = p.descuento_original > 0
-                ? p.precio_original * (1 - p.descuento_original / 100)
-                : p.precio_original;
-
-            const imagen = p.imagen && p.imagen !== 'null'
-                ? `/integrador2/${p.imagen}`
-                : `/integrador2/img_productos/Imagen_no_disponible.svg.png`;
-
-            const item = document.createElement("div");
-            item.className = "list-group-item d-flex gap-3 py-3 align-items-center";
-            item.setAttribute("data-id", p.idProducto);
-            item.innerHTML = `
-                <img src="/${p.imagen}" alt="${p.nombre}" class="rounded flex-shrink-0" style="width: 48px; height: 48px; object-fit: contain;">
-                <div class="flex-fill">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0">${p.nombre}</h6>
-                    <span class="fw-bold text-success">$${precioFinal.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                </div>
-                </div>
-                <div class="btn-group ms-2">
-                <button class="btn btn-sm btn-outline-primary btn-reactivar" title="Volver a activos">🛒</button>
-                <button class="btn btn-sm btn-outline-danger btn-eliminar" title="Eliminar">🗑️</button>
-                </div>
-            `;
-
-            listaReservados.appendChild(item);
-
-            item.querySelector(".btn-reactivar").addEventListener("click", async () => {
-                const productoId = item.getAttribute("data-id");
-                try {
-                const res = await fetch("/integrador2/carrito", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ productoId, cantidad: 1 })
-                });
-
-                if (res.ok) {
-                    item.remove();
-                } else {
-                    alert("No se pudo reactivar el producto.");
-                }
-                } catch (err) {
-                console.error("Error al reactivar:", err);
-                }
-            });
-
-            item.querySelector(".btn-eliminar").addEventListener("click", async () => {
-                const productoId = item.getAttribute("data-id");
-                try {
-                const res = await fetch("/integrador2/carrito", {
-                    method: "DELETE",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ usuarioId: modal.getAttribute("data-user-id"), productoId })
-                });
-
-                if (res.ok) {
-                    item.remove();
-                } else {
-                    alert("No se pudo eliminar el producto.");
-                }
-                } catch (err) {
-                console.error("Error al eliminar:", err);
-                }
-            });
-            });
-
-        } catch (error) {
-        console.error("Error al cargar productos reservados:", error);
-        }
-    }
-
-    // Escuchar cambio de tab
-    document.querySelector('#tab-reserva')?.addEventListener("shown.bs.tab", () => {
-        cargarReservados();
-    });
-
-    // Cargar reservados al abrir modal (por si es el tab por defecto)
-    modal.addEventListener("show.bs.modal", cargarReservados);
-    });
-</script>
-
-
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-    const modal = document.getElementById("modalCarrito");
-    modal?.addEventListener("hide.bs.modal", () => {
-        if (document.activeElement) {
-        document.activeElement.blur();
-        }
-    });
+        const modal = document.getElementById("modalCarrito");
+        modal?.addEventListener("hide.bs.modal", () => {
+            if (document.activeElement) {
+            document.activeElement.blur();
+            }
+        });
     });
 </script>
