@@ -1,6 +1,7 @@
 // src/utils/funciones.js
 import fs from 'fs';
 import path from 'path';
+import Producto from '../models/producto.js';
 
 export function tiempoTranscurrido(fecha) {
     if (!fecha) return '';
@@ -25,8 +26,6 @@ export function tiempoTranscurrido(fecha) {
     return `${diffAnios} años`;
 }
 
-// public/js/funciones.js
-
 export function imagenNoDisponible(img) {
   img.style.display = 'none';
 
@@ -39,7 +38,6 @@ export function imagenNoDisponible(img) {
     img.parentElement.appendChild(aviso);
   }
 }
-
 
 /**
  * Asegura que cada producto tenga una imagen válida.
@@ -59,5 +57,25 @@ export function validaImagenProductos(productos) {
     }
 
     return producto;
+  });
+}
+
+export async function obtenerProductosConDescuento() {
+  const productos = await Producto.find();
+  return productos.map(p => {
+      const precioDescuentoValor = p.descuento > 0 
+          ? p.precio_original * (1 - p.descuento / 100) 
+          : p.precio_original;
+
+      const formatoPrecio = valor => new Intl.NumberFormat('es-AR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+      }).format(valor);
+
+      return {
+          ...p.toObject(),
+          precioDescuento: formatoPrecio(precioDescuentoValor),
+          precioOriginalFormateado: formatoPrecio(p.precio_original)
+      };
   });
 }
