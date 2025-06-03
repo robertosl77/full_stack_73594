@@ -372,3 +372,13 @@
 </script>
 
 
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("modalCarrito");
+    modal?.addEventListener("hide.bs.modal", () => {
+        if (document.activeElement) {
+        document.activeElement.blur();
+        }
+    });
+    });
+</script>
