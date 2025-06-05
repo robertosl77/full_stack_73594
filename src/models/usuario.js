@@ -6,7 +6,12 @@ const usuarioSchema = new mongoose.Schema({
     nombre: { type: String },
     apellido: { type: String },
     email: { type: String },
-    rol: { type: String, enum: ['ROLE_ADMINISTRADOR', 'ROLE_CLIENTE', 'ROLE_CONSULTA'], default: 'ROLE_CLIENTE' }
+    rol: { type: String, enum: ['ROLE_ADMINISTRADOR', 'ROLE_CLIENTE', 'ROLE_CONSULTA', 'ROLE_VISTA'], default: 'ROLE_CLIENTE' },
+    rrss: {
+        proveedor: { type: String },
+        idSocial: { type: String },
+        email: { type: String }
+    }
 });
 
 // 👇 importante: tercer parámetro para que respete tu colección 'usuarios'
