@@ -13,7 +13,7 @@ const usuarioSchema = new mongoose.Schema({
     nombre: String,
     apellido: String,
     email: { type: String, unique: true },
-    rol: { type: String, enum: ['ROLE_ADMINISTRADOR', 'ROLE_CONSULTA'], default: 'ROLE_CONSULTA' }
+    rol: { type: String, enum: ['ROLE_ADMINISTRADOR', 'ROLE_CLIENTE'], default: 'ROLE_CLIENTE' }
 });
 
 const Usuario = mongoose.model('Usuario', usuarioSchema, 'usuarios');
@@ -35,7 +35,7 @@ async function crearUsuario() {
         nombre: 'Marcos',
         apellido: 'Gonzalez Benavides',
         email: 'mgbenavides@ejemplo.com',
-        rol: 'ROLE_CONSULTA'
+        rol: 'ROLE_CLIENTE'
     };
 
     try {

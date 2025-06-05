@@ -6,7 +6,7 @@ const usuarioSchema = new mongoose.Schema({
     nombre: { type: String },
     apellido: { type: String },
     email: { type: String },
-    rol: { type: String, enum: ['ROLE_ADMINISTRADOR', 'ROLE_CONSULTA'], default: 'ROLE_CONSULTA' }
+    rol: { type: String, enum: ['ROLE_ADMINISTRADOR', 'ROLE_CLIENTE', 'ROLE_CONSULTA'], default: 'ROLE_CLIENTE' }
 });
 
 // 👇 importante: tercer parámetro para que respete tu colección 'usuarios'

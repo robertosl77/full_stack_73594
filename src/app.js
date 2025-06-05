@@ -12,18 +12,42 @@ import abmRoutes from './routes/abm.routes.js';
 import altaRoutes from './routes/alta.routes.js';
 import carritoRoutes from './routes/carrito.routes.js';
 import registerHandlebarsHelpers from './helpers/handlebarsHelpers.js';
+import { auth } from 'express-openid-connect';
 
 dotenv.config();
 
 const app = express();
 const BASEDIR = process.env.BASEDIR;
 
+// Configuracion de Aut0
+const configAuth0 = {
+    authRequired: false,
+    auth0Logout: true,
+    secret: process.env.AUTH0_SECRET,
+    baseURL: process.env.AUTH0_BASE_URL,
+    clientID: process.env.AUTH0_CLIENT_ID,
+    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
+    clientSecret: process.env.AUTH0_CLIENT_SECRET,
+    routes: {
+        login: `/${BASEDIR}/auth0/login`,
+        logout: `/${BASEDIR}/auth0/logout`,
+        callback: `/${BASEDIR}/auth0/callback`
+    },
+    authorizationParams: {
+        response_type: 'code',
+        scope: 'openid profile email'
+    }
+};
+
 // Middleware de Session
 app.use(session({
-    secret: 'tu_clave_secreta_segura',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false
 }));
+
+// Middleware Auth0
+app.use(auth(configAuth0));
 
 // Middleware para pasar basedir a todas las vistas
 app.use((req, res, next) => {
@@ -77,6 +101,13 @@ app.use(express.static('public'));
 
 app.post(`${BASEDIR}/info`, (req, res) => {
     res.render('info', { nombre, edad });
+});
+
+
+app.get(`${BASEDIR}/auth0`, (req, res) => {
+    res.send(req.oidc.isAuthenticated()
+      ? `Logueado como ${req.oidc.user.name}`
+      : 'No estás logueado con Auth0');
 });
 
 export default app;
