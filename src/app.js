@@ -35,7 +35,8 @@ const configAuth0 = {
     },
     authorizationParams: {
         response_type: 'code',
-        scope: 'openid profile email'
+        scope: 'openid profile email',
+        prompt: "login"
     }
 };
 

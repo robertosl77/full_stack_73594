@@ -28,11 +28,35 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get('/logout', (req, res) => {
-    req.session.destroy(() => {
-        res.redirect(`${res.locals.basedir}/login`);
-    });
-});
+router.get("/logout", (req, res) => {
+    console.log("=== LOGOUT SOLICITADO ===")
+    console.log("Sesión usuario:", req.session?.user ? "ACTIVA" : "INACTIVA")
+    console.log("Auth0 autenticado:", req.oidc?.isAuthenticated() ? "SÍ" : "NO")
+  
+    // Si hay sesión Auth0 activa, usar logout de Auth0
+    if (req.oidc && req.oidc.isAuthenticated()) {
+      console.log("🔑 EJECUTANDO LOGOUT AUTH0")
+      console.log("Usuario Auth0:", req.oidc.user?.email || req.oidc.user?.sub || "desconocido")
+  
+      req.session.destroy(() => {
+        console.log("✅ Sesión local destruida, redirigiendo a Auth0 logout")
+        res.oidc.logout({
+          returnTo: `${res.locals.basedir}/login`,
+        })
+      })
+    } else {
+      // Solo sesión local
+      console.log("🔑 EJECUTANDO LOGOUT LOCAL")
+      if (req.session?.user) {
+        console.log("Usuario local:", req.session.user.email || req.session.user.usuario || "desconocido")
+      }
+  
+      req.session.destroy(() => {
+        console.log("✅ Sesión local destruida, redirigiendo a login")
+        res.redirect(`${res.locals.basedir}/login`)
+      })
+    }
+})
 
 // Auth0
 router.get('/auth0/login', (req, res) => {
