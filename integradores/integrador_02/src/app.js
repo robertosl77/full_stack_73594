@@ -20,7 +20,7 @@ const BASEDIR = process.env.BASEDIR;
 
 // Middleware de Session
 app.use(session({
-    secret: 'tu_clave_secreta_segura',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false
 }));
@@ -78,5 +78,6 @@ app.use(express.static('public'));
 app.post(`${BASEDIR}/info`, (req, res) => {
     res.render('info', { nombre, edad });
 });
+
 
 export default app;
