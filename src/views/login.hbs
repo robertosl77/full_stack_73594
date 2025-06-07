@@ -221,6 +221,12 @@
           </button>
         </div>
 
+        <div class="mt-2">
+          <button type="button" class="btn btn-secondary w-100" id="demoLoginBtn">
+            Ingresar como usuario invitado
+          </button>
+        </div>        
+
         <p class="mt-5 mb-3 text-body-secondary">&copy; 2025 - Integrador2 - Desarrollado por robertosl77@gmail.com</p>
       </form>
     </main>
@@ -275,6 +281,32 @@
         } catch (error) {
           console.error("Error al iniciar sesión con Google:", error);
           alert("Falló el login con Google.");
+        }
+      });
+
+    </script>
+
+    <script type="module">
+      document.getElementById("demoLoginBtn").addEventListener("click", async () => {
+        const datos = {
+          proveedor: "demo",
+          idSocial: "demo_user",
+          email: "invitado@demo.com",
+          nombre: "Invitado",
+          apellido: "Demo"
+        };
+
+        const response = await fetch("{{basedir}}/loginFirebase", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(datos)
+        });
+
+        const resData = await response.json();
+        if (resData.success) {
+          window.location.href = resData.redirect;
+        } else {
+          alert("Falló el login como invitado: " + resData.error);
         }
       });
 
