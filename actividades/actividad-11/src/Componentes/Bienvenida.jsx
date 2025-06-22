@@ -25,7 +25,8 @@ function Bienvenida() {
             if (edad < 18) {
                 setMensaje(`Hola ${nombre}, eres muy joven para usar esta aplicación`);
             } else {
-                setMensaje(`Bienvenido ${nombre}, gracias por usar nuestra aplicación`);
+                // setMensaje(`Bienvenido ${nombre}, gracias por usar nuestra aplicación`);
+                setMensaje(`Bienvenido ${nombre}, sigues siendo joven aunque seas mayor de edad!!`);
             }
 
             setMostrarError(false);
