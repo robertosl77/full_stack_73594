@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 function Bienvenida() {
     const [nombre, setNombre] = useState("");
-    const [edad, setEdad] = useState("");
+    const [edad, setEdad] = useState(0);
     const [mensaje, setMensaje] = useState("");
     const [mostrarError, setMostrarError] = useState(false);
     const [mostrarMensaje, setMostrarMensaje] = useState(false);
@@ -14,7 +14,7 @@ function Bienvenida() {
     }
     const handleEdadChange = (e) => {
         // Solo permitir números
-        const value = e.target.value.replace(/\D/, "");
+        const value = e.target.value.replace(/\D/g, "");
         setEdad(value);
         setMostrarMensaje(false);
         setMostrarError(false); 
@@ -22,7 +22,12 @@ function Bienvenida() {
 
     const handleMensaje = (nombre, edad) => {
         if (nombre && edad) {
-            setMensaje(`Hola ${nombre}, tienes ${edad} años.`);
+            if (edad < 18) {
+                setMensaje(`Hola ${nombre}, eres muy joven para usar esta aplicación`);
+            } else {
+                setMensaje(`Bienvenido ${nombre}, gracias por usar nuestra aplicación`);
+            }
+
             setMostrarError(false);
             setMostrarMensaje(true);
         } else {
@@ -33,12 +38,13 @@ function Bienvenida() {
     }
 
     return (
-        <div className="container">
+        <div className="container mt-5 p-4 bg-light rounded shadow-sm" style={{ maxWidth: '600px' }}>
+            {/* Cabecera */}
             <div>
-                <h1 className="text-center">Bienvenido</h1>
+                <h1 className="text-center">Actividad #11</h1>
                 <p className="mb-5">Por favor, ingresa tu nombre y edad:</p> 
             </div>
-
+            {/* Formulario */}
             <div className="row g-3 align-items-center ms-5 me-5">
 
                 <div className="mb-3 row">
@@ -70,9 +76,9 @@ function Bienvenida() {
                         <input 
                             type="range" 
                             className="form-range" 
-                            id="inputEdad"
                             min={0}
                             max={120}
+                            value={edad}
                             onChange={handleEdadChange}
                         />              
                     </div>
@@ -81,11 +87,14 @@ function Bienvenida() {
                 <button 
                     type="button"
                     title="Enviar"
+                    className="btn btn-primary"
                     onClick={() => { handleMensaje(nombre, edad) }}
                 >
                     Enviar Mensaje
                 </button>
-
+            </div>
+            {/* Mensajes */}
+            <div className="row g-3 align-items-center ms-5 me-5 mt-5">
                 {mostrarError && (
                 <div className="alert alert-warning d-flex justify-content-between align-items-center" role="alert">
                     <div>{mensaje}</div>
@@ -108,8 +117,7 @@ function Bienvenida() {
                         onClick={() => setMostrarMensaje(false)}
                     />
                 </div>
-                )}
-
+                )}                
             </div>
         </div>
     );
