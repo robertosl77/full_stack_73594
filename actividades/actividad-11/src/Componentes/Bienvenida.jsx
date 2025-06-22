@@ -4,15 +4,33 @@ function Bienvenida() {
     const [nombre, setNombre] = useState("");
     const [edad, setEdad] = useState("");
     const [mensaje, setMensaje] = useState("");
+    const [mostrarError, setMostrarError] = useState(false);
+    const [mostrarMensaje, setMostrarMensaje] = useState(false);
 
     const handleNombreChange = (e) => {
         setNombre(e.target.value);
+        setMostrarMensaje(false);
+        setMostrarError(false); 
     }
     const handleEdadChange = (e) => {
         // Solo permitir números
         const value = e.target.value.replace(/\D/, "");
         setEdad(value);
+        setMostrarMensaje(false);
+        setMostrarError(false); 
     };
+
+    const handleMensaje = (nombre, edad) => {
+        if (nombre && edad) {
+            setMensaje(`Hola ${nombre}, tienes ${edad} años.`);
+            setMostrarError(false);
+            setMostrarMensaje(true);
+        } else {
+            setMensaje("Por favor, completa ambos campos.");
+            setMostrarError(true);
+            setMostrarMensaje(false);
+        }        
+    }
 
     return (
         <div className="container">
@@ -63,21 +81,35 @@ function Bienvenida() {
                 <button 
                     type="button"
                     title="Enviar"
-                    onClick={() => {
-                        if (nombre && edad) {
-                            setMensaje(`Hola ${nombre}, tienes ${edad} años.`);
-                        } else {
-                            setMensaje("Por favor, completa ambos campos.");
-                        }
-                    }}
-                    
+                    onClick={() => { handleMensaje(nombre, edad) }}
                 >
                     Enviar Mensaje
                 </button>
 
-                <div>
-                    {mensaje && <p>{mensaje}</p>}
-                </div>            
+                {mostrarError && (
+                <div className="alert alert-warning d-flex justify-content-between align-items-center" role="alert">
+                    <div>{mensaje}</div>
+                    <button 
+                        type="button" 
+                        className="btn-close" 
+                        aria-label="Close"
+                        onClick={() => setMostrarError(false)}
+                    />
+                </div>
+                )}
+
+                {mostrarMensaje && (
+                <div className="alert alert-info d-flex justify-content-between align-items-center" role="alert">
+                    <div>{mensaje}</div>
+                    <button 
+                        type="button" 
+                        className="btn-close" 
+                        aria-label="Close"
+                        onClick={() => setMostrarMensaje(false)}
+                    />
+                </div>
+                )}
+
             </div>
         </div>
     );
