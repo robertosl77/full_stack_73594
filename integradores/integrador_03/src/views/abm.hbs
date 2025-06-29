@@ -1,0 +1,110 @@
+{{!-- src/views/abm.hbs --}}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Gestión de Productos</h2>
+
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Imagen</th>
+                <th>Nombre</th>
+                <th>Bodega</th>
+                <th>Tipo</th>
+                <th>Precio</th>
+                <th>Descuento</th>
+                <th>Stock</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each productos}}
+            <tr class="fila-producto" data-producto-id="{{_id}}" 
+                data-nombre="{{nombre}}" 
+                data-bodega="{{bodega}}" 
+                data-tipo="{{tipo}}" 
+                data-imagen="{{imagen}}" 
+                data-precio="{{precio_original}}" 
+                data-descuento="{{descuento}}" 
+                data-stock="{{stock}}" 
+                data-estado="{{estado}}">
+                <td><img src="/{{imagen}}" alt="imagen" style="height: 50px;"></td>
+                {{!-- <td><img src="/{{imagen}}" alt="imagen" style="height: 50px;" onerror="this.onerror=null; this.src='/img_productos/Imagen_no_disponible.svg.png';"></td> --}}
+                <td>{{nombre}}</td>
+                <td>{{bodega}}</td>
+                <td>{{tipo}}</td>
+                <td>${{precio_original}}</td>
+                <td>{{descuento}}%</td>
+                <td>{{stock}}</td>
+                <td>{{#if estado}}Activo{{else}}Desactivo{{/if}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+{{!-- 👉 Offcanvas para edición --}}
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasProducto" aria-labelledby="offcanvasProductoLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasProductoLabel">Editar Producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form id="formEditarProducto">
+            <input type="hidden" name="productoId" id="productoId">
+
+            <div class="mb-3 text-center">
+            <img id="productoImagen" src="" alt="imagen actual" style="max-height: 120px;">
+            {{!-- <img id="productoImagen" src="" onerror="imagenNoDisponible(this)" style="max-height: 120px;"> --}}
+            </div>
+
+            <div class="mb-3">
+            <label class="form-label">Imagen del producto</label>
+            <input type="file" class="form-control" id="nuevaImagen" name="nuevaImagen" accept="image/*">
+            <div id="imagenErrorABM" class="alert alert-danger mt-2" style="display: none;">
+                Solo se permiten archivos de imagen.
+            </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="productoNombre">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Bodega</label>
+                <input type="text" class="form-control" id="productoBodega" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tipo</label>
+                <input type="text" class="form-control" id="productoTipo" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Precio Original</label>
+                <input type="number" class="form-control" name="precio_original" id="productoPrecio">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Descuento (%)</label>
+                <input type="number" class="form-control" name="descuento" id="productoDescuento">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Stock</label>
+                <input type="number" class="form-control" name="stock" id="productoStock">
+            </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" name="estado" id="productoEstado">
+                <label class="form-check-label" for="productoEstado">Habilitado</label>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{!-- 👉 JS para manejar el click en las filas (lo hacemos después) --}}
+<script src="/js/abm.js"></script>

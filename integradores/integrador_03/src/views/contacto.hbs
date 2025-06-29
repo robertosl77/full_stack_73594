@@ -1,0 +1,54 @@
+{{!-- src/views/contacto.hbs --}}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow p-4">
+                <h2 class="text-center mb-4">Contacto</h2>
+
+                <form id="form-contacto" action="{{basedir}}/contacto" method="POST">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre:</label>
+                        <input type="text" class="form-control" name="nombre" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail:</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="comentario" class="form-label">Comentario:</label>
+                        <textarea class="form-control" name="comentario" rows="4" required></textarea>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-dark">Enviar</button>
+                    </div>
+
+                    {{!-- Si se envió correctamente --}}
+                    {{#if success}}
+                        <div class="alert alert-success mt-3" id="alert-success">{{success}}</div>
+                    {{/if}}
+
+                    {{!-- Si hubo error --}}
+                    {{#if error}}
+                        <div class="alert alert-danger mt-3" id="alert-error">{{error}}</div>
+                    {{/if}}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="height: 220px;"></div>
+
+{{!-- 👉 incluir validaciones cliente (opcional si querés conservarlo igual) --}}
+<script src="/js/contacto-validaciones.js"></script>
+<script>
+    // Oculta automáticamente el mensaje después de 3 segundos
+    setTimeout(() => {
+        const successAlert = document.getElementById('alert-success');
+        const errorAlert = document.getElementById('alert-error');
+        if (successAlert) successAlert.style.display = 'none';
+        if (errorAlert) errorAlert.style.display = 'none';
+    }, 3000);
+</script>

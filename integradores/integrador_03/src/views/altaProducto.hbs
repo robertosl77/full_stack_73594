@@ -1,0 +1,233 @@
+{{!-- src/views/altaProducto.hbs --}}
+
+<div class="container mt-4">
+  <h2 class="mb-4">Alta de Producto</h2>
+
+    {{#if errorImagen}}
+    <!-- Modal -->
+    <div class="modal fade show" id="errorModal" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title">Error al guardar producto</h5>
+            <button type="button" class="btn-close" onclick="cerrarModal()" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>{{errorImagen}}</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function cerrarModal() {
+        const modal = document.getElementById('errorModal');
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+      }
+    </script>
+    {{/if}}
+
+  <form action="{{basedir}}/alta" method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="nombre" class="form-label">Nombre del producto</label>
+      <input type="text" class="form-control" id="nombre" name="nombre" required>
+      <div id="nombreErrorAlert" class="alert alert-danger mt-2" style="display: none;">
+        El nombre del producto ya existe.
+      </div>      
+    </div>
+
+    <div class="mb-3">
+      <label for="imagen" class="form-label">Imagen del producto</label>
+      <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*" required>
+      <div id="imageErrorAlert" class="alert alert-danger mt-2" style="display: none;">
+        Solo se permiten archivos de imagen.
+      </div>      
+    </div>
+
+    <div class="mb-3">
+      <label for="bodega" class="col-sm-2 col-form-label">Bodega</label>
+      <div class="row">
+        <div class="col-sm-6">
+          <select class="form-select" id="bodega" name="bodega" required>
+            <option value="" selected disabled>Seleccione una bodega</option>
+            {{#each bodegasExistentes}}
+              <option value="{{this}}">{{titleCase this}}</option>
+            {{/each}}
+            <option value="otro">Otro...</option>
+          </select>
+        </div>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="bodegaOtro" name="bodegaOtro" placeholder="Ingrese nueva bodega" disabled>
+          <div id="bodegaErrorAlert" class="alert alert-danger mt-2" style="display: none;">
+            Esa bodega ya existe.
+          </div>          
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="tipo" class="col-sm-2 col-form-label">Tipo</label>
+      <div class="row">
+        <div class="col-sm-6">
+          <select class="form-select" id="tipo" name="tipo" required>
+            <option value="" selected disabled>Seleccione un tipo</option>
+            {{#each tiposExistentes}}
+              <option value="{{this}}">{{titleCase this}}</option>
+            {{/each}}
+            <option value="otro">Otro...</option>
+          </select>
+        </div>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="tipoOtro" name="tipoOtro" placeholder="Ingrese nuevo tipo" disabled>
+          <div id="tipoErrorAlert" class="alert alert-danger mt-2" style="display: none;">
+            Ese tipo ya existe.
+          </div>          
+        </div>
+      </div>
+    </div>    
+
+    <div class="mb-3">
+      <div class="row">
+        <div class="col-sm-4">
+          <label for="precio" class="form-label">Precio</label>
+          <input type="number" class="form-control" id="precio_original" name="precio_original" step="0.01" required>
+        </div>
+        <div class="col-sm-4">
+          <label for="descuento" class="form-label">Descuento (%)</label>
+          <input type="number" class="form-control" id="descuento" name="descuento" min="0" max="100" value="0">
+        </div>
+        <div class="col-sm-4">
+          <label for="stock" class="form-label">Stock disponible</label>
+          <input type="number" class="form-control" id="stock" name="stock" min="0" value="0">
+        </div>
+      </div>
+    </div>      
+
+    <button type="submit" class="btn btn-success">Guardar producto</button>
+  </form>
+</div>
+
+<script>
+  document.getElementById('imagen').addEventListener('change', function (event) {
+    const file = event.target.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const alertBox = document.getElementById('imageErrorAlert');
+
+    if (file && !allowedTypes.includes(file.type)) {
+      alertBox.style.display = 'block';
+      event.target.value = ''; // Limpia el input
+      setTimeout(() => {
+        alertBox.style.display = 'none';
+      }, 3000);
+    } else {
+      alertBox.style.display = 'none'; // Oculta si todo está bien
+    }
+  });
+</script>
+
+<script>
+  const nombresExistentes = {{{nombresExistentes}}};
+  const inputNombre = document.getElementById('nombre');
+  const alertaNombre = document.getElementById('nombreErrorAlert');
+  let nombreTimer = null;
+
+  inputNombre.addEventListener('input', function () {
+    const valor = inputNombre.value.trim().toLowerCase();
+    const existe = nombresExistentes.includes(valor);
+
+    if (existe) {
+      alertaNombre.style.display = 'block';
+
+      clearTimeout(nombreTimer); // Reinicia si sigue escribiendo
+      nombreTimer = setTimeout(() => {
+        alertaNombre.style.display = 'none';
+      }, 3000);
+    } else {
+      alertaNombre.style.display = 'none';
+      clearTimeout(nombreTimer);
+    }
+  });
+</script>
+
+<script>
+  document.getElementById('bodega').addEventListener('change', function () {
+    const bodegaOtroInput = document.getElementById('bodegaOtro');
+    if (this.value === 'otro') {
+      bodegaOtroInput.disabled = false;
+      bodegaOtroInput.required = true;
+    } else {
+      bodegaOtroInput.disabled = true;
+      bodegaOtroInput.required = false;
+      bodegaOtroInput.value = '';
+    }
+  });
+</script>
+
+<script>
+  const bodegasExistentes = {{{bodegasJSON}}};
+  const inputOtro = document.getElementById('bodegaOtro');
+  const alerta = document.getElementById('bodegaErrorAlert');
+  let Timer = null;
+
+  inputOtro.addEventListener('input', function () {
+    const valor = inputOtro.value.trim().toLowerCase();
+    const existe = bodegasExistentes.includes(valor);
+
+    if (existe) {
+      alerta.style.display = 'block';
+
+      clearTimeout(Timer);
+      Timer = setTimeout(() => {
+        alerta.style.display = 'none';
+      }, 3000);
+    } else {
+      alerta.style.display = 'none';
+      clearTimeout(Timer);
+    }
+  });
+</script>
+
+<script>
+  document.getElementById('tipo').addEventListener('change', function () {
+    const tipoOtroInput = document.getElementById('tipoOtro');
+    if (this.value === 'otro') {
+      tipoOtroInput.disabled = false;
+      tipoOtroInput.required = true;
+    } else {
+      tipoOtroInput.disabled = true;
+      tipoOtroInput.required = false;
+      tipoOtroInput.value = '';
+      document.getElementById('tipoErrorAlert').style.display = 'none';
+    }
+  });
+</script>
+
+<script>
+  const tiposExistentes = {{{tiposJSON}}};
+  const inputTipoOtro = document.getElementById('tipoOtro');
+  const alertaTipo = document.getElementById('tipoErrorAlert');
+  let tipoTimer = null;
+
+  inputTipoOtro.addEventListener('input', function () {
+    const valor = inputTipoOtro.value.trim().toLowerCase();
+    const existe = tiposExistentes.includes(valor);
+
+    if (existe) {
+      alertaTipo.style.display = 'block';
+
+      clearTimeout(tipoTimer);
+      tipoTimer = setTimeout(() => {
+        alertaTipo.style.display = 'none';
+      }, 3000);
+    } else {
+      alertaTipo.style.display = 'none';
+      clearTimeout(tipoTimer);
+    }
+  });
+</script>
+
+<script type="module" src="/js/funciones.js"></script>

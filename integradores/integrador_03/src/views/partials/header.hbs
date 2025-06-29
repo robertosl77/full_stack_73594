@@ -1,0 +1,108 @@
+<header>
+    {{!-- <nav class="navbar navbar-expand-lg navbar-light bg-light"> --}}
+    {{!-- <nav class="navbar navbar-expand-lg bg-dark border-bottom border-body" data-bs-theme="dark"> --}}
+    <nav class="navbar navbar-expand-lg bg-dark border-bottom border-body fixed-top" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{basedir}}/productos">
+                <img src="/img_logo/logo.png" alt="Logo" style="height: 40px;">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{basedir}}/productos">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{basedir}}/nosotros">Nosotros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{basedir}}/contacto">Contactenos</a>
+                    </li>                    
+                    {{#if (eq user.rol 'ROLE_ADMINISTRADOR')}}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="productosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Gestiones
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="productosDropdown">
+                            <li><a class="dropdown-item" href="{{basedir}}/mensajes">Mensajes</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{basedir}}/admin/abm">Gestión de Productos</a></li>
+                            <li><a class="dropdown-item" href="{{basedir}}/alta">Nuevo Producto</a></li>
+                        </ul>
+                    </li>                    
+                    {{/if}}
+                </ul>                
+
+                {{#if user}}
+                <ul class="navbar-nav">
+                    <!-- 🛒 Carrito -->
+                    {{!-- {{#if tieneCarrito}}
+                    <li class="nav-item d-flex align-items-center" id="cart-container" style="position: relative;">
+                    <a href="{{basedir}}/carrito" class="nav-link position-relative px-2">
+                        🛒
+                        <span id="cart-count"
+                            class="position-absolute top-10 start-70 translate-middle badge rounded-pill bg-danger"
+                            style="font-size: 0.7rem;">
+                        {{cantidadCarrito}}
+                        </span>
+                    </a>
+                    </li>
+                    {{/if}} --}}
+
+                    {{!-- <li class="nav-item d-flex align-items-center me-3" id="cart-container" style="position: relative; {{#unless tieneCarrito}}display: none;{{/unless}}">
+                    <a href="{{basedir}}/carrito">
+                        <span id="cart-icon">🛒</span>
+                        <span id="cart-count" class="position-absolute top-10 start-70 translate-middle badge rounded-pill bg-danger">
+                        {{cantidadCarrito}}
+                        </span>
+                    </a>
+                    </li> --}}
+
+                    {{!-- <li class="nav-item d-flex align-items-center me-3" id="cart-container"
+                        style="position: relative; {{#unless tieneCarrito}}display: none;{{/unless}}">
+                        <a href="{{basedir}}/carrito" class="nav-link position-relative px-2">
+                            🛒
+                            {{#if tieneCarrito}}
+                            <span id="cart-count"
+                                class="position-absolute top-10 start-70 translate-middle badge rounded-pill bg-danger"
+                                style="font-size: 0.7rem;">
+                            {{cantidadCarrito}}
+                            </span>
+                            {{/if}}
+                        </a>
+                    </li> --}}
+
+                    <li class="nav-item d-flex align-items-center me-3" style="position: relative;">
+                        <div id="cart-wrapper" style="{{#unless tieneCarrito}}display: none;{{/unless}}">
+                            {{!-- <a href="{{basedir}}/carrito" class="nav-link position-relative px-2"> --}}
+                            <a href="#" class="nav-link position-relative px-2" data-bs-toggle="modal" data-bs-target="#modalCarrito">
+                            🛒
+                            <span id="cart-count"
+                                    class="position-absolute top-10 start-70 translate-middle badge rounded-pill bg-danger"
+                                    style="font-size: 0.7rem;">
+                                {{cantidadCarrito}}
+                            </span>
+                            </a>
+                        </div>
+                    </li>
+
+
+
+                    <!-- Usuario + logout -->
+                    <li class="nav-item">
+                        <span class="nav-link disabled">Hola, {{user.nombre}} {{user.apellido}}</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{basedir}}/logout">Cerrar sesión</a>
+                    </li>
+                </ul>
+                {{/if}}
+            </div>
+        </div>
+    </nav>
+</header>
