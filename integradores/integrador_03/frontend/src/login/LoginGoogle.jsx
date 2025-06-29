@@ -20,7 +20,7 @@ const LoginGoogle = () => {
         apellido: user.displayName?.split(" ")[1] || "",
       };
 
-      const res = await fetch("/integrador2/loginFirebase", {
+      const res = await fetch("/integrador3/loginFirebase", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datos),

@@ -3,7 +3,7 @@ import React from "react";
 
 const LoginGithub = () => {
   const handleGithubLogin = () => {
-    window.location.href = "/integrador2/github/login"; // Ruta backend que inicia OAuth con GitHub
+    window.location.href = "/integrador3/github/login"; // Ruta backend que inicia OAuth con GitHub
   };
 
   return (

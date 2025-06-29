@@ -1,73 +1,123 @@
-// src/login/Login.jsx
-import React, { useState } from "react";
-import LoginGoogle from "./LoginGoogle";
-import LoginGithub from "./LoginGithub";
+"use client"
 
-const Login = () => {
-  const [usuario, setUsuario] = useState("");
-  const [password, setPassword] = useState("");
+import { useState } from "react"
+
+const Login = ({ basedir = "/integrador3" }) => {
+  const [usuario, setUsuario] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
+    setLoading(true)
+    setError("")
 
     try {
-      const res = await fetch("/integrador2/login", {
+      const res = await fetch(`${basedir}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ usuario, password }),
-      });
+      })
 
-      const data = await res.json();
-      if (data.success) {
-        window.location.href = data.redirect;
+      if (res.ok) {
+        window.location.href = `${basedir}/productos`
       } else {
-        alert(data.error || "Credenciales incorrectas");
+        const data = await res.json()
+        setError(data.error || "Usuario o contraseña incorrectos")
+        setTimeout(() => setError(""), 3000)
       }
-    } catch (err) {
-      console.error("Error en login clásico:", err);
-      alert("Error de red");
+    } catch (error) {
+      console.error("Error en login:", error)
+      setError("Error de conexión")
+      setTimeout(() => setError(""), 3000)
+    } finally {
+      setLoading(false)
     }
-  };
+  }
+
+  const handleGoogleLogin = async () => {
+    // Implementar Firebase Google Auth aquí
+    console.log("Google login")
+  }
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "400px" }}>
-      <div className="card shadow p-4">
-        <h2 className="text-center mb-4">Iniciar sesión</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="usuario" className="form-label">Usuario</label>
-            <input
-              type="text"
-              className="form-control"
-              id="usuario"
-              value={usuario}
-              onChange={(e) => setUsuario(e.target.value)}
-              required
-            />
-          </div>
+    <html lang="es" data-bs-theme="auto">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Signin Template · Bootstrap v5.3</title>
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          crossOrigin="anonymous"
+        />
+        <link href="/css/sign-in.css" rel="stylesheet" />
+      </head>
 
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">Contraseña</label>
-            <input
-              type="password"
-              className="form-control"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+      <body className="d-flex align-items-center py-4 bg-body-tertiary">
+        <main className="form-signin w-100 m-auto">
+          <form onSubmit={handleSubmit}>
+            <img className="mb-4" src="/img_logo/educacionit_logo.jpeg" alt="" width="100" />
+            <h1 className="h3 mb-3 fw-normal">Proyecto: Integrador3</h1>
 
-          <button type="submit" className="btn btn-primary w-100">Ingresar</button>
-        </form>
+            <div className="form-floating">
+              <input
+                type="text"
+                className="form-control"
+                id="usuario"
+                placeholder="Usuario"
+                autoComplete="username"
+                value={usuario}
+                onChange={(e) => setUsuario(e.target.value)}
+                required
+              />
+              <label htmlFor="usuario">Usuario</label>
+            </div>
 
-        <div className="mt-3">
-          <LoginGoogle />
-          <LoginGithub />
-        </div>
-      </div>
-    </div>
-  );
-};
+            <div className="form-floating">
+              <input
+                type="password"
+                className="form-control"
+                id="floatingPassword"
+                placeholder="Password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <label htmlFor="floatingPassword">Password</label>
+            </div>
 
-export default Login;
+            <button className="btn btn-primary w-100 py-2" type="submit" disabled={loading}>
+              {loading ? "Ingresando..." : "Ingreso"}
+            </button>
+
+            {error && (
+              <div className="alert alert-danger mt-4" role="alert">
+                {error}
+              </div>
+            )}
+
+            <div className="mt-2">
+              <button type="button" className="btn btn-danger w-100" onClick={handleGoogleLogin}>
+                Iniciar sesión con Google
+              </button>
+            </div>
+
+            <p className="mt-5 mb-3 text-body-secondary">
+              &copy; 2025 - Integrador3 - Desarrollado por robertosl77@gmail.com
+            </p>
+          </form>
+        </main>
+
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+          crossOrigin="anonymous"
+        />
+      </body>
+    </html>
+  )
+}
+
+export default Login
