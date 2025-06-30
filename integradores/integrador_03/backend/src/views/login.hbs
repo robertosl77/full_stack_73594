@@ -199,7 +199,20 @@
             Recuerdame
           </label>
         </div> --}}
-        <button class="btn btn-primary w-100 py-2" type="submit">Ingreso</button>
+
+        <style>
+          .btn-teal {
+            background-color: #20c997;
+            border-color: #1cb386;
+            color: white;
+          }
+          .btn-teal:hover {
+            background-color: #1cb386;
+            border-color: #199d76;
+            color: white;
+          }
+        </style>
+        <button class="btn btn-teal w-100 py-2" type="submit">Ingreso</button>
 
         {{#if error}}
             <div class="alert alert-danger mt-4" role="alert" id="errorAlert">
@@ -221,6 +234,18 @@
           </button>
         </div>
 
+        <div class="mt-2">
+            <button type="button" class="btn btn-primary w-100" id="facebookLoginBtn">
+                Iniciar sesión con Facebook
+            </button>
+        </div>
+
+        <div class="mt-2">
+          <button type="button" class="btn btn-secondary w-100" id="demoLoginBtn">
+            Ingresar como usuario invitado
+          </button>
+        </div>        
+
         <p class="mt-5 mb-3 text-body-secondary">&copy; 2025 - Integrador2 - Desarrollado por robertosl77@gmail.com</p>
       </form>
     </main>
@@ -228,6 +253,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
     <!-- Firebase SDKs -->
+    {{!-- Login con Google --}}
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
       import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
@@ -279,6 +305,102 @@
       });
 
     </script>
+
+    {{!-- Login con Invitado --}}
+    <script type="module">
+      document.getElementById("demoLoginBtn").addEventListener("click", async () => {
+        const datos = {
+          proveedor: "demo",
+          idSocial: "demo_user",
+          email: "invitado@demo.com",
+          nombre: "Invitado",
+          apellido: "Demo"
+        };
+
+        const response = await fetch("{{basedir}}/loginFirebase", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(datos)
+        });
+
+        const resData = await response.json();
+        if (resData.success) {
+          window.location.href = resData.redirect;
+        } else {
+          alert("Falló el login como invitado: " + resData.error);
+        }
+      });
+
+    </script>
+
+    <!-- SDK de Facebook -->
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js"></script>
+
+    <!-- Login con Facebook -->
+    <script>
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId: '2439166789800873', // Tu App ID
+                cookie: true,
+                xfbml: true,
+                version: 'v18.0'
+            });
+
+            // ✅ Mover el event listener DENTRO de fbAsyncInit
+            document.getElementById("facebookLoginBtn").addEventListener("click", function() {
+                FB.login(function(response) {
+                    if (response.authResponse) {
+                        console.log('✅ Usuario autenticado con Facebook');
+                        
+                        FB.api('/me', {fields: 'name,email,first_name,last_name'}, function(userInfo) {
+                            console.log('Información del usuario:', userInfo);
+                            
+                            const datos = {
+                                proveedor: 'facebook.com',
+                                idSocial: userInfo.id,
+                                email: userInfo.email || `${userInfo.id}@facebook.com`,
+                                nombre: userInfo.first_name || '',
+                                apellido: userInfo.last_name || ''
+                            };
+
+                            fetch("{{basedir}}/loginFacebookDirect", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(datos)
+                            })
+                            .then(response => response.json())
+                            .then(resData => {
+                                if (resData.success) {
+                                    console.log('✅ Login Facebook exitoso');
+                                    window.location.href = resData.redirect;
+                                } else {
+                                    alert("Falló el login: " + resData.error);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert("Error al procesar el login con Facebook");
+                            });
+                        });
+                    } else {
+                        console.log('❌ Login cancelado');
+                        alert("Login con Facebook cancelado");
+                    }
+                }, {scope: 'email'});
+            });
+        };
+
+        // Fallback en caso de que fbAsyncInit no se ejecute
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/es_ES/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+
+
 
 
   </body>
