@@ -16,7 +16,7 @@ const Login = () => {
     setError("")
 
     try {
-      const res = await axios.post(`http://localhost:8081${basedir}/login`, { usuario, password })
+      const res = await axios.post(`http://localhost:8081/integrador3/login`, { usuario, password })
       if (res.status === 200) {
         window.location.href = `${basedir}/productos`
       }
