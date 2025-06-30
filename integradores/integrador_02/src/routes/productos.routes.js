@@ -30,7 +30,8 @@ router.get('/productos', async (req, res) => {
             extraCss: '/css/productos.css',
             user,
             tieneCarrito,
-            cantidadCarrito
+            cantidadCarrito,
+            esSoloVista: user.rol === 'ROLE_VISTA'
         });
     } catch (error) {
         console.error(error);

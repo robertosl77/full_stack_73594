@@ -12,7 +12,7 @@ export default function registerHandlebarsHelpers() {
         return a === b;
     });
 
-    // Helper: convertir a JSON
+    // Helper para convertir a JSON (útil para pasar datos a JavaScript)
     Handlebars.registerHelper('json', function(context) {
         return JSON.stringify(context);
     });
@@ -24,4 +24,19 @@ export default function registerHandlebarsHelpers() {
             return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
         });
     });    
+
+    // Helper adicional para debugging
+    Handlebars.registerHelper('debug', function(value) {
+        console.log('Debug value:', value, typeof value);
+        return '';
+    });
+
+    // Helper corregido: ocultar acciones de productos si es solo vista
+    Handlebars.registerHelper('ocultarSi', function(condicion) {
+        // Asegurarse de que la condición sea evaluada correctamente
+        return condicion === true ? 'style="display: none;"' : '';
+    });
+
 }
+
+
