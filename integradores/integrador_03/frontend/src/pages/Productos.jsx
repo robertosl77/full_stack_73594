@@ -10,20 +10,20 @@ const Productos = ({ user, basedir = "/integrador3" }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    cargarProductos()
-  }, [])
-
-  const cargarProductos = async () => {
-    try {
-      const res = await fetch(`${basedir}/api/productos`)
-      const data = await res.json()
-      setProductos(data)
-    } catch (error) {
-      console.error("Error al cargar productos:", error)
-    } finally {
-      setLoading(false)
+    const cargarProductos = async () => {
+      try {
+        const res = await fetch(`${basedir}/api/productos`)
+        const data = await res.json()
+        setProductos(data)
+      } catch (error) {
+        console.error("Error al cargar productos:", error)
+      } finally {
+        setLoading(false)
+      }
     }
-  }
+
+    cargarProductos()
+  }, [basedir])
 
   const agregarAlCarrito = async (productoId, cantidad) => {
     if (!user) return
@@ -36,11 +36,9 @@ const Productos = ({ user, basedir = "/integrador3" }) => {
       })
 
       if (res.ok) {
-        // Actualizar contador del carrito
         const cartRes = await fetch(`${basedir}/carrito/cantidad`)
         const cartData = await cartRes.json()
 
-        // Actualizar UI del carrito
         const cartWrapper = document.querySelector("#cart-wrapper")
         const cartCount = document.querySelector("#cart-count")
 
@@ -70,12 +68,9 @@ const Productos = ({ user, basedir = "/integrador3" }) => {
     return true
   }
 
-  const titleCase = (str) => {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
-  }
+  const titleCase = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 
   const updateCartCount = async () => {
-    // Función para actualizar el contador del carrito
     try {
       const res = await fetch(`${basedir}/carrito/cantidad`)
       const data = await res.json()

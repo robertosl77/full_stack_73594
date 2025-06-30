@@ -7,7 +7,7 @@ function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
-        <Link className="navbar-brand" to="/">Integrador3</Link>
+        <Link className="navbar-brand" to="/">integrador3</Link>
         <button
           className="navbar-toggler"
           type="button"

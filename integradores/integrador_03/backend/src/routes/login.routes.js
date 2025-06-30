@@ -11,9 +11,13 @@ router.get('/login', (req, res) => {
 
 router.post('/login', async (req, res) => {
     const { usuario, password } = req.body;
+    console.log('usuario: '+usuario);
     const user = await Usuario.findOne({ usuario });
-    
+
+    console.log('user: '+user);
+
     if (user && await bcrypt.compare(password, user.password)) {
+        console.log('usuario: '+usuario);
         req.session.user = {
             _id: user._id,
             usuario: user.usuario,
@@ -24,6 +28,7 @@ router.post('/login', async (req, res) => {
         };
         res.redirect(`${res.locals.basedir}/productos`);
     } else {
+        console.log('ususario nulo');
         res.render('login', { layout: false, error: 'Usuario o contraseña incorrectos' });
     }
 });

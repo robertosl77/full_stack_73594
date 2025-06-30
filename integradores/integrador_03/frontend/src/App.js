@@ -1,6 +1,4 @@
-"use client"
-
-import { useState, useEffect } from "react"
+import { useCallback, useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import Productos from "./pages/Productos"
 import Login from "./login/Login"
@@ -10,15 +8,11 @@ import Contacto from "./pages/Contacto"
 function App() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
-  const basedir = "/integrador3"
+  const basedir = process.env.REACT_APP_BASEDIR || "/integrador3"
 
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
-      const res = await fetch(`${basedir}/api/auth/me`)
+      const res = await fetch(`${basedir}/login`)
       if (res.ok) {
         const userData = await res.json()
         setUser(userData)
@@ -28,7 +22,11 @@ function App() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [basedir])
+
+  useEffect(() => {
+    checkAuth()
+  }, [checkAuth])
 
   if (loading) {
     return (
@@ -43,20 +41,14 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={user ? <Navigate to="/productos" /> : <Login basedir={basedir} />} />
-        <Route
-          path="/productos"
-          element={user ? <Productos user={user} basedir={basedir} /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/nosotros"
-          element={user ? <Nosotros user={user} basedir={basedir} /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/contacto"
-          element={user ? <Contacto user={user} basedir={basedir} /> : <Navigate to="/login" />}
-        />
-        <Route path="/" element={<Navigate to="/productos" />} />
+        {/* Redirige la raíz al login con basedir */}
+        <Route path="/" element={<Navigate to={`${basedir}/login`} />} />
+        
+        {/* Rutas con el basedir */}
+        <Route path={`${basedir}/login`} element={user ? <Navigate to={`${basedir}/productos`} /> : <Login />} />
+        <Route path={`${basedir}/productos`} element={user ? <Productos user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
+        <Route path={`${basedir}/nosotros`} element={user ? <Nosotros user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
+        <Route path={`${basedir}/contacto`} element={user ? <Contacto user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
       </Routes>
     </Router>
   )

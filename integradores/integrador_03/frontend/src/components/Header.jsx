@@ -1,18 +1,10 @@
-"use client"
-
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 
 const Header = ({ user, basedir = "/integrador3" }) => {
   const [cartCount, setCartCount] = useState(0)
   const [showCart, setShowCart] = useState(false)
 
-  useEffect(() => {
-    if (user) {
-      updateCartCount()
-    }
-  }, [user])
-
-  const updateCartCount = async () => {
+  const updateCartCount = useCallback(async () => {
     try {
       const res = await fetch(`${basedir}/carrito/cantidad`)
       const data = await res.json()
@@ -21,7 +13,13 @@ const Header = ({ user, basedir = "/integrador3" }) => {
     } catch (error) {
       console.error("Error al actualizar carrito:", error)
     }
-  }
+  }, [basedir])
+
+  useEffect(() => {
+    if (user) {
+      updateCartCount()
+    }
+  }, [user, updateCartCount])
 
   const isAdmin = user?.rol === "ROLE_ADMINISTRADOR"
 
@@ -48,51 +46,37 @@ const Header = ({ user, basedir = "/integrador3" }) => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav me-auto">
               <li className="nav-item">
-                <a className="nav-link" href={`${basedir}/productos`}>
-                  Inicio
-                </a>
+                <a className="nav-link" href={`${basedir}/productos`}>Inicio</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href={`${basedir}/nosotros`}>
-                  Nosotros
-                </a>
+                <a className="nav-link" href={`${basedir}/nosotros`}>Nosotros</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href={`${basedir}/contacto`}>
-                  Contactenos
-                </a>
+                <a className="nav-link" href={`${basedir}/contacto`}>Contactenos</a>
               </li>
 
               {isAdmin && (
                 <li className="nav-item dropdown">
-                  <a
-                    className="nav-link dropdown-toggle"
-                    href="#"
+                  <button
+                    className="nav-link dropdown-toggle btn btn-link"
                     id="productosDropdown"
-                    role="button"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
+                    type="button"
+                    style={{ textDecoration: "none" }}
                   >
                     Gestiones
-                  </a>
+                  </button>
                   <ul className="dropdown-menu" aria-labelledby="productosDropdown">
                     <li>
-                      <a className="dropdown-item" href={`${basedir}/mensajes`}>
-                        Mensajes
-                      </a>
+                      <a className="dropdown-item" href={`${basedir}/mensajes`}>Mensajes</a>
+                    </li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <a className="dropdown-item" href={`${basedir}/admin/abm`}>Gestión de Productos</a>
                     </li>
                     <li>
-                      <hr className="dropdown-divider" />
-                    </li>
-                    <li>
-                      <a className="dropdown-item" href={`${basedir}/admin/abm`}>
-                        Gestión de Productos
-                      </a>
-                    </li>
-                    <li>
-                      <a className="dropdown-item" href={`${basedir}/alta`}>
-                        Nuevo Producto
-                      </a>
+                      <a className="dropdown-item" href={`${basedir}/alta`}>Nuevo Producto</a>
                     </li>
                   </ul>
                 </li>
@@ -103,11 +87,12 @@ const Header = ({ user, basedir = "/integrador3" }) => {
               <ul className="navbar-nav">
                 <li className="nav-item d-flex align-items-center me-3" style={{ position: "relative" }}>
                   <div id="cart-wrapper" style={{ display: showCart ? "inline-block" : "none" }}>
-                    <a
-                      href="#"
-                      className="nav-link position-relative px-2"
+                    <button
+                      type="button"
+                      className="nav-link btn btn-link position-relative px-2"
                       data-bs-toggle="modal"
                       data-bs-target="#modalCarrito"
+                      style={{ textDecoration: "none" }}
                     >
                       🛒
                       <span
@@ -117,7 +102,7 @@ const Header = ({ user, basedir = "/integrador3" }) => {
                       >
                         {cartCount}
                       </span>
-                    </a>
+                    </button>
                   </div>
                 </li>
 
