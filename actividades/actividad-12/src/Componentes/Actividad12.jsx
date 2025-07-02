@@ -21,7 +21,7 @@ function Actividad12() {
         <div className="container mt-5 p-4 bg-light rounded shadow-sm" style={{ maxWidth: '700px' }}>
             <h1 className="text-center mb-4">Actividad #12 - Lista de Tareas</h1>
             <TaskForm agregarTarea={agregarTarea} />
-            <TaskList tareas={tareas} eliminarTarea={eliminarTarea} />
+            <TaskList tareas={tareas} setTareas={setTareas} eliminarTarea={eliminarTarea} />
         </div>
     );
 }
