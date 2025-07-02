@@ -12,6 +12,8 @@ router.get("/login", (req, res) => {
 router.post("/login", async (req, res) => {
   const { usuario, password } = req.body
   const user = await Usuario.findOne({ usuario })
+  console.log('usuario: '+usuario);
+  console.log('user: '+user);
 
   if (user && (await bcrypt.compare(password, user.password))) {
     req.session.user = {
