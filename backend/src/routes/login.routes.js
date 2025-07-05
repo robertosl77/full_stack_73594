@@ -5,6 +5,14 @@ import Usuario from "../models/usuario.js"
 
 const router = express.Router()
 
+router.get("/api/checkAuth", (req, res) => {
+  if (req.session?.user) {
+    res.json(req.session.user);
+  } else {
+    res.status(401).json({ error: "No autenticado" });
+  }
+});
+
 router.get("/api/logout", (req, res) => {
   console.info("=== LOGOUT SOLICITADO ===");
   if (req.session?.user) {
@@ -87,14 +95,6 @@ router.post("/api/loginForm", async (req, res) => {
 router.get("/api/login", (req, res) => {
   res.render("login", { layout: false })
 })
-
-router.get("/api/checkAuth", (req, res) => {
-  if (req.session?.user) {
-    res.json(req.session.user);
-  } else {
-    res.status(401).json({ error: "No autenticado" });
-  }
-});
 
 router.post("/api/login", async (req, res) => {
   const { usuario, password } = req.body
