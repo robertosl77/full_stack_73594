@@ -17,8 +17,12 @@ const LoginForm = () => {
       });
 
       const resData = await res.json();
+      
+      // 🔐 Limpieza de seguridad
+      localStorage.removeItem("token");
 
       if (resData.success) {
+        localStorage.setItem("token", resData.token);
         window.location.href = resData.redirect;
       } else {
         setError("Login fallido: " + resData.error);

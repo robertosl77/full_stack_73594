@@ -1,34 +1,29 @@
-import { useCallback, useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import Productos from "./pages/Productos"
 import Login from "./login/Login"
 import Nosotros from "./pages/Nosotros"
 import Contacto from "./pages/Contacto"
+import { jwtDecode } from "jwt-decode";
 
 function App() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const basedir = process.env.REACT_APP_BASEDIR || "/integrador3"
 
-  const checkAuth = useCallback(async () => {
-    try {
-      const res = await fetch(`http://localhost:8081${basedir}/api/checkAuth`, {
-        credentials: "include"
-      });
-      if (res.ok) {
-        const userData = await res.json();
-        setUser(userData);
-      }
-    } catch (error) {
-      console.error("Error checking auth:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [basedir]);
-
   useEffect(() => {
-    checkAuth()
-  }, [checkAuth])
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const userData = jwtDecode(token);
+        setUser(userData);
+      } catch (err) {
+        console.error("Token inválido:", err);
+        localStorage.removeItem("token");
+      }
+    }
+    setLoading(false);
+  }, []);
 
   if (loading) {
     return (

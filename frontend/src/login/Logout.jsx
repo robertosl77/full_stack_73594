@@ -1,14 +1,20 @@
 export const logout = async () => {
-  try {
-    const res = await fetch("http://localhost:8081/integrador3/api/logout", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+  // Borrar token del frontend
+  localStorage.removeItem("token");
 
-    const resData = await res.json();
-    window.location.href = resData.redirect || "/integrador3/login";
-  } catch (error) {
+  // Notificar al backend por si hay sesión activa
+  try {
+    await fetch("http://localhost:8081/integrador3/api/logout", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+      },
+    });
+  } catch (e) {
+    // Ignorar error
+  } finally {
+    // Redirigir siempre
     window.location.href = "/integrador3/login";
   }
 };
