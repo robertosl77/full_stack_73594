@@ -7,11 +7,13 @@ import Contacto from "./pages/Contacto"
 import { jwtDecode } from "jwt-decode";
 
 function App() {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const basedir = process.env.REACT_APP_BASEDIR || "/integrador3"
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const basedir = process.env.REACT_APP_BASEDIR;
 
   useEffect(() => {
+    console.log('a: '+basedir);
+    console.log('b: '+process.env.REACT_APP_BASEDIR);
     const token = localStorage.getItem("token");
     if (token) {
       try {
@@ -23,7 +25,7 @@ function App() {
       }
     }
     setLoading(false);
-  }, []);
+  }, [basedir]);
 
   if (loading) {
     return (

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import LoginForm from "./LoginForm";
 import LoginInvitado from "./LoginInvitado";
+import LoginGoogle from "./LoginGoogle";
 
 const Login = () => {
 
@@ -124,11 +125,7 @@ const Login = () => {
 
           <LoginForm />
 
-          <div className="mt-2">
-            <button type="button" className="btn btn-danger w-100" id="googleLoginBtn">
-              Iniciar sesión con Google
-            </button>
-          </div>
+          <LoginGoogle />
 
           <div className="mt-2">
             <button type="button" className="btn btn-primary w-100" id="facebookLoginBtn">

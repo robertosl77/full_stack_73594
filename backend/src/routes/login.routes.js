@@ -6,14 +6,6 @@ import { generarTokenUsuario } from "../utils/token.js"
 
 const router = express.Router()
 
-router.get("/api/checkAuth", (req, res) => {
-  if (req.session?.user) {
-    res.json(req.session.user);
-  } else {
-    res.status(401).json({ error: "No autenticado" });
-  }
-});
-
 router.get("/api/logout", (req, res) => {
   console.info("=== LOGOUT SOLICITADO ===");
   if (req.session?.user) {
@@ -31,7 +23,6 @@ router.get("/api/logout", (req, res) => {
   });
 });
 
-// Login con Invitado
 router.post("/api/loginInvitado", async (req, res) => {
   const { proveedor, usuario, email, nombre, apellido } = req.body;
 
@@ -84,6 +75,7 @@ router.post("/api/loginForm", async (req, res) => {
     req.session.user = payload;
 
     console.info("✅ Login exitoso:", user.usuario);
+    console.log(res.locals.basedir);
     res.json({
       success: true,
       redirect: `${res.locals.basedir}/productos`,
@@ -92,6 +84,40 @@ router.post("/api/loginForm", async (req, res) => {
   } catch (error) {
     console.error("❌ Error en login:", error);
     res.json({ success: false, error: "Error interno del servidor" });
+  }
+});
+
+// Login con firebase (Google)
+router.post("/api/loginFirebase", async (req, res) => {
+  const { proveedor, idSocial, email, nombre, apellido } = req.body;
+
+  try {
+    if (!proveedor || !idSocial || !email) {
+      throw new Error("Datos incompletos");
+    }
+
+    const sessionUser = {
+      usuario: email, // si no usás username aparte, podés usar el email como identificador
+      nombre: nombre || "",
+      apellido: apellido || "",
+      email,
+      rol: "ROLE_VISTA",  // 🔐 fuerza el rol mínimo para Google/Firebase
+      origen: proveedor,
+    };
+
+    const { token, payload } = generarTokenUsuario(sessionUser, proveedor);
+
+    // Opcional: guardar en sesión también, si mantenés alguna parte con session
+    req.session.user = payload;
+
+    res.json({
+      success: true,
+      redirect: `${res.locals.basedir}/productos`,
+      token,
+    });
+  } catch (err) {
+    console.error("❌ Error en /loginFirebase:", err);
+    res.status(500).json({ success: false, error: "Error al procesar login con Google" });
   }
 });
 
@@ -105,12 +131,13 @@ router.post("/api/loginForm", async (req, res) => {
 
 
 
-
 router.get("/api/login", (req, res) => {
+  console.log(111111111111111);
   res.render("login", { layout: false })
 })
 
 router.post("/api/login", async (req, res) => {
+  console.log(111111111111111);
   const { usuario, password } = req.body
   const user = await Usuario.findOne({ usuario })
   
@@ -138,24 +165,7 @@ router.post("/api/login", async (req, res) => {
 
 
 
-// Login con firebase (Google)
-router.post("/loginFirebase", async (req, res) => {
-  const { proveedor, idSocial, email, nombre, apellido } = req.body
 
-  try {
-    if (!proveedor || !idSocial || !email) {
-      throw new Error("Datos incompletos")
-    }
-
-    const sessionUser = await procesarLogin({ proveedor, idSocial, email, nombre, apellido })
-
-    req.session.user = sessionUser
-    res.json({ success: true, redirect: `${res.locals.basedir}/productos` })
-  } catch (err) {
-    console.error("Error en /loginFirebase:", err)
-    res.status(500).json({ success: false, error: "Error al procesar login" })
-  }
-})
 
 // Nueva ruta para Facebook directo
 router.post("/loginFacebookDirect", async (req, res) => {
@@ -184,6 +194,8 @@ router.post("/loginFacebookDirect", async (req, res) => {
 
 // Nueva función que maneja múltiples redes sociales
 async function procesarLoginSocialMultiple({ proveedor, idSocial, email, nombre, apellido }) {
+  console.log(111111111111111);
+
   console.info("Procesando login social:", { proveedor, idSocial, email })
 
   // 1. Buscar si existe un usuario con este idSocial y proveedor
@@ -255,10 +267,6 @@ async function procesarLoginSocialMultiple({ proveedor, idSocial, email, nombre,
   }
 }
 
-// Función original para Firebase (Google) - actualizada para usar array
-async function procesarLogin({ proveedor, idSocial, email, nombre, apellido }) {
-  // Redirigir a la nueva función que maneja múltiples redes sociales
-  return procesarLoginSocialMultiple({ proveedor, idSocial, email, nombre, apellido })
-}
+
 
 export default router
