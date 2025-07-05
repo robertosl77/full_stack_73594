@@ -2,6 +2,7 @@
 import express from "express"
 import bcrypt from "bcrypt"
 import Usuario from "../models/usuario.js"
+import { generarTokenUsuario } from "../utils/token.js"
 
 const router = express.Router()
 
@@ -32,22 +33,36 @@ router.get("/api/logout", (req, res) => {
 
 // Login con Invitado
 router.post("/api/loginInvitado", async (req, res) => {
-  const { proveedor, usuario, email, nombre, apellido } = req.body
-  
+  const { proveedor, usuario, email, nombre, apellido } = req.body;
+
   try {
     if (!proveedor || !usuario || !email) {
-      throw new Error("Datos incompletos")
+      throw new Error("Datos incompletos");
     }
-    
-    const sessionUser = await procesarLogin({ proveedor, usuario, email, nombre, apellido })
 
-    req.session.user = sessionUser
-    res.json({ success: true, redirect: `${res.locals.basedir}/productos` })
+    const sessionUser = {
+      usuario,
+      nombre: nombre || "",
+      apellido: apellido || "",
+      email,
+      rol: "ROLE_VISTA",
+      origen: proveedor,
+    };
+
+    const { token, payload } = generarTokenUsuario(sessionUser, proveedor);
+
+    req.session.user = payload;
+
+    res.json({
+      success: true,
+      redirect: `${res.locals.basedir}/productos`,
+      token,
+    });
   } catch (err) {
-    console.error("Error en /loginFirebase:", err)
-    res.status(500).json({ success: false, error: "Error al procesar login" })
+    console.error("Error en /loginInvitado:", err);
+    res.status(500).json({ success: false, error: "Error al procesar login" });
   }
-})
+});
 
 router.post("/api/loginForm", async (req, res) => {
   const { usuario, password } = req.body;
@@ -64,23 +79,22 @@ router.post("/api/loginForm", async (req, res) => {
       return res.json({ success: false, error: "Contraseña incorrecta" });
     }
 
-    // ✅ Login correcto: guardar en sesión
-    req.session.user = {
-      usuario: user.usuario,
-      email: user.email,
-      nombre: user.nombre,
-      apellido: user.apellido,
-      rol: user.rol,
-      origen: "loginLocal",
-    };
+    const { token, payload } = generarTokenUsuario(user, "loginLocal");
+
+    req.session.user = payload;
 
     console.info("✅ Login exitoso:", user.usuario);
-    res.json({ success: true, redirect: `${res.locals.basedir}/productos` });
+    res.json({
+      success: true,
+      redirect: `${res.locals.basedir}/productos`,
+      token,
+    });
   } catch (error) {
     console.error("❌ Error en login:", error);
     res.json({ success: false, error: "Error interno del servidor" });
   }
 });
+
 
 
 
