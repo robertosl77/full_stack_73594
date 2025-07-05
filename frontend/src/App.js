@@ -12,17 +12,19 @@ function App() {
 
   const checkAuth = useCallback(async () => {
     try {
-      const res = await fetch(`${basedir}/login`)
+      const res = await fetch(`http://localhost:8081${basedir}/api/checkAuth`, {
+        credentials: "include"
+      });
       if (res.ok) {
-        const userData = await res.json()
-        setUser(userData)
+        const userData = await res.json();
+        setUser(userData);
       }
     } catch (error) {
-      console.error("Error checking auth:", error)
+      console.error("Error checking auth:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [basedir])
+  }, [basedir]);
 
   useEffect(() => {
     checkAuth()

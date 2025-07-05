@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import LoginForm from "./LoginForm";
+import LoginInvitado from "./LoginInvitado";
 
 const Login = () => {
-  const [error, setError] = useState("");
 
   useEffect(() => {
     // Cargar scripts externos
@@ -53,25 +54,6 @@ const Login = () => {
           }
         });
       });
-    });
-
-    // Demo login
-    document.getElementById("demoLoginBtn")?.addEventListener("click", async () => {
-      const datos = {
-        proveedor: "demo",
-        idSocial: "demo_user",
-        email: "invitado@demo.com",
-        nombre: "Invitado",
-        apellido: "Demo",
-      };
-      const res = await fetch("/loginFirebase", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(datos),
-      });
-      const resData = await res.json();
-      if (resData.success) window.location.href = resData.redirect;
-      else alert("Falló login demo: " + resData.error);
     });
 
     // Facebook login
@@ -137,75 +119,28 @@ const Login = () => {
       {/* BODY */}
       <div className="d-flex align-items-center py-4 bg-body-tertiary min-vh-100">
         <main className="form-signin w-100 m-auto">
-          <form action="/login" method="POST">
-            <img className="mb-4" src="/img_logo/educacionit_logo.jpeg" alt="" width="100" />
-            <h1 className="h3 mb-3 fw-normal">Proyecto: Integrador2</h1>
+          <img className="mb-4" src="/img_logo/educacionit_logo.jpeg" alt="" width="100" />
+          <h1 className="h3 mb-3 fw-normal">Proyecto: Integrador3</h1>
 
-            <div className="form-floating">
-              <input
-                type="text"
-                className="form-control"
-                name="usuario"
-                id="usuario"
-                placeholder="Usuario"
-                required
-              />
-              <label htmlFor="usuario">Usuario</label>
-            </div>
+          <LoginForm />
 
-            <div className="form-floating">
-              <input
-                type="password"
-                className="form-control"
-                name="password"
-                id="floatingPassword"
-                placeholder="Password"
-              />
-              <label htmlFor="floatingPassword">Password</label>
-            </div>
+          <div className="mt-2">
+            <button type="button" className="btn btn-danger w-100" id="googleLoginBtn">
+              Iniciar sesión con Google
+            </button>
+          </div>
 
-            <style>{`
-              .btn-teal {
-                background-color: #20c997;
-                border-color: #1cb386;
-                color: white;
-              }
-              .btn-teal:hover {
-                background-color: #1cb386;
-                border-color: #199d76;
-              }
-            `}</style>
+          <div className="mt-2">
+            <button type="button" className="btn btn-primary w-100" id="facebookLoginBtn">
+              Iniciar sesión con Facebook
+            </button>
+          </div>
 
-            <button className="btn btn-teal w-100 py-2" type="submit">Ingreso</button>
+          <LoginInvitado />
 
-            {error && (
-              <div className="alert alert-danger mt-4" role="alert">
-                {error}
-              </div>
-            )}
-
-            <div className="mt-2">
-              <button type="button" className="btn btn-danger w-100" id="googleLoginBtn">
-                Iniciar sesión con Google
-              </button>
-            </div>
-
-            <div className="mt-2">
-              <button type="button" className="btn btn-primary w-100" id="facebookLoginBtn">
-                Iniciar sesión con Facebook
-              </button>
-            </div>
-
-            <div className="mt-2">
-              <button type="button" className="btn btn-secondary w-100" id="demoLoginBtn">
-                Ingresar como usuario invitado
-              </button>
-            </div>
-
-            <p className="mt-5 mb-3 text-body-secondary">
-              &copy; 2025 - Integrador2 - Desarrollado por robertosl77@gmail.com
-            </p>
-          </form>
+          <p className="mt-5 mb-3 text-body-secondary">
+            &copy; 2025 - Integrador3 - Desarrollado por robertosl77@gmail.com
+          </p>
         </main>
       </div>
     </>

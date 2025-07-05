@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback } from "react";
+import { logout } from "../login/Logout";
 
 const Header = ({ user, basedir = "/integrador3" }) => {
   const [cartCount, setCartCount] = useState(0)
@@ -112,9 +113,14 @@ const Header = ({ user, basedir = "/integrador3" }) => {
                   </span>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href={`${basedir}/logout`}>
+                  <button
+                    className="nav-link btn btn-link"
+                    style={{ textDecoration: "none" }}
+                    onClick={logout}
+                    type="button"
+                  >
                     Cerrar sesión
-                  </a>
+                  </button>
                 </li>
               </ul>
             )}
