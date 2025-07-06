@@ -41,6 +41,7 @@ const LoginForm = () => {
           name="usuario"
           id="usuario"
           placeholder="Usuario"
+          autoComplete="username"
           required
           value={usuario}
           onChange={(e) => setUsuario(e.target.value)}
@@ -55,6 +56,7 @@ const LoginForm = () => {
           name="password"
           id="floatingPassword"
           placeholder="Password"
+          autoComplete="current-password"
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
