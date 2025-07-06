@@ -11,7 +11,7 @@ const router = express.Router();
 router.get(
   "/api/carrito/cantidad",
   verificarToken,
-  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE", "ROLE_CONSULTA"]),
+  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
   async (req, res) => {
     try {
       const userId = req.user?._id;
@@ -29,8 +29,13 @@ router.get(
 );
 
 // Agregar producto al carrito
-router.post('/api/carrito', async (req, res) => {
-  const usuarioId = req.session.user?._id;
+router.post(
+  '/api/carrito', 
+  verificarToken,
+  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
+  async (req, res) => {
+    console.log(1);
+  const usuarioId = req.user?._id;
   const { productoId, cantidad } = req.body;
 
   if (!usuarioId || !productoId || !cantidad) {
@@ -104,7 +109,11 @@ router.post('/api/carrito', async (req, res) => {
 });
 
 // Eliminar producto del carrito (marca como eliminado)
-router.delete('/api/carrito', async (req, res) => {
+router.delete(
+  '/api/carrito', 
+  verificarToken,
+  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
+  async (req, res) => {
   const { usuarioId, productoId } = req.body;
 
   if (!usuarioId || !productoId) {
@@ -138,7 +147,11 @@ router.delete('/api/carrito', async (req, res) => {
 });
 
 // Vaciar carrito (solo estado 1 y 2)
-router.delete('/api/carrito/vaciar', async (req, res) => {
+router.delete(
+  '/api/carrito/vaciar', 
+  verificarToken,
+  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
+  async (req, res) => {
   const { usuarioId } = req.body;
 
   if (!usuarioId) {
@@ -175,7 +188,11 @@ router.delete('/api/carrito/vaciar', async (req, res) => {
 });
 
 // Reservar producto del carrito (cambia estado a 2)
-router.put('/api/carrito/reservar', async (req, res) => {
+router.put(
+  '/api/carrito/reservar', 
+  verificarToken,
+  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
+  async (req, res) => {
   const { usuarioId, productoId } = req.body;
 
   if (!usuarioId || !productoId) {
@@ -208,7 +225,11 @@ router.put('/api/carrito/reservar', async (req, res) => {
 });
 
 // Actualizar cantidad de un producto en el carrito (sin modificar estado)
-router.put('/api/carrito/cantidad', async (req, res) => {
+router.put(
+  '/api/carrito/cantidad', 
+  verificarToken,
+  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
+  async (req, res) => {
   const { usuarioId, productoId, cantidad } = req.body;
 
   if (!usuarioId || !productoId || cantidad == null) {
@@ -250,7 +271,11 @@ router.put('/api/carrito/cantidad', async (req, res) => {
 });
 
 // Confirmar compra: pasa productos activos o reservados a estado 3
-router.put('/api/carrito/comprar', async (req, res) => {
+router.put(
+  '/api/carrito/comprar', 
+  verificarToken,
+  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
+  async (req, res) => {
   const { usuarioId, productos: productosFront } = req.body;
 
   if (!usuarioId || !Array.isArray(productosFront)) {
@@ -387,7 +412,11 @@ router.put('/api/carrito/comprar', async (req, res) => {
 });
 
 // Obtener productos del carrito con validaciones
-router.get('/api/carrito/:idUsuario', async (req, res) => {
+router.get(
+  '/api/carrito/:idUsuario', 
+  verificarToken,
+  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
+  async (req, res) => {
   try {
     const { idUsuario } = req.params;
 

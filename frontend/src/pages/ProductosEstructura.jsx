@@ -11,6 +11,44 @@ const ProductosEstructura = ({ user, basedir }) => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const agregarAlCarrito = async (productoId, cantidad) => {
+    if (!user) return;
+
+    try {
+      const res = await apiFetch(`/api/carrito`, {
+        method: "POST",
+        body: JSON.stringify({ productoId, cantidad }),
+      });
+
+      if (res.ok) {
+        const cartRes = await apiFetch(`/api/carrito/cantidad`);
+        const cartData = await cartRes.json();
+
+        const cartWrapper = document.querySelector("#cart-wrapper");
+        const cartCount = document.querySelector("#cart-count");
+
+        if (cartWrapper) cartWrapper.style.display = "inline-block";
+        if (cartCount) cartCount.textContent = cartData.cantidad;
+      }
+    } catch (error) {
+      console.error("Fallo al agregar al carrito", error);
+    }
+  };
+
+  const validarCantidad = (productoId, cantidad, max) => {
+    const errorDiv = document.querySelector(`#error-stock-${productoId}`);
+    if (cantidad < 1 || cantidad > max) {
+      if (errorDiv) {
+        errorDiv.textContent = `La cantidad debe estar entre 1 y ${max}.`;
+        errorDiv.style.display = "block";
+        setTimeout(() => (errorDiv.style.display = "none"), 3000);
+      }
+      return false;
+    }
+    if (errorDiv) errorDiv.style.display = "none";
+    return true;
+  };
+
   useEffect(() => {
     const cargarProductos = async () => {
       try {
@@ -47,7 +85,16 @@ const ProductosEstructura = ({ user, basedir }) => {
             {productos.map(producto => (
               <div key={producto._id} className="col">
                 {/* Componente ProductoCard irá acá */}
-                <ProductosCard producto={producto} onAgregar={onAgregar} />
+
+                <ProductosCard
+                  producto={producto}
+                  onAgregar={(id, cantidad) => {
+                    if (validarCantidad(id, cantidad, producto.stock)) {
+                      agregarAlCarrito(id, cantidad);
+                    }
+                  }}
+                />
+
               </div>
             ))}
           </div>
