@@ -88,14 +88,14 @@ router.post("/api/loginForm", async (req, res) => {
 });
 
 // Login con firebase (Google)
-router.post("/api/loginFirebase", async (req, res) => {
+router.post("/api/loginGoogle", async (req, res) => {
   const { proveedor, idSocial, email, nombre, apellido } = req.body;
 
   try {
     if (!proveedor || !idSocial || !email) {
       throw new Error("Datos incompletos");
     }
-
+    
     const sessionUser = {
       usuario: email, // si no usás username aparte, podés usar el email como identificador
       nombre: nombre || "",
@@ -106,10 +106,10 @@ router.post("/api/loginFirebase", async (req, res) => {
     };
 
     const { token, payload } = generarTokenUsuario(sessionUser, proveedor);
-
+    
     // Opcional: guardar en sesión también, si mantenés alguna parte con session
     req.session.user = payload;
-
+    
     res.json({
       success: true,
       redirect: `${res.locals.basedir}/productos`,

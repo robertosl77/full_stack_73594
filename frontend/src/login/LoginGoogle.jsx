@@ -23,8 +23,7 @@
  *    entonces se guarda en sessionStorage y se redirige automáticamente.
  */
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
@@ -42,7 +41,7 @@ const firebaseConfig = {
 const auth = getAuth(initializeApp(firebaseConfig));
 
 function LoginGoogle() {
-  const navigate = useNavigate();
+  const [error, setError] = useState("");
 
   const loginGoogle = async () => {
     try {
@@ -63,7 +62,7 @@ function LoginGoogle() {
         rol: 'operador'
       };        
 
-      const res = await fetch(`http://localhost:8081/integrador3/api/loginFirebase`, {
+      const res = await fetch(`http://localhost:8081/integrador3/api/loginGoogle`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(datos)
@@ -71,34 +70,46 @@ function LoginGoogle() {
 
       const resData = await res.json();
 
-      if (resData.success && resData.token) {
+      // 🔐 Limpieza de seguridad
+      localStorage.removeItem("token");
+            
+      console.log(resData);
+
+      if (resData.success) {
         localStorage.setItem("token", resData.token);
-        navigate(resData.redirect || '/');
+        window.location.href = resData.redirect;
       } else {
-        alert("Falló el login en backend: " + resData.error);
-        navigate('/SGE/Login');
+        setError("Login fallido: " + resData.error);
       }
     } catch (error) {
       console.error("Error completo:", error);
 
       if (error.code === 'auth/account-exists-with-different-credential') {
-        alert(`Este email ya está registrado con otro proveedor. Usá el método correspondiente (${error.customData?.email}).`);
+        setError(`Este email ya está registrado con otro proveedor. Usá el método correspondiente (${error.customData?.email}).`);
       } else if (error.code !== 'auth/popup-closed-by-user') {
-        alert("Error de autenticación: " + error.message);
+        setError("Error de autenticación: " + error.message);
       }
     }
   };
 
   return (
-    <button
-      onClick={loginGoogle}
-      type="button" 
-      id="googleLoginBtn"
-      className="btn btn-danger w-100" 
-      style={{ backgroundColor: '#db4437', marginTop: '10px' }}
-    >
-      Iniciar sesión con Google
-    </button>
+    <>
+      <button
+        onClick={loginGoogle}
+        type="button" 
+        id="googleLoginBtn"
+        className="btn btn-danger w-100" 
+        style={{ backgroundColor: '#db4437', marginTop: '10px' }}
+      >
+        Iniciar sesión con Google
+      </button>
+
+      {error && (
+        <div className="alert alert-danger mt-3" role="alert">
+          {error}
+        </div>
+      )}    
+    </>
   );
 }
 
