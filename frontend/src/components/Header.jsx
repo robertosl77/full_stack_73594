@@ -14,9 +14,9 @@ const Header = ({ user }) => {
       const res = await apiFetch(`/api/carrito/cantidad`, {
         method: "GET",
       });
-      const data = await res.json()
-      setCartCount(data.cantidad || 0)
-      setShowCart(data.cantidad > 0)
+      const resData = await res;
+      setCartCount(resData.cantidad || 0)
+      setShowCart(resData.cantidad > 0)
     } catch (error) {
       console.error("Error al actualizar carrito:", error)
     }
