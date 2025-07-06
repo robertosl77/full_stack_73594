@@ -95,31 +95,124 @@ router.post("/api/loginGoogle", async (req, res) => {
     if (!proveedor || !idSocial || !email) {
       throw new Error("Datos incompletos");
     }
-    
-    const sessionUser = {
-      usuario: email, // si no usás username aparte, podés usar el email como identificador
-      nombre: nombre || "",
-      apellido: apellido || "",
-      email,
-      rol: "ROLE_VISTA",  // 🔐 fuerza el rol mínimo para Google/Firebase
-      origen: proveedor,
-    };
 
+    // Reutiliza la lógica de asociación
+    const sessionUser = await procesarLoginSocialMultiple({ proveedor, idSocial, email, nombre, apellido });
+
+    // Generar token (incluye todos los datos del usuario)
     const { token, payload } = generarTokenUsuario(sessionUser, proveedor);
-    
-    // Opcional: guardar en sesión también, si mantenés alguna parte con session
+
+    // Guarda en sesión si querés mantener compatibilidad
     req.session.user = payload;
-    
+
     res.json({
       success: true,
       redirect: `${res.locals.basedir}/productos`,
       token,
     });
   } catch (err) {
-    console.error("❌ Error en /loginFirebase:", err);
+    console.error("❌ Error en /loginGoogle:", err);
     res.status(500).json({ success: false, error: "Error al procesar login con Google" });
   }
 });
+
+// Nueva ruta para Facebook directo
+router.post("/api/loginFacebook", async (req, res) => {
+  const { accessToken } = req.body;
+
+  try {
+    if (!accessToken) throw new Error("Falta accessToken");
+
+    // Obtener perfil desde Facebook Graph API
+    const fbRes = await fetch(`https://graph.facebook.com/me?fields=id,email,first_name,last_name&access_token=${accessToken}`);
+    const userInfo = await fbRes.json();
+
+    if (!userInfo?.email) throw new Error("Facebook no devolvió email");
+
+    const sessionUser = await procesarLoginSocialMultiple({
+      proveedor: 'facebook.com',
+      idSocial: userInfo.id,
+      email: userInfo.email,
+      nombre: userInfo.first_name,
+      apellido: userInfo.last_name
+    });
+
+    const { token, payload } = generarTokenUsuario(sessionUser, 'facebook.com');
+    req.session.user = payload;
+
+    res.json({ success: true, redirect: `${res.locals.basedir}/productos`, token });
+
+  } catch (err) {
+    console.error("Error en /loginFacebook:", err);
+    res.status(500).json({ success: false, error: "Error al procesar login con Facebook" });
+  }
+});
+
+// Nueva función que maneja múltiples redes sociales
+async function procesarLoginSocialMultiple({ proveedor, idSocial, email, nombre, apellido }) {
+  console.info("Procesando login social:", { proveedor, idSocial, email });
+
+  let user = await Usuario.findOne({ "rrss.idSocial": idSocial, "rrss.proveedor": proveedor });
+
+  if (user) {
+    console.info("Usuario encontrado por idSocial:", user.email);
+
+    const rrssIndex = user.rrss.findIndex((r) => r.proveedor === proveedor && r.idSocial === idSocial);
+    if (rrssIndex >= 0 && user.rrss[rrssIndex].email !== email) {
+      user.rrss[rrssIndex].email = email;
+      await user.save();
+      console.info("Email actualizado para el proveedor:", proveedor);
+    }
+  } else {
+    user = await Usuario.findOne({ email });
+
+    if (user) {
+      console.info("Usuario encontrado por email:", email);
+
+      const existingProvider = user.rrss.find((r) => r.proveedor === proveedor);
+
+      if (!existingProvider) {
+        if (!Array.isArray(user.rrss)) {
+          user.rrss = user.rrss ? [user.rrss] : [];
+        }
+
+        user.rrss.push({ proveedor, idSocial, email });
+        await user.save();
+        console.info("Proveedor", proveedor, "agregado al usuario existente");
+      } else {
+        const rrssIndex = user.rrss.findIndex((r) => r.proveedor === proveedor);
+        if (user.rrss[rrssIndex].idSocial !== idSocial) {
+          user.rrss[rrssIndex].idSocial = idSocial;
+          await user.save();
+          console.info("IdSocial actualizado para el proveedor:", proveedor);
+        }
+      }
+    } else {
+      user = new Usuario({
+        usuario: email.split("@")[0],
+        nombre,
+        apellido,
+        email,
+        rol: "ROLE_VISTA",  // 👈 consistente con lo definido en el loginGoogle
+        password: "~~",
+        rrss: [{ proveedor, idSocial, email }],
+      });
+      await user.save();
+      console.info("Nuevo usuario creado:", email);
+    }
+  }
+
+  return {
+    _id: user._id,
+    usuario: user.usuario,
+    rol: user.rol,
+    nombre: user.nombre,
+    apellido: user.apellido,
+    email: user.email,
+    proveedor: proveedor,
+  };
+}
+
 
 
 
@@ -167,105 +260,6 @@ router.post("/api/login", async (req, res) => {
 
 
 
-// Nueva ruta para Facebook directo
-router.post("/loginFacebookDirect", async (req, res) => {
-  const { proveedor, idSocial, email, nombre, apellido } = req.body
-
-  try {
-    console.info("=== LOGIN FACEBOOK DIRECTO ===")
-    console.info("Datos recibidos:", { proveedor, idSocial, email, nombre, apellido })
-
-    if (!proveedor || !idSocial || !email) {
-      throw new Error("Datos incompletos de Facebook")
-    }
-
-    // Usar la misma función que Firebase pero sin restricciones
-    const sessionUser = await procesarLoginSocialMultiple({ proveedor, idSocial, email, nombre, apellido })
-
-    req.session.user = sessionUser
-    console.info("✅ Sesión creada para usuario Facebook:", sessionUser.email)
-
-    res.json({ success: true, redirect: `${res.locals.basedir}/productos` })
-  } catch (err) {
-    console.error("Error en /loginFacebookDirect:", err)
-    res.status(500).json({ success: false, error: "Error al procesar login con Facebook" })
-  }
-})
-
-// Nueva función que maneja múltiples redes sociales
-async function procesarLoginSocialMultiple({ proveedor, idSocial, email, nombre, apellido }) {
-  console.log(111111111111111);
-
-  console.info("Procesando login social:", { proveedor, idSocial, email })
-
-  // 1. Buscar si existe un usuario con este idSocial y proveedor
-  let user = await Usuario.findOne({ "rrss.idSocial": idSocial, "rrss.proveedor": proveedor })
-
-  if (user) {
-    console.info("Usuario encontrado por idSocial:", user.email)
-
-    // Actualizar el email si cambió
-    const rrssIndex = user.rrss.findIndex((r) => r.proveedor === proveedor && r.idSocial === idSocial)
-    if (rrssIndex >= 0 && user.rrss[rrssIndex].email !== email) {
-      user.rrss[rrssIndex].email = email
-      await user.save()
-      console.info("Email actualizado para el proveedor:", proveedor)
-    }
-  } else {
-    // 2. Si no existe por idSocial, buscar por email
-    user = await Usuario.findOne({ email })
-
-    if (user) {
-      console.info("Usuario encontrado por email:", email)
-
-      // Verificar si ya tiene este proveedor
-      const existingProvider = user.rrss.find((r) => r.proveedor === proveedor)
-
-      if (!existingProvider) {
-        // Agregar este proveedor a sus redes sociales
-        // Asegurarse de que rrss sea un array
-        if (!Array.isArray(user.rrss)) {
-          // Migrar de objeto a array si es necesario
-          user.rrss = user.rrss ? [user.rrss] : []
-        }
-
-        user.rrss.push({ proveedor, idSocial, email })
-        await user.save()
-        console.info("Proveedor", proveedor, "agregado al usuario existente")
-      } else {
-        // Actualizar el idSocial si cambió
-        const rrssIndex = user.rrss.findIndex((r) => r.proveedor === proveedor)
-        if (user.rrss[rrssIndex].idSocial !== idSocial) {
-          user.rrss[rrssIndex].idSocial = idSocial
-          await user.save()
-          console.info("IdSocial actualizado para el proveedor:", proveedor)
-        }
-      }
-    } else {
-      // 3. Si no existe, crear un nuevo usuario
-      user = new Usuario({
-        usuario: email.split("@")[0],
-        nombre,
-        apellido,
-        email,
-        rol: "ROLE_CLIENTE",
-        password: "~~",
-        rrss: [{ proveedor, idSocial, email }],
-      })
-      await user.save()
-      console.info("Nuevo usuario creado:", email)
-    }
-  }
-
-  return {
-    _id: user._id,
-    rol: user.rol,
-    nombre: user.nombre,
-    apellido: user.apellido,
-    email: user.email,
-    proveedor: proveedor,
-  }
-}
 
 
 

@@ -1,69 +1,111 @@
-// src/login/LoginFacebook.jsx
-import React, { useEffect } from "react";
+/**
+ * COMPONENTE REUTILIZABLE: LoginFacebook
+ * ------------------------------------------------------------
+ * Este componente permite iniciar sesión con Facebook vía Firebase.
+ * Se puede copiar y pegar en cualquier proyecto React sin necesidad
+ * de importar firebase-config por separado.
+ * 
+ * ✅ USO:
+ * 
+ * 1. Asegurate de tener Firebase instalado:
+ *    npm install firebase
+ * 
+ * 2. En tu backend, implementá una ruta POST /loginFacebook
+ *    que reciba: { email, nombre, apellido, proveedor, idSocial }
+ * 
+ * 3. Desde cualquier componente:
+ *    import LoginFacebook from './LoginFacebook';
+ *    ...
+ *    <LoginFacebook />
+ * 
+ * 4. Si tu backend responde con:
+ *    { success: true, user: { username, rol }, redirect: '/SGE/Afectaciones' }
+ *    entonces se guarda en sessionStorage y se redirige automáticamente.
+ * 
+ * 5. Asegurate de tener configurado Facebook como proveedor
+ *    en la consola de Firebase y haber agregado el dominio autorizado.
+ */
 
-const LoginFacebook = () => {
+import React, { useEffect, useState } from 'react';
+
+/* global FB */
+
+function LoginFacebook() {
+  const [error, setError] = useState("");
+
   useEffect(() => {
-    // Carga SDK de Facebook
     window.fbAsyncInit = function () {
-      window.FB.init({
-        appId: "720584530950391", // ← Reemplazar si cambia
-        cookie: true,
-        xfbml: true,
-        version: "v19.0",
+      FB.init({
+          appId: '2439166789800873', // Tu App ID
+          cookie: true,
+          xfbml: true,
+          version: 'v18.0'
       });
     };
 
     (function (d, s, id) {
-      const fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) return;
-      const js = d.createElement(s);
-      js.id = id;
+      const js = d.createElement(s); js.id = id;
       js.src = "https://connect.facebook.net/es_LA/sdk.js";
-      fjs.parentNode.insertBefore(js, fjs);
-    })(document, "script", "facebook-jssdk");
+      d.getElementsByTagName(s)[0].parentNode.insertBefore(js, d.getElementsByTagName(s)[0]);
+    })(document, 'script', 'facebook-jssdk');
   }, []);
 
-  const handleFacebookLogin = () => {
-    window.FB.login(
-      function (response) {
-        if (response.authResponse) {
-          window.FB.api("/me", { fields: "name,email" }, async function (userData) {
-            const [nombre, apellido] = userData.name.split(" ");
+  const iniciarLogin = () => {
+    FB.login(response => {
+      if (response.authResponse) {
+        loginBackend(response.authResponse.accessToken);
+      } else {
+        alert('El usuario canceló el login o no autorizó la app.');
+      }
+    }, { scope: 'email' });
+  };
 
-            const datos = {
-              proveedor: "facebook.com",
-              idSocial: userData.id,
-              email: userData.email,
-              nombre,
-              apellido,
-            };
+  const loginBackend = async (accessToken) => {
+    try {
+      const res = await fetch(`http://localhost:8081/integrador3/api/loginFacebook`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accessToken })
+      });
 
-            const res = await fetch("/integrador3/loginFirebase", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(datos),
-            });
+      const resData = await res.json();
+      console.log(resData);
 
-            const json = await res.json();
-            if (json.success) {
-              window.location.href = json.redirect;
-            } else {
-              alert("Falló el login en backend: " + json.error);
-            }
-          });
-        } else {
-          alert("Login cancelado o no autorizado.");
-        }
-      },
-      { scope: "public_profile,email" }
-    );
+      // 🔐 Limpieza de seguridad
+      localStorage.removeItem("token");
+
+      if (resData.success) {
+        localStorage.setItem("token", resData.token);
+        window.location.href = resData.redirect;
+      } else {
+        setError("Login fallido: " + resData.error);
+      }
+    } catch (error) {
+      console.error('Error enviando el token al backend:', error);
+      alert('Error de red o del servidor');
+    }
   };
 
   return (
-    <button className="btn btn-primary w-100 mt-2" onClick={handleFacebookLogin}>
-      Iniciar sesión con Facebook
-    </button>
+    <>
+      <button 
+        type="button" 
+        id="facebookLoginBtn"    
+        className="btn btn-primary w-100" 
+        style={{ backgroundColor: '#4267B2', marginTop: '10px' }}
+        onClick={iniciarLogin} 
+      >
+        Iniciar sesión con Facebook
+      </button>
+
+      {error && (
+        <div className="alert alert-danger mt-3" role="alert">
+          {error}
+        </div>
+      )}    
+    </>
   );
-};
+}
 
 export default LoginFacebook;

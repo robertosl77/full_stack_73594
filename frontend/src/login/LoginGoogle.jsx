@@ -73,8 +73,6 @@ function LoginGoogle() {
       // 🔐 Limpieza de seguridad
       localStorage.removeItem("token");
             
-      console.log(resData);
-
       if (resData.success) {
         localStorage.setItem("token", resData.token);
         window.location.href = resData.redirect;
@@ -95,11 +93,11 @@ function LoginGoogle() {
   return (
     <>
       <button
-        onClick={loginGoogle}
         type="button" 
         id="googleLoginBtn"
         className="btn btn-danger w-100" 
         style={{ backgroundColor: '#db4437', marginTop: '10px' }}
+        onClick={loginGoogle}
       >
         Iniciar sesión con Google
       </button>
