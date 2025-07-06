@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
-import Productos from "./pages/Productos"
+import ProductosEstructura from "./pages/ProductosEstructura"
 import Login from "./login/Login"
 import Nosotros from "./pages/Nosotros"
 import Contacto from "./pages/Contacto"
@@ -49,7 +49,7 @@ function App() {
         
         {/* Rutas con el basedir */}
         <Route path={`${basedir}/login`} element={user ? <Navigate to={`${basedir}/productos`} /> : <Login />} />
-        <Route path={`${basedir}/productos`} element={user ? <Productos user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
+        <Route path={`${basedir}/productos`} element={user ? <ProductosEstructura user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
         <Route path={`${basedir}/nosotros`} element={user ? <Nosotros user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
         <Route path={`${basedir}/contacto`} element={user ? <Contacto user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
       </Routes>

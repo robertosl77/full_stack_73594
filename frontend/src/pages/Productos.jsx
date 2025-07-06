@@ -1,88 +1,93 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Header from "../components/Header"
-import Footer from "../components/Footer"
-import ModalCarrito from "../components/ModalCarrito"
+import { useState, useEffect } from "react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import ModalCarrito from "../components/ModalCarrito";
+import { apiFetch } from "../utils/apiFetch";
 
-const Productos = ({ user, basedir = "/integrador3" }) => {
-  const [productos, setProductos] = useState([])
-  const [loading, setLoading] = useState(true)
+const Productos = ({ user, basedir }) => {
+  const [productos, setProductos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const cargarProductos = async () => {
       try {
-        const res = await fetch(`${basedir}/api/productos`)
-        const data = await res.json()
-        setProductos(data)
+        const res = await apiFetch(`/api/productos`, {
+          method: "GET",
+        });        
+        const resData = await res;
+        setProductos(resData.productos);
+        console.log(resData);
+        console.log(resData.productos);
       } catch (error) {
-        console.error("Error al cargar productos:", error)
+        console.error("Error al cargar productos:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    cargarProductos()
-  }, [basedir])
+    cargarProductos();
+  }, [basedir]);
 
   const agregarAlCarrito = async (productoId, cantidad) => {
-    if (!user) return
+    if (!user) return;
 
     try {
       const res = await fetch(`${basedir}/carrito`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productoId, cantidad }),
-      })
+      });
 
       if (res.ok) {
-        const cartRes = await fetch(`${basedir}/carrito/cantidad`)
-        const cartData = await cartRes.json()
+        const cartRes = await fetch(`${basedir}/carrito/cantidad`);
+        const cartData = await cartRes.json();
 
-        const cartWrapper = document.querySelector("#cart-wrapper")
-        const cartCount = document.querySelector("#cart-count")
+        const cartWrapper = document.querySelector("#cart-wrapper");
+        const cartCount = document.querySelector("#cart-count");
 
-        if (cartWrapper) cartWrapper.style.display = "inline-block"
-        if (cartCount) cartCount.textContent = cartData.cantidad
+        if (cartWrapper) cartWrapper.style.display = "inline-block";
+        if (cartCount) cartCount.textContent = cartData.cantidad;
       }
     } catch (error) {
-      console.error("Fallo al agregar al carrito", error)
+      console.error("Fallo al agregar al carrito", error);
     }
-  }
+  };
 
   const validarCantidad = (productoId, cantidad, max) => {
-    const errorDiv = document.querySelector(`#error-stock-${productoId}`)
+    const errorDiv = document.querySelector(`#error-stock-${productoId}`);
 
     if (cantidad < 1 || cantidad > max) {
       if (errorDiv) {
-        errorDiv.textContent = `La cantidad debe estar entre 1 y ${max}.`
-        errorDiv.style.display = "block"
+        errorDiv.textContent = `La cantidad debe estar entre 1 y ${max}.`;
+        errorDiv.style.display = "block";
         setTimeout(() => {
-          errorDiv.style.display = "none"
-        }, 3000)
+          errorDiv.style.display = "none";
+        }, 3000);
       }
-      return false
+      return false;
     }
 
-    if (errorDiv) errorDiv.style.display = "none"
-    return true
-  }
+    if (errorDiv) errorDiv.style.display = "none";
+    return true;
+  };
 
-  const titleCase = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+  const titleCase = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
   const updateCartCount = async () => {
     try {
-      const res = await fetch(`${basedir}/carrito/cantidad`)
-      const data = await res.json()
-      const cartWrapper = document.querySelector("#cart-wrapper")
-      const cartCount = document.querySelector("#cart-count")
+      const res = await fetch(`${basedir}/carrito/cantidad`);
+      const data = await res.json();
+      const cartWrapper = document.querySelector("#cart-wrapper");
+      const cartCount = document.querySelector("#cart-count");
 
-      if (cartWrapper) cartWrapper.style.display = data.cantidad > 0 ? "inline-block" : "none"
-      if (cartCount) cartCount.textContent = data.cantidad
+      if (cartWrapper) cartWrapper.style.display = data.cantidad > 0 ? "inline-block" : "none";
+      if (cartCount) cartCount.textContent = data.cantidad;
     } catch (error) {
-      console.error("Error al actualizar carrito:", error)
+      console.error("Error al actualizar carrito:", error);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -91,12 +96,12 @@ const Productos = ({ user, basedir = "/integrador3" }) => {
           <span className="visually-hidden">Cargando...</span>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <>
-      <Header user={user}/>
+      <Header user={user} />
 
       <div id="main-content" className="container-fluid pt-5 mt-4">
         <div className="container-sm mt-3">
@@ -155,11 +160,11 @@ const Productos = ({ user, basedir = "/integrador3" }) => {
                       disabled={producto.stock === 0}
                       style={producto.stock === 0 ? { background: "gray", cursor: "not-allowed" } : {}}
                       onClick={() => {
-                        const cantidadInput = document.querySelector(`#cantidad${producto._id}`)
-                        const cantidad = Number.parseInt(cantidadInput?.value || "1", 10)
+                        const cantidadInput = document.querySelector(`#cantidad${producto._id}`);
+                        const cantidad = Number.parseInt(cantidadInput?.value || "1", 10);
 
                         if (validarCantidad(producto._id, cantidad, producto.stock)) {
-                          agregarAlCarrito(producto._id, cantidad)
+                          agregarAlCarrito(producto._id, cantidad);
                         }
                       }}
                     >
@@ -176,7 +181,7 @@ const Productos = ({ user, basedir = "/integrador3" }) => {
       <ModalCarrito user={user} basedir={basedir} onUpdateCart={updateCartCount} />
       <Footer />
     </>
-  )
-}
+  );
+};
 
-export default Productos
+export default Productos;

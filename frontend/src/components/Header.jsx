@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { logout } from "../login/Logout";
 import { apiFetch } from "../utils/apiFetch";
-import { getBasedirFromToken } from "../utils/tokenUtils"
+import { getBasedirFromToken } from "../utils/tokenUtils";
 
 const Header = ({ user }) => {
-  const basedir = getBasedirFromToken();  
-  
-  const [cartCount, setCartCount] = useState(0)
-  const [showCart, setShowCart] = useState(false)
+  const basedir = getBasedirFromToken();
+
+  const [cartCount, setCartCount] = useState(0);
+  const [showCart, setShowCart] = useState(false);
 
   const updateCartCount = useCallback(async () => {
     try {
@@ -15,20 +15,20 @@ const Header = ({ user }) => {
         method: "GET",
       });
       const resData = await res;
-      setCartCount(resData.cantidad || 0)
-      setShowCart(resData.cantidad > 0)
+      setCartCount(resData.cantidad || 0);
+      setShowCart(resData.cantidad > 0);
     } catch (error) {
-      console.error("Error al actualizar carrito:", error)
+      console.error("Error al actualizar carrito:", error);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (user) {
-      updateCartCount()
+      updateCartCount();
     }
-  }, [user, updateCartCount])
+  }, [user, updateCartCount]);
 
-  const isAdmin = user?.rol === "ROLE_ADMINISTRADOR"
+  const isAdmin = user?.rol === "ROLE_ADMINISTRADOR";
 
   return (
     <header>
@@ -134,7 +134,7 @@ const Header = ({ user }) => {
         </div>
       </nav>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;
