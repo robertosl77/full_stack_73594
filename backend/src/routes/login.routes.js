@@ -32,6 +32,7 @@ router.post("/api/loginInvitado", async (req, res) => {
     }
 
     const sessionUser = {
+      _id: usuario, // ⚠️ mismo string, pero ahora compatible con rutas que usan req.user._id
       usuario,
       nombre: nombre || "",
       apellido: apellido || "",
@@ -75,7 +76,6 @@ router.post("/api/loginForm", async (req, res) => {
     req.session.user = payload;
 
     console.info("✅ Login exitoso:", user.usuario);
-    console.log(res.locals.basedir);
     res.json({
       success: true,
       redirect: `${res.locals.basedir}/productos`,
@@ -193,7 +193,7 @@ async function procesarLoginSocialMultiple({ proveedor, idSocial, email, nombre,
         nombre,
         apellido,
         email,
-        rol: "ROLE_VISTA",  // 👈 consistente con lo definido en el loginGoogle
+        rol: "ROLE_CONSULTA", // 👈 actualizado
         password: "~~",
         rrss: [{ proveedor, idSocial, email }],
       });
@@ -212,6 +212,5 @@ async function procesarLoginSocialMultiple({ proveedor, idSocial, email, nombre,
     proveedor: proveedor,
   };
 }
-
 
 export default router

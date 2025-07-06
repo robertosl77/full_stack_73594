@@ -96,7 +96,7 @@ const Productos = ({ user, basedir = "/integrador3" }) => {
 
   return (
     <>
-      <Header user={user} basedir={basedir} />
+      <Header user={user}/>
 
       <div id="main-content" className="container-fluid pt-5 mt-4">
         <div className="container-sm mt-3">

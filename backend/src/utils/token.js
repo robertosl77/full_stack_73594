@@ -2,16 +2,18 @@ import jwt from "jsonwebtoken";
 
 export const generarTokenUsuario = (usuarioBase, origen = "loginLocal") => {
   const payload = {
+    _id: usuarioBase._id.toString(), // 👈 este campo es clave
     usuario: usuarioBase.usuario,
     nombre: usuarioBase.nombre || "",
     apellido: usuarioBase.apellido || "",
     email: usuarioBase.email || "",
     rol: usuarioBase.rol || "ROLE_CLIENTE",
     origen,
+    basedir: process.env.BASEDIR || "",
   };
 
   const token = jwt.sign(payload, process.env.JWT_SECRET || "clave-secreta", {
-    expiresIn: "2h",
+    expiresIn: "10s",
   });
 
   return { token, payload };
@@ -32,4 +34,11 @@ export const verificarToken = (req, res, next) => {
   } catch (err) {
     res.status(403).json({ error: "Token inválido" });
   }
+};
+
+export const permitirSolo = (rolesPermitidos) => (req, res, next) => {
+  if (!rolesPermitidos.includes(req.user.rol)) {
+    return res.status(403).json({ error: "Acceso denegado" });
+  }
+  next();
 };

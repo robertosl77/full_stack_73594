@@ -16,7 +16,13 @@ function App() {
     if (token) {
       try {
         const userData = jwtDecode(token);
-        setUser(userData);
+        const now = Date.now() / 1000; // en segundos
+        if (userData.exp && userData.exp < now) {
+          console.warn("Token expirado");
+          localStorage.removeItem("token");
+        } else {
+          setUser(userData);
+        }
       } catch (err) {
         console.error("Token inválido:", err);
         localStorage.removeItem("token");

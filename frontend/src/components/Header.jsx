@@ -1,20 +1,26 @@
 import { useState, useEffect, useCallback } from "react";
 import { logout } from "../login/Logout";
+import { apiFetch } from "../utils/apiFetch";
+import { getBasedirFromToken } from "../utils/tokenUtils"
 
-const Header = ({ user, basedir = "/integrador3" }) => {
+const Header = ({ user }) => {
+  const basedir = getBasedirFromToken();  
+  
   const [cartCount, setCartCount] = useState(0)
   const [showCart, setShowCart] = useState(false)
 
   const updateCartCount = useCallback(async () => {
     try {
-      const res = await fetch(`${basedir}/carrito/cantidad`)
+      const res = await apiFetch(`/api/carrito/cantidad`, {
+        method: "GET",
+      });
       const data = await res.json()
       setCartCount(data.cantidad || 0)
       setShowCart(data.cantidad > 0)
     } catch (error) {
       console.error("Error al actualizar carrito:", error)
     }
-  }, [basedir])
+  }, [])
 
   useEffect(() => {
     if (user) {
