@@ -37,7 +37,7 @@ router.post("/api/loginInvitado", async (req, res) => {
       nombre: nombre || "",
       apellido: apellido || "",
       email,
-      rol: "ROLE_VISTA",
+      rol: "ROLE_CONSULTA",
       origen: proveedor,
     };
 
@@ -193,7 +193,7 @@ async function procesarLoginSocialMultiple({ proveedor, idSocial, email, nombre,
         nombre,
         apellido,
         email,
-        rol: "ROLE_CONSULTA", // 👈 actualizado
+        rol: "ROLE_CLIENTE", // 👈 actualizado
         password: "~~",
         rrss: [{ proveedor, idSocial, email }],
       });

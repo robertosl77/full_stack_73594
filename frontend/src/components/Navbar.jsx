@@ -15,7 +15,7 @@ function Navbar({ user }) {
 
   const updateCartCount = useCallback(async () => {
     try {
-      if (user.rol === 'ROLE_VISTA') {
+      if (user.rol === 'ROLE_CONSULTA') {
         return;
       }
       

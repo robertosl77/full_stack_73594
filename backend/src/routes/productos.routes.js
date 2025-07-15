@@ -10,7 +10,7 @@ const router = express.Router();
 router.get(
   '/api/productos',
   verificarToken,
-  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE", "ROLE_CONSULTA", "ROLE_VISTA"]),
+  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE", "ROLE_CONSULTA"]),
   async (req, res) => {
     try {
       let productos = await obtenerProductosConDescuento();
@@ -25,7 +25,7 @@ router.get(
         productos,
         tieneCarrito: productosActivos.length > 0,
         cantidadCarrito: productosActivos.length,
-        esSoloVista: req.user.rol === 'ROLE_VISTA'
+        esSoloVista: req.user.rol === 'ROLE_CONSULTA'
       });
     } catch (error) {
       console.error(error);

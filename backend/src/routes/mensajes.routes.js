@@ -26,7 +26,7 @@ router.get(
       res.json({
         mensajes: contactosConTiempo,
         cantidadMensajes: contactosConTiempo.length,
-        esSoloVista: req.user.rol === 'ROLE_VISTA',
+        esSoloVista: req.user.rol === 'ROLE_CONSULTA',
       });
     } catch (error) {
       console.error(error);

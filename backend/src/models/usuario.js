@@ -8,7 +8,7 @@ const usuarioSchema = new mongoose.Schema({
   email: { type: String },
   rol: {
     type: String,
-    enum: ["ROLE_ADMINISTRADOR", "ROLE_CLIENTE", "ROLE_CONSULTA", "ROLE_VISTA"],
+    enum: ["ROLE_ADMINISTRADOR", "ROLE_CLIENTE", "ROLE_CONSULTA"],
     default: "ROLE_CLIENTE",
   },
   // Cambiamos rrss a un array para permitir múltiples proveedores

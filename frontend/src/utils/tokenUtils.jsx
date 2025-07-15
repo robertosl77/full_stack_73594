@@ -25,7 +25,7 @@ export function getRolFromToken() {
 
 export function esVista() {
   try {
-    return getRolFromToken() === "ROLE_VISTA"
+    return getRolFromToken() === "ROLE_CONSULTA"
   } catch (e) {
     return false
   }
