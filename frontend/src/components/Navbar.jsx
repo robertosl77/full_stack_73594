@@ -15,6 +15,10 @@ function Navbar({ user }) {
 
   const updateCartCount = useCallback(async () => {
     try {
+      if (user.rol === 'ROLE_VISTA') {
+        return;
+      }
+      
       const res = await apiFetch(`/api/carrito/cantidad`, { method: "GET" });
       const resData = await res;
       setCartCount(resData.cantidad || 0);
@@ -22,7 +26,7 @@ function Navbar({ user }) {
     } catch (error) {
       console.error("Error al actualizar carrito:", error);
     }
-  }, []);
+  }, [user]);
 
   const cerrarMenu = () => {
     const navbar = document.getElementById("navbarNav");

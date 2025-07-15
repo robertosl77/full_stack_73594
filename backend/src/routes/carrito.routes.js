@@ -13,6 +13,7 @@ router.get(
   verificarToken,
   permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
   async (req, res) => {
+    console.log(1);
     try {
       const userId = req.user?._id;
       const carrito = await Carrito.findOne({ usuario: userId });
@@ -34,7 +35,6 @@ router.post(
   verificarToken,
   permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
   async (req, res) => {
-    console.log(1);
   const usuarioId = req.user?._id;
   const { productoId, cantidad } = req.body;
 

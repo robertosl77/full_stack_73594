@@ -32,7 +32,7 @@ router.post("/api/loginInvitado", async (req, res) => {
     }
 
     const sessionUser = {
-      _id: usuario, // ⚠️ mismo string, pero ahora compatible con rutas que usan req.user._id
+      _id: null,
       usuario,
       nombre: nombre || "",
       apellido: apellido || "",
@@ -60,7 +60,7 @@ router.post("/api/loginForm", async (req, res) => {
   const { usuario, password } = req.body;
 
   try {
-    const user = await Usuario.findOne({ usuario });
+    const user = await Usuario.findOne({ usuario: usuario.toLowerCase() });
 
     if (!user) {
       return res.json({ success: false, error: "Usuario no encontrado" });

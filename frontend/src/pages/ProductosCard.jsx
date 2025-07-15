@@ -1,6 +1,6 @@
 import React from "react";
 
-const ProductosCard = ({ producto, onAgregar }) => {
+const ProductosCard = ({ producto, onAgregar, esVista }) => {
   const titleCase = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
   const validarCantidad = (productoId, cantidad, max) => {
@@ -62,28 +62,32 @@ const ProductosCard = ({ producto, onAgregar }) => {
 
         <p className="text-success fs-6">Disponibles: {producto.stock}</p>
 
-        <div className="mb-2">
-          <label htmlFor={`cantidad${producto._id}`}>Cantidad:</label>
-          <input
-            type="number"
-            id={`cantidad${producto._id}`}
-            min="1"
-            max={producto.stock}
-            defaultValue="1"
-            disabled={producto.stock === 0}
-          />
-        </div>
+        {!esVista && (
+          <>
+            <div className="mb-2">
+              <label htmlFor={`cantidad${producto._id}`}>Cantidad:</label>
+              <input
+                type="number"
+                id={`cantidad${producto._id}`}
+                min="1"
+                max={producto.stock}
+                defaultValue="1"
+                disabled={producto.stock === 0}
+              />
+            </div>
 
-        <div className="text-danger small mb-2" id={`error-stock-${producto._id}`} style={{ display: "none" }}></div>
+            <div className="text-danger small mb-2" id={`error-stock-${producto._id}`} style={{ display: "none" }}></div>
 
-        <button
-          className={`btn w-100 mt-auto ${producto.stock > 0 ? "btn-primary" : "btn-secondary"}`}
-          disabled={producto.stock === 0}
-          style={producto.stock === 0 ? { background: "gray", cursor: "not-allowed" } : {}}
-          onClick={handleAgregar}
-        >
-          {producto.stock > 0 ? "AGREGAR" : "Sin stock"}
-        </button>
+            <button
+              className={`btn w-100 mt-auto ${producto.stock > 0 ? "btn-primary" : "btn-secondary"}`}
+              disabled={producto.stock === 0}
+              style={producto.stock === 0 ? { background: "gray", cursor: "not-allowed" } : {}}
+              onClick={handleAgregar}
+            >
+              {producto.stock > 0 ? "AGREGAR" : "Sin stock"}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import ModalCarrito from "../components/ModalCarrito";
 import { useState, useEffect } from "react";
 import { apiFetch } from "../utils/apiFetch";
 import ProductosCard from "./ProductosCard";
+import { esVista } from "../utils/tokenUtils";
 
 const ProductosEstructura = ({ user, basedir }) => {
   const [productos, setProductos] = useState([]);
@@ -73,6 +74,8 @@ const ProductosEstructura = ({ user, basedir }) => {
     );
   }
 
+  const rolVista = esVista();
+
   return (
     <>
       <main className="container-fluid pt-5 mt-2 mb-5">
@@ -90,6 +93,7 @@ const ProductosEstructura = ({ user, basedir }) => {
                       agregarAlCarrito(id, cantidad);
                     }
                   }}
+                  esVista={rolVista}
                 />
 
               </div>

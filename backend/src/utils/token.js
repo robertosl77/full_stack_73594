@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 export const generarTokenUsuario = (usuarioBase, origen = "loginLocal") => {
   const payload = {
-    _id: usuarioBase._id.toString(), // 👈 este campo es clave
+    _id: usuarioBase._id, // 👈 este campo es clave
     usuario: usuarioBase.usuario,
     nombre: usuarioBase.nombre || "",
     apellido: usuarioBase.apellido || "",
