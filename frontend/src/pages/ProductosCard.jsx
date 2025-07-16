@@ -21,7 +21,6 @@ const ProductosCard = ({ producto, onAgregar, esVista }) => {
     const cantidad = parseInt(input?.value || "1", 10);
     if (validarCantidad(producto._id, cantidad, producto.stock)) {
       onAgregar(producto._id, cantidad);
-      console.log('volvio');
     }
   };
 

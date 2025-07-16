@@ -1,6 +1,10 @@
 // src/routes/productos.routes.js
 import express from 'express';
-import { validaImagenProductos, obtenerProductosConDescuento } from '../utils/funciones.js';
+import { 
+  validaImagenProductos, 
+  obtenerProductosConDescuento, 
+  ajustarStockConCarrito 
+} from '../utils/funciones.js';
 import Carrito from '../models/carrito.js';
 import { verificarToken, permitirSolo } from '../utils/token.js';
 
@@ -17,6 +21,8 @@ router.get(
       productos = validaImagenProductos(productos);
 
       const carrito = await Carrito.findOne({ usuario: req.user._id });
+      productos = ajustarStockConCarrito(productos, carrito);
+
       const productosActivos = carrito
         ? carrito.productos.filter(p => p.estado === 1 || p.estado === 2)
         : [];

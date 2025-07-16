@@ -79,3 +79,20 @@ export async function obtenerProductosConDescuento() {
       };
   });
 }
+
+// Ajusta el stock de productos según el carrito del usuario
+export function ajustarStockConCarrito(productos, carrito) {
+  if (!carrito || !Array.isArray(carrito.productos)) return productos;
+
+  const itemsCarrito = carrito.productos.filter(p => p.estado === 1 || p.estado === 2);
+
+  productos.forEach(prod => {
+    const item = itemsCarrito.find(p => p.producto.toString() === prod._id.toString());
+    if (item) {
+      prod.stock = Math.max(0, prod.stock - item.cantidad);
+    }
+  });
+
+  return productos;
+}
+

@@ -9,7 +9,6 @@ import { esVista } from "../utils/tokenUtils";
 const ProductosEstructura = ({ user, basedir }) => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [cantidadCarrito, setCantidadCarrito] = useState(0);
 
   const agregarAlCarrito = async (productoId, cantidad) => {
     if (!user) return;
@@ -21,14 +20,11 @@ const ProductosEstructura = ({ user, basedir }) => {
       });
 
       if (res.status===200) {
-        setCantidadCarrito(res.cantidadCarrito);
-
         setProductos(prev =>
           prev.map(p =>
             p._id === productoId ? { ...p, stock: res.stockActual } : p
           )
         );
-        console.log(productos);
       }
     } catch (error) {
       console.error("Fallo al agregar al carrito", error);
