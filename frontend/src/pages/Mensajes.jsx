@@ -34,7 +34,7 @@ const Mensajes = ({ user }) => {
   }
 
   return (
-    <MarcoContenido titulo="Mensajes de Contacto" ancho={3}>
+    <MarcoContenido titulo="Mensajes de Contacto" ancho={1}>
       <div className="table-responsive">
         <table className="table table-bordered table-striped align-middle">
           <thead className="table-dark">

@@ -5,10 +5,9 @@ import session from 'express-session';
 import loginRoutes from './routes/login.routes.js';
 import productosRoutes from './routes/productos.routes.js';
 import carritoRoutes from './routes/carrito.routes.js';
-// import nosotrosRoutes from './routes/nosotros.routes.js'
 import contactoRoutes from './routes/contacto.routes.js';
-// import mensajesRoutes from './routes/mensajes.routes.js';
-// import abmRoutes from './routes/abm.routes.js';
+import mensajesRoutes from './routes/mensajes.routes.js';
+import abmRoutes from './routes/abm.routes.js';
 // import altaRoutes from './routes/alta.routes.js';
 import cors from "cors";
 
@@ -52,10 +51,9 @@ app.get(BASEDIR, (req, res) => res.redirect(`${BASEDIR}/login`));
 app.use(BASEDIR, loginRoutes);
 app.use(BASEDIR, productosRoutes);
 app.use(BASEDIR, carritoRoutes);
-// app.use(BASEDIR, nosotrosRoutes);
 app.use(BASEDIR, contactoRoutes);
-// app.use(BASEDIR, mensajesRoutes);
-// app.use(BASEDIR, abmRoutes);
+app.use(BASEDIR, mensajesRoutes);
+app.use(BASEDIR, abmRoutes);
 // app.use(BASEDIR, altaRoutes);
 
 // Conexion mongoose

@@ -1,6 +1,6 @@
 "use client";
 
-import ModalCarrito from "../components/ModalCarrito";
+import ModalCarrito from "../modales/ModalCarrito";
 import { useState, useEffect } from "react";
 import { apiFetch } from "../utils/apiFetch";
 import ProductosCard from "./ProductosCard";

@@ -4,6 +4,8 @@ import ProductosEstructura from "./pages/ProductosEstructura";
 import Login from "./login/Login";
 import Nosotros from "./pages/Nosotros";
 import Contacto from "./pages/Contacto";
+import Mensajes from "./pages/Mensajes";
+import AbmProductos from "./pages/AbmProductos";
 import { jwtDecode } from "jwt-decode";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -52,6 +54,8 @@ function App() {
         <Route path={`${basedir}/productos`} element={user ? <ProductosEstructura user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
         <Route path={`${basedir}/nosotros`} element={user ? <Nosotros user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
         <Route path={`${basedir}/contacto`} element={user ? <Contacto user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
+        <Route path={`${basedir}/admin/mensajes`} element={user ? <Mensajes user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
+        <Route path={`${basedir}/admin/abm`} element={user ? <AbmProductos user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
       </Routes>
       {user && <Footer />}
     </Router>

@@ -71,7 +71,7 @@ function Navbar({ user }) {
                 </button>
                 <ul className="dropdown-menu" aria-labelledby="productosDropdown">
                   <li>
-                    <Link className="dropdown-item" to={`${basedir}/mensajes`} onClick={cerrarMenu}>Mensajes</Link>
+                    <Link className="dropdown-item" to={`${basedir}/admin/mensajes`} onClick={cerrarMenu}>Mensajes</Link>
                   </li>
                   <li><hr className="dropdown-divider" /></li>
                   <li>
