@@ -1,20 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 
 const ProductosCard = ({ producto, onAgregar, esVista }) => {
+  const [mensajeError, setMensajeError] = useState('');
+
   const titleCase = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
   const validarCantidad = (productoId, cantidad, max) => {
-    const errorDiv = document.querySelector(`#error-stock-${productoId}`);
     if (cantidad < 1 || cantidad > max) {
-      if (errorDiv) {
-        errorDiv.textContent = `La cantidad debe estar entre 1 y ${max}.`;
-        errorDiv.style.display = "block";
-        setTimeout(() => (errorDiv.style.display = "none"), 3000);
-      }
+      setMensajeError(`No puede seleccionar mas de ${max}.`);
+      setTimeout(() => (setMensajeError('')), 3000);
       return false;
+    } else {
+      setMensajeError('');
+      return true;
     }
-    if (errorDiv) errorDiv.style.display = "none";
-    return true;
   };
 
   const handleAgregar = () => {
@@ -22,6 +21,7 @@ const ProductosCard = ({ producto, onAgregar, esVista }) => {
     const cantidad = parseInt(input?.value || "1", 10);
     if (validarCantidad(producto._id, cantidad, producto.stock)) {
       onAgregar(producto._id, cantidad);
+      console.log('volvio');
     }
   };
 
@@ -47,19 +47,19 @@ const ProductosCard = ({ producto, onAgregar, esVista }) => {
         <p className="text-secondary fs-6 mb-0">{titleCase(producto.bodega)}</p>
         <p className="mb-0">{titleCase(producto.tipo)}</p>
 
-        <p className="fw-bold fs-5 mb-1">
-          {producto.descuento > 0 ? (
-            <>
-              <small className="text-decoration-line-through text-danger" style={{ fontSize: "0.75rem" }}>
-                ${producto.precioOriginalFormateado}
-              </small>
-              <br />${producto.precioDescuento}
-            </>
-          ) : (
-            `$${producto.precioOriginalFormateado}`
+        {/* Precio */}
+        <div className="d-flex justify-content-center align-items-baseline gap-2 mb-1">
+          <span className="fw-bold fs-5 text-danger">
+            ${producto.precioDescuento}
+          </span>
+          {producto.descuento > 0 && (
+            <small className="text-muted text-decoration-line-through" style={{ fontSize: '0.75rem' }}>
+              ${producto.precioOriginalFormateado}
+            </small>
           )}
-        </p>
+        </div>
 
+        {/* Stock */}
         <p className="text-success fs-6">Disponibles: {producto.stock}</p>
 
         {!esVista && (
@@ -76,7 +76,15 @@ const ProductosCard = ({ producto, onAgregar, esVista }) => {
               />
             </div>
 
-            <div className="text-danger small mb-2" id={`error-stock-${producto._id}`} style={{ display: "none" }}></div>
+            { mensajeError.length>0 && (
+              <div 
+                id={`error-stock${producto._id}`}
+                className="alert alert-danger" 
+                role="alert"
+              >
+                {mensajeError}
+              </div>              
+            )}
 
             <button
               className={`btn w-100 mt-auto ${producto.stock > 0 ? "btn-primary" : "btn-secondary"}`}

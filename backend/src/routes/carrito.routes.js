@@ -34,78 +34,121 @@ router.post(
   verificarToken,
   permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
   async (req, res) => {
-  const usuarioId = req.user?._id;
-  const { productoId, cantidad } = req.body;
+    const usuarioId = req.user?._id;
+    const { productoId, cantidad } = req.body;
 
-  if (!usuarioId || !productoId || !cantidad) {
-    return res.status(400).json({ error: 'Faltan datos requeridos.' });
-  }
-
-  try {
-    // Validar existencia usuario
-    const user = await Usuario.findById(usuarioId);
-    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
-
-    // Validar existencia y estado del producto
-    const producto = await Producto.findById(productoId);
-    if (!producto || !producto.estado) {
-      return res.status(404).json({ error: 'Producto no disponible' });
-    }
-
-    if (cantidad > producto.stock) {
-      return res.status(400).json({ error: 'Stock insuficiente' });
-    }
-
-    // Buscar si ya hay carrito del usuario
-    let carrito = await Carrito.findOne({ usuario: usuarioId });
-    const ahora = new Date();
-
-    if (!carrito) {
-      carrito = await Carrito.create({
-        usuario: usuarioId,
-        productos: [{
-          producto: productoId,
-          cantidad,
-          estado: 1,
-          fecha_agregado: ahora,
-          fecha_eliminado: null
-        }]
+    if (!usuarioId || !productoId || !cantidad) {
+      return res.status(400).json({
+        status: 400,
+        error: 'Faltan datos requeridos.'
       });
-    } else {
-      const existente = carrito.productos.find(p =>
-        p.producto.toString() === productoId && p.estado !== 0 && p.estado !== 3
-      );
+    }
 
-      if (!existente || existente.estado === 0 || existente.estado === 3) {
-        // Insertar nuevo
-        carrito.productos.push({
-          producto: productoId,
-          cantidad,
-          estado: 1,
-          fecha_agregado: ahora,
-          fecha_eliminado: null
+    try {
+      // Validar existencia usuario
+      const user = await Usuario.findById(usuarioId);
+      if (!user) {
+        return res.status(404).json({
+          status: 404,
+          error: 'Usuario no encontrado'
         });
-      } else if (existente.estado === 1 || existente.estado === 2) {
-        // Actualizar existente
-        if (cantidad > producto.stock) {
-          return res.status(400).json({ error: 'Stock insuficiente' });
-        }
-
-        existente.estado = 1;
-        existente.cantidad = cantidad;
-        existente.fecha_agregado = ahora;
-        existente.fecha_eliminado = null;
       }
 
-      await carrito.save();
-    }
+      // Validar existencia y estado del producto
+      const producto = await Producto.findById(productoId);
+      if (!producto || !producto.estado) {
+        return res.status(404).json({
+          status: 404,
+          error: 'Producto no disponible'
+        });
+      }
 
-    res.json({ success: 'Producto actualizado en el carrito' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al agregar al carrito' });
+      // Buscar si ya hay carrito del usuario
+      let carrito = await Carrito.findOne({ usuario: usuarioId });
+
+      const stock = carrito === null ? 0 : carrito.productos.find(p =>
+        p.producto.toString() === productoId && p.estado !== 0 && p.estado !== 3
+      ).cantidad || 0;      
+
+      // Valida diferencia de 
+      if (cantidad > producto.stock-stock) {
+        return res.status(400).json({
+          status: 400,
+          error: 'Stock insuficiente'
+        });
+      }
+
+      const ahora = new Date();
+
+      if (!carrito) {
+        carrito = await Carrito.create({
+          usuario: usuarioId,
+          productos: [{
+            producto: productoId,
+            cantidad,
+            estado: 1,
+            fecha_agregado: ahora,
+            fecha_eliminado: null
+          }]
+        });
+      } else {
+        const existente = carrito.productos.find(p =>
+          p.producto.toString() === productoId && p.estado !== 0 && p.estado !== 3
+        );
+
+        if (!existente || existente.estado === 0 || existente.estado === 3) {
+          // Insertar nuevo
+          carrito.productos.push({
+            producto: productoId,
+            cantidad,
+            estado: 1,
+            fecha_agregado: ahora,
+            fecha_eliminado: null
+          });
+        } else if (existente.estado === 1 || existente.estado === 2) {
+          // Actualizar existente sumando la cantidad
+          const nuevaCantidad = existente.cantidad + cantidad;
+          if (nuevaCantidad > producto.stock) {
+            return res.status(400).json({
+              status: 400,
+              error: 'Stock insuficiente para la cantidad solicitada'
+            });
+          }
+
+          existente.estado = 1;
+          existente.cantidad = nuevaCantidad; // Sumar en lugar de sobrescribir
+          existente.fecha_agregado = ahora;
+          existente.fecha_eliminado = null;
+        }
+
+        await carrito.save();
+      }
+
+      // Recalcular cantidad actual en el carrito
+      const carritoActualizado = await Carrito.findOne({ usuario: usuarioId });
+      const totalCantidad = carritoActualizado.productos
+        .filter(p => p.estado === 1)
+        .reduce((acc, p) => acc + p.cantidad, 0);
+
+      // Obtener stock actual del producto
+      const productoActualizado = await Producto.findById(productoId);
+
+      res.status(200).json({
+        status: 200,
+        success: 'Producto actualizado en el carrito',
+        cantidadCarrito: totalCantidad,
+        stockActual: productoActualizado.stock - cantidad - stock
+      });
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: 500,
+        error: 'Error al agregar al carrito'
+      });
+    }
   }
-});
+);
 
 // Eliminar producto del carrito (marca como eliminado)
 router.delete(

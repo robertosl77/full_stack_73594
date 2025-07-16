@@ -9,6 +9,7 @@ import { esVista } from "../utils/tokenUtils";
 const ProductosEstructura = ({ user, basedir }) => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cantidadCarrito, setCantidadCarrito] = useState(0);
 
   const agregarAlCarrito = async (productoId, cantidad) => {
     if (!user) return;
@@ -19,33 +20,19 @@ const ProductosEstructura = ({ user, basedir }) => {
         body: JSON.stringify({ productoId, cantidad }),
       });
 
-      if (res.ok) {
-        const cartRes = await apiFetch(`/api/carrito/cantidad`);
-        const cartData = await cartRes.json();
+      if (res.status===200) {
+        setCantidadCarrito(res.cantidadCarrito);
 
-        const cartWrapper = document.querySelector("#cart-wrapper");
-        const cartCount = document.querySelector("#cart-count");
-
-        if (cartWrapper) cartWrapper.style.display = "inline-block";
-        if (cartCount) cartCount.textContent = cartData.cantidad;
+        setProductos(prev =>
+          prev.map(p =>
+            p._id === productoId ? { ...p, stock: res.stockActual } : p
+          )
+        );
+        console.log(productos);
       }
     } catch (error) {
       console.error("Fallo al agregar al carrito", error);
     }
-  };
-
-  const validarCantidad = (productoId, cantidad, max) => {
-    const errorDiv = document.querySelector(`#error-stock-${productoId}`);
-    if (cantidad < 1 || cantidad > max) {
-      if (errorDiv) {
-        errorDiv.textContent = `La cantidad debe estar entre 1 y ${max}.`;
-        errorDiv.style.display = "block";
-        setTimeout(() => (errorDiv.style.display = "none"), 3000);
-      }
-      return false;
-    }
-    if (errorDiv) errorDiv.style.display = "none";
-    return true;
   };
 
   useEffect(() => {
@@ -89,9 +76,7 @@ const ProductosEstructura = ({ user, basedir }) => {
                 <ProductosCard
                   producto={producto}
                   onAgregar={(id, cantidad) => {
-                    if (validarCantidad(id, cantidad, producto.stock)) {
                       agregarAlCarrito(id, cantidad);
-                    }
                   }}
                   esVista={rolVista}
                 />
