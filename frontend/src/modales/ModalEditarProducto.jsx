@@ -1,67 +1,65 @@
-// src/components/ModalEditarProducto.jsx
-import { useEffect, useState } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { useState } from "react";
+import { Offcanvas, Form, Button, Alert } from "react-bootstrap";
+import { apiFetch } from "../utils/apiFetch";
 
 const ModalEditarProducto = ({ producto, onClose }) => {
-  const [formData, setFormData] = useState({
-    _id: "",
-    nombre: "",
-    bodega: "",
-    tipo: "",
-    precio_original: 0,
-    descuento: 0,
-    stock: 0,
-    estado: false,
-    imagen: "",
-  });
+  const [precio, setPrecio] = useState(producto.precio_original);
+  const [descuento, setDescuento] = useState(producto.descuento);
+  const [stock, setStock] = useState(producto.stock);
+  const [estado, setEstado] = useState(producto.estado);
+  const [imagenFile, setImagenFile] = useState(null);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
-  useEffect(() => {
-    if (producto) {
-      setFormData({
-        _id: producto._id,
-        nombre: producto.nombre,
-        bodega: producto.bodega,
-        tipo: producto.tipo,
-        precio_original: producto.precio_original,
-        descuento: producto.descuento,
-        stock: producto.stock,
-        estado: producto.estado,
-        imagen: producto.imagen,
-      });
-    }
-  }, [producto]);
-
-  const handleChange = (e) => {
-    const { name, value, type, checked, files } = e.target;
-
-    if (type === "checkbox") {
-      setFormData((prev) => ({ ...prev, [name]: checked }));
-    } else if (type === "file") {
-      setFormData((prev) => ({ ...prev, nuevaImagen: files[0] }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleGuardar = async (e) => {
     e.preventDefault();
-    console.log("Enviar datos:", formData);
-    // TODO: Enviar datos al backend para guardar cambios
-    onClose();
+    setError(null);
+    setSuccess(null);
+
+    const formData = new FormData();
+    formData.append("precio_original", precio);
+    formData.append("descuento", descuento);
+    formData.append("stock", stock);
+    formData.append("estado", estado);
+
+    if (imagenFile) {
+      if (!imagenFile.type.startsWith("image/")) {
+        setError("Solo se permiten archivos de imagen.");
+        return;
+      }
+      formData.append("nuevaImagen", imagenFile);
+    }
+
+    try {
+      const res = await apiFetch(`/api/admin/abmProductos/${producto._id}`, {
+        method: "PUT",
+        body: formData,
+        headers: {}
+      });
+
+      if (res.ok) {
+        setSuccess("Producto actualizado correctamente.");
+        setTimeout(() => onClose(), 1500);
+      } else {
+        setError(res.error || "Error al guardar");
+      }
+    } catch (err) {
+      setError("Error al guardar");
+      console.error(err);
+    }
   };
 
   return (
-    <Modal show onHide={onClose} centered scrollable>
-      <Modal.Header closeButton>
-        <Modal.Title>Editar Producto</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form onSubmit={handleSubmit}>
-
+    <Offcanvas show onHide={onClose} placement="end">
+      <Offcanvas.Header closeButton>
+        <Offcanvas.Title>Editar Producto</Offcanvas.Title>
+      </Offcanvas.Header>
+      <Offcanvas.Body>
+        <Form onSubmit={handleGuardar}>
           <div className="text-center mb-3">
             <img
-              src={`/${formData.imagen}`}
-              alt="imagen actual"
+              src={`/${producto.imagen}`}
+              alt="Imagen actual"
               style={{ maxHeight: "120px" }}
             />
           </div>
@@ -70,49 +68,32 @@ const ModalEditarProducto = ({ producto, onClose }) => {
             <Form.Label>Imagen del producto</Form.Label>
             <Form.Control
               type="file"
-              name="nuevaImagen"
               accept="image/*"
-              onChange={handleChange}
+              onChange={(e) => setImagenFile(e.target.files[0])}
             />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Nombre</Form.Label>
-            <Form.Control
-              type="text"
-              name="nombre"
-              value={formData.nombre}
-              onChange={handleChange}
-            />
+            <Form.Control value={producto.nombre} disabled />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Bodega</Form.Label>
-            <Form.Control
-              type="text"
-              name="bodega"
-              value={formData.bodega}
-              readOnly
-            />
+            <Form.Control value={producto.bodega} disabled />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Tipo</Form.Label>
-            <Form.Control
-              type="text"
-              name="tipo"
-              value={formData.tipo}
-              readOnly
-            />
+            <Form.Control value={producto.tipo} disabled />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Precio Original</Form.Label>
             <Form.Control
               type="number"
-              name="precio_original"
-              value={formData.precio_original}
-              onChange={handleChange}
+              value={precio}
+              onChange={(e) => setPrecio(e.target.value)}
             />
           </Form.Group>
 
@@ -120,9 +101,8 @@ const ModalEditarProducto = ({ producto, onClose }) => {
             <Form.Label>Descuento (%)</Form.Label>
             <Form.Control
               type="number"
-              name="descuento"
-              value={formData.descuento}
-              onChange={handleChange}
+              value={descuento}
+              onChange={(e) => setDescuento(e.target.value)}
             />
           </Form.Group>
 
@@ -130,30 +110,36 @@ const ModalEditarProducto = ({ producto, onClose }) => {
             <Form.Label>Stock</Form.Label>
             <Form.Control
               type="number"
-              name="stock"
-              value={formData.stock}
-              onChange={handleChange}
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
             />
           </Form.Group>
 
           <Form.Check
-            className="mb-3"
             type="checkbox"
-            name="estado"
             label="Habilitado"
-            checked={formData.estado}
-            onChange={handleChange}
+            checked={estado}
+            onChange={(e) => setEstado(e.target.checked)}
+            className="mb-3"
           />
 
-          <div className="d-grid">
-            <Button variant="primary" type="submit">
-              Guardar Cambios
-            </Button>
-          </div>
+          <Button type="submit" variant="primary" className="w-100">
+            Guardar Cambios
+          </Button>
 
+          {success && (
+            <Alert variant="success" className="mt-3 text-center">
+              {success}
+            </Alert>
+          )}
+          {error && (
+            <Alert variant="danger" className="mt-3 text-center">
+              {error}
+            </Alert>
+          )}
         </Form>
-      </Modal.Body>
-    </Modal>
+      </Offcanvas.Body>
+    </Offcanvas>
   );
 };
 
