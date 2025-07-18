@@ -66,9 +66,10 @@ router.post(
       // Buscar si ya hay carrito del usuario
       let carrito = await Carrito.findOne({ usuario: usuarioId });
 
-      const stock = carrito === null ? 0 : carrito.productos.find(p =>
+      const existenteProducto = carrito?.productos.find(p => 
         p.producto.toString() === productoId && p.estado !== 0 && p.estado !== 3
-      ).cantidad || 0;      
+      );
+      const stock = existenteProducto?.cantidad || 0;
 
       // Valida diferencia de 
       if (cantidad > producto.stock-stock) {
