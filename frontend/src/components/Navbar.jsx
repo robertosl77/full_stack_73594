@@ -78,7 +78,7 @@ function Navbar({ user }) {
                     <Link className="dropdown-item" to={`${basedir}/admin/abm`} onClick={cerrarMenu}>Gestión de Productos</Link>
                   </li>
                   <li>
-                    <Link className="dropdown-item" to={`${basedir}/alta`} onClick={cerrarMenu}>Nuevo Producto</Link>
+                    <Link className="dropdown-item" to={`${basedir}/admin/alta`} onClick={cerrarMenu}>Nuevo Producto</Link>
                   </li>
                 </ul>
               </li>
