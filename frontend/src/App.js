@@ -19,6 +19,11 @@ function App() {
   const basedir = process.env.REACT_APP_BASEDIR;
 
   useEffect(() => {
+    document.body.style.backgroundColor = '#f8f9fa';
+    document.body.style.backgroundImage = "url('https://www.transparenttextures.com/patterns/wine-cork.png')";
+  }, []);  
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       try {

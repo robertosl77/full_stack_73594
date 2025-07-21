@@ -1,28 +1,22 @@
-// src/components/AbmProductos.jsx
-import { useState, useEffect, useRef } from "react";
-import ModalEditarProducto from "../modales/ModalEditarProducto";
-import { apiFetch } from "../utils/apiFetch";
-import MarcoContenido from "../components/MarcoContenido";
+import React, { useEffect, useState } from 'react';
+import { apiFetch } from '../utils/apiFetch';
+import MarcoContenido from '../components/MarcoContenido';
+import ModalAbmProductos from '../modales/ModalAbmProductos';
+import { getBasedirFromToken } from "../utils/tokenUtils"
 
 const AbmProductos = () => {
+  const basedir = getBasedirFromToken(); // obtiene la ruta base desde el token
+
   const [productos, setProductos] = useState([]);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
-  const tablaRef = useRef(null);
-  const scrollY = useRef(0);
 
   const cargarProductos = async () => {
     try {
-      const res = await apiFetch("/api/admin/abmProductos");
-      setProductos(res.productos || []);
-      // restaurar scroll
-      setTimeout(() => {
-        if (tablaRef.current) {
-          tablaRef.current.scrollTop = scrollY.current;
-        }
-      }, 50);
-    } catch (error) {
-      console.error("Error al cargar productos:", error);
+      const res = await apiFetch('/api/abm');
+      if (res?.productos) setProductos(res.productos);
+    } catch (err) {
+      console.error('Error cargando productos', err);
     }
   };
 
@@ -30,63 +24,60 @@ const AbmProductos = () => {
     cargarProductos();
   }, []);
 
-  const abrirModal = (producto) => {
-    scrollY.current = tablaRef.current?.scrollTop || 0;
+  const handleSeleccionar = (producto) => {
     setProductoSeleccionado(producto);
     setMostrarModal(true);
   };
 
-  const cerrarModal = () => {
+  const cerrarModal = (actualizado = false) => {
     setMostrarModal(false);
     setProductoSeleccionado(null);
-    cargarProductos();
+    if (actualizado) cargarProductos();
   };
 
   return (
-    <MarcoContenido ancho={1} titulo='Gestión de Productos'>
-        <div
-            className="table-responsive"
-            ref={tablaRef}
-            style={{ maxHeight: "70vh", overflowY: "auto" }}
-        >
-            <table className="table table-hover align-middle">
-            <thead className="table-light">
-                <tr>
-                <th>Imagen</th>
-                <th>Nombre</th>
-                <th>Bodega</th>
-                <th>Tipo</th>
-                <th>Precio</th>
-                <th>Descuento</th>
-                <th>Stock</th>
-                <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody>
-                {productos.map((p) => (
-                <tr key={p._id} onClick={() => abrirModal(p)} style={{ cursor: "pointer" }}>
-                    <td>
-                    <img src={`/${p.imagen}`} alt="imagen" style={{ height: "50px" }} />
-                    </td>
-                    <td>{p.nombre}</td>
-                    <td>{p.bodega}</td>
-                    <td>{p.tipo}</td>
-                    <td>${p.precio_original}</td>
-                    <td>{p.descuento}%</td>
-                    <td>{p.stock}</td>
-                    <td>{p.estado ? "Activo" : "Desactivo"}</td>
-                </tr>
-                ))}
-            </tbody>
-            </table>
-        </div>
+    <MarcoContenido titulo="Gestión de Productos">
+      <div className="table-responsive">
+        <table className="table table-hover align-middle">
+          <thead className="table-light">
+            <tr>
+              <th>Imagen</th>
+              <th>Nombre</th>
+              <th>Bodega</th>
+              <th>Tipo</th>
+              <th>Precio</th>
+              <th>Descuento</th>
+              <th>Stock</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {productos.map(prod => (
+              <tr key={prod._id} onClick={() => handleSeleccionar(prod)} style={{ cursor: 'pointer' }}>
+                <td>
+                  <img src={`http://localhost:8081${basedir}/${prod.imagen}`} alt="imagen" style={{ height: '50px' }}
+                    onError={(e) => { e.target.style.display = 'none'; }} />
+                </td>
+                <td>{prod.nombre}</td>
+                <td>{prod.bodega}</td>
+                <td>{prod.tipo}</td>
+                <td>${prod.precio_original}</td>
+                <td>{prod.descuento}%</td>
+                <td>{prod.stock}</td>
+                <td>{prod.estado ? 'Activo' : 'Desactivo'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-        {mostrarModal && productoSeleccionado && (
-            <ModalEditarProducto
-            producto={productoSeleccionado}
-            onClose={cerrarModal}
-            />
-        )}
+      {productoSeleccionado && (
+        <ModalAbmProductos
+          show={mostrarModal}
+          onHide={cerrarModal}
+          producto={productoSeleccionado}
+        />
+      )}
     </MarcoContenido>
   );
 };

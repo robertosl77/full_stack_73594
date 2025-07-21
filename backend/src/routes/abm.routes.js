@@ -1,36 +1,24 @@
-// src/routes/abmProductos.routes.js
+// src/routes/abm.routes.js
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
 import Producto from '../models/producto.js';
-import { validaImagenProductos } from '../utils/funciones.js';
 import { verificarToken, permitirSolo } from '../utils/token.js';
 import { cargarImagen } from '../utils/cargarImagen.js';
-import multer from 'multer';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const upload = multer({
-  dest: path.join(__dirname, '../uploads/'),
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) cb(null, true);
-    else cb(new Error('Solo se permiten imágenes.'));
-  }
-});
+import { validarNumero, obtenerCampoFinal } from '../utils/productoUtils.js';
+import upload from '../middleware/multerImagen.js';
 
 const router = express.Router();
 
+// GET lista de productos (ADMIN)
 router.get(
-  '/api/admin/abmProductos',
+  '/api/abm',
   verificarToken,
   permitirSolo(['ROLE_ADMINISTRADOR']),
   async (req, res) => {
     try {
-      let productos = await Producto.find().sort({ nombre: 1 }).lean();
-      productos = validaImagenProductos(productos);
-
-      res.json({ productos });
+      const productos = await Producto.find().sort({ nombre: 1 }).lean();
+      res.json({ success: true, productos });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Error al obtener productos' });
@@ -38,41 +26,94 @@ router.get(
   }
 );
 
-router.put(
-  '/api/admin/abmProductos/:id',
+// POST modifica producto
+router.post(
+  '/api/abm/modifica',
   verificarToken,
   permitirSolo(['ROLE_ADMINISTRADOR']),
-  upload.single('nuevaImagen'),
+  upload.single('imagen'),
   async (req, res) => {
     try {
-      const { id } = req.params;
-      const { precio_original, descuento, stock, estado } = req.body;
+      const { id, nombre, bodega, tipo, precio_original, descuento = 0, stock = 0 } = req.body;
+      if (!id || !nombre || !bodega || !tipo || !precio_original) {
+        return res.status(400).json({ error: 'Faltan datos obligatorios' });
+      }
+
       const producto = await Producto.findById(id);
       if (!producto) return res.status(404).json({ error: 'Producto no encontrado' });
 
-      const precio = parseFloat(precio_original);
-      const desc = parseFloat(descuento);
-      const st = parseInt(stock);
-      const est = estado === 'true' || estado === true;
-
-      if (isNaN(precio) || isNaN(desc) || isNaN(st)) {
-        return res.status(400).json({ error: 'Datos inválidos' });
-      }
-
-      producto.precio_original = precio;
-      producto.descuento = desc;
-      producto.stock = st;
-      producto.estado = est;
-
+      // Si hay nueva imagen, eliminar la anterior
       if (req.file) {
-        cargarImagen(req.file, producto);
+        if (producto.imagen) {
+          const vieja = path.join(process.cwd(), 'public', producto.imagen);
+          if (fs.existsSync(vieja)) fs.unlinkSync(vieja);
+        }
+
+        cargarImagen(req.file, producto); // asigna nueva imagen
       }
+
+      // Validar y actualizar campos
+      producto.nombre = nombre.trim();
+      producto.bodega = obtenerCampoFinal(bodega, req.body.bodegaOtro);
+      producto.tipo = obtenerCampoFinal(tipo, req.body.tipoOtro);
+      producto.precio_original = validarNumero(precio_original, 'Precio original', { min: 0 });
+      producto.descuento = validarNumero(descuento, 'Descuento', { min: 0, max: 100 });
+      producto.stock = validarNumero(stock, 'Stock', { min: 0 });
 
       await producto.save();
-      res.json({ ok: true, productoActualizado: producto });
+
+      res.json({ success: 'Producto actualizado correctamente', producto });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Error al actualizar producto' });
+      res.status(500).json({ error: 'Error al modificar producto' });
+    }
+  }
+);
+
+// POST elimina producto
+router.post(
+  '/api/abm/elimina',
+  verificarToken,
+  permitirSolo(['ROLE_ADMINISTRADOR']),
+  async (req, res) => {
+    try {
+      const { id } = req.body;
+      const producto = await Producto.findById(id);
+      if (!producto) return res.status(404).json({ error: 'Producto no encontrado' });
+
+      // Eliminar imagen si existe
+      if (producto.imagen) {
+        const ruta = path.join(process.cwd(), 'public', producto.imagen);
+        if (fs.existsSync(ruta)) fs.unlinkSync(ruta);
+      }
+
+      await Producto.findByIdAndDelete(id);
+      res.json({ success: 'Producto eliminado correctamente' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error al eliminar producto' });
+    }
+  }
+);
+
+// POST deshabilita producto (deja imagen, stock 0)
+router.post(
+  '/api/abm/deshabilita',
+  verificarToken,
+  permitirSolo(['ROLE_ADMINISTRADOR']),
+  async (req, res) => {
+    try {
+      const { id } = req.body;
+      const producto = await Producto.findById(id);
+      if (!producto) return res.status(404).json({ error: 'Producto no encontrado' });
+
+      producto.stock = 0;
+      await producto.save();
+
+      res.json({ success: 'Producto deshabilitado correctamente' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error al deshabilitar producto' });
     }
   }
 );
