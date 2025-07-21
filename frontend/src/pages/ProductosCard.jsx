@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { getBasedirFromToken } from "../utils/tokenUtils"
 
 const ProductosCard = ({ producto, onAgregar, esVista }) => {
+  const basedir = getBasedirFromToken(); // obtiene la ruta base desde el token
+
   const [mensajeError, setMensajeError] = useState('');
 
   const titleCase = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -34,7 +37,8 @@ const ProductosCard = ({ producto, onAgregar, esVista }) => {
 
       <div className="d-flex justify-content-center align-items-center" style={{ height: "200px", overflow: "hidden" }}>
         <img
-          src={`/${producto.imagen}`}
+          // src={`/${producto.imagen}`} 
+          src={`http://localhost:8081${basedir}/${producto.imagen}`} 
           alt={titleCase(producto.nombre)}
           className="img-fluid"
           style={{ objectFit: "cover", maxHeight: "100%" }}

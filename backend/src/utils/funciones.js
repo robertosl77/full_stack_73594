@@ -53,7 +53,10 @@ export function validaImagenProductos(productos) {
     const rutaCompleta = path.join(rutaImagenes, archivo);
 
     if (!producto.imagen || !fs.existsSync(rutaCompleta)) {
+      console.log(`Imagen NO válida para el producto ${producto.nombre}: ${producto.imagen}`);
       return { ...producto, imagen: imagenFallback };
+    } else {
+      console.log(`Imagen válida para el producto ${producto.nombre}: ${producto.imagen}`);
     }
 
     return producto;

@@ -62,8 +62,8 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.error(err));
 
 // Otros
-app.use(express.static('public'));
-// app.use(BASEDIR, express.static('public'));
+// app.use(express.static('public'));
+app.use(BASEDIR, express.static('public'));
 
 
 
