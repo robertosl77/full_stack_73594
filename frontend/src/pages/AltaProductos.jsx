@@ -44,19 +44,21 @@ const AltaProductos = () => {
 
   const validarExistente = (campo, valor) => existentes[campo].includes(valor.trim().toLowerCase());
 
+
   const handleSubmit = async e => {
     e.preventDefault();
+
     const datos = new FormData();
     for (const key in formData) datos.append(key, formData[key]);
+    datos.append('categoria', 'vinos');
+
     try {
-      const res = await fetch(`/api/alta`, {
+      const res = await apiFetch('/api/alta', {
         method: 'POST',
-        body: datos,
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        credentials: 'include'
+        body: datos
       });
-      const json = await res.json();
-      if (!res.ok || json.error) throw new Error(json.error || 'Error al guardar producto');
+
+      if (!res || res.error) throw new Error(res.error || 'Error al guardar producto');
       alert('Producto creado correctamente');
     } catch (err) {
       setErrorImagen(err.message);

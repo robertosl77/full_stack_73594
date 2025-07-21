@@ -1,30 +1,27 @@
-// src/utils/cargarImagen.js
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export const cargarImagen = (file, producto) => {
-  if (!file || !file.mimetype.startsWith('image/')) {
-    throw new Error('Archivo no válido');
+// Función para cargar la imagen
+export function cargarImagen(file, producto) {
+  if (!file) {
+    throw new Error('No se proporcionó ninguna imagen');
   }
 
-  const carpetaDestino = path.join(__dirname, '../public/img_productos');
-  const ext = path.extname(file.originalname);
-  const nombreFinal = `${producto._id}${ext}`;
-  const rutaFinal = path.join(carpetaDestino, nombreFinal);
-
-  // eliminar imagen anterior si no es la default
-  if (
-    producto.imagen &&
-    producto.imagen !== 'img_productos/Imagen_no_disponible.svg.png'
-  ) {
-    const rutaAnterior = path.join(__dirname, '../public/', producto.imagen);
-    if (fs.existsSync(rutaAnterior)) fs.unlinkSync(rutaAnterior);
+  // Obtener la extensión original del archivo
+  const extension = path.extname(file.originalname).toLowerCase();
+  // Validar que sea una extensión de imagen permitida
+  const extensionesPermitidas = ['.png', '.jpg', '.jpeg', '.webp', '.svg'];
+  if (!extensionesPermitidas.includes(extension)) {
+    throw new Error('Formato de imagen no permitido');
   }
 
-  fs.renameSync(file.path, rutaFinal);
-  producto.imagen = `img_productos/${nombreFinal}`;
-};
+  // Generar un nombre de archivo único (usando el ID del producto)
+  const nombreArchivo = `${producto._id}${extension}`;
+  const rutaDestino = path.join(process.cwd(), 'public', 'img_productos', nombreArchivo);
+
+  // Mover el archivo a la carpeta de destino
+  fs.renameSync(file.path, rutaDestino);
+
+  // Asignar la ruta relativa al campo imagen del producto
+  producto.imagen = `img_productos/${nombreArchivo}`;
+}

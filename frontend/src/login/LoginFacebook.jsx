@@ -70,7 +70,6 @@ function LoginFacebook() {
       });
 
       const resData = await res.json();
-      console.log(resData);
 
       // 🔐 Limpieza de seguridad
       localStorage.removeItem("token");
