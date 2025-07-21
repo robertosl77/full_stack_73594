@@ -1,29 +1,15 @@
 import express from 'express';
-import multer from 'multer';
 import Producto from '../models/producto.js';
 import { verificarToken, permitirSolo } from '../utils/token.js';
 import { cargarImagen } from '../utils/cargarImagen.js';
 import { 
-  getProductos, 
   obtenerCampoFinal, 
   validarNumero, 
   getAltaProductoContext 
 } from '../utils/productoUtils.js';
+import upload from '../middleware/multerImagen.js';
 
 const router = express.Router();
-
-// Configuración de multer para carga de imágenes
-const upload = multer({ 
-  dest: 'public/img_temp',
-  fileFilter: (req, file, cb) => {
-    const tiposValidos = ['image/jpeg', 'image/png', 'image/webp'];
-    if (tiposValidos.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Solo se permiten imágenes (jpeg, png, webp)'));
-    }
-  }
-});
 
 // GET datos para formulario de alta (JSON)
 router.get(
