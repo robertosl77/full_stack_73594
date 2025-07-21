@@ -6,7 +6,7 @@ import { apiFetch } from "../utils/apiFetch";
 import { getBasedirFromToken } from "../utils/tokenUtils";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle";
 
-function Navbar({ user }) {
+function Navbar({ user, cantidadCarrito }) {
   const location = useLocation();
   const basedir = getBasedirFromToken();
 
@@ -38,6 +38,14 @@ function Navbar({ user }) {
   useEffect(() => {
     if (user) updateCartCount();
   }, [user, updateCartCount]);
+
+  useEffect(() => {
+    if (user && cantidadCarrito > 0) {
+      setShowCart(true);
+    } else {
+      setShowCart(false);
+    }
+  }, [user, cantidadCarrito]);  
 
   const isAdmin = user?.rol === "ROLE_ADMINISTRADOR";
 
@@ -92,7 +100,7 @@ function Navbar({ user }) {
                   <button type="button" className="nav-link btn btn-link position-relative px-2" data-bs-toggle="modal" data-bs-target="#modalCarrito" style={{ textDecoration: "none" }}>
                     🛒
                     <span className="position-absolute top-10 start-70 translate-middle badge rounded-pill bg-danger" style={{ fontSize: "0.7rem" }}>
-                      {cartCount}
+                      {cantidadCarrito || cartCount}
                     </span>
                   </button>
                 )}

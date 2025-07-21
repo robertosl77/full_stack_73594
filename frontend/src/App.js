@@ -14,6 +14,8 @@ import Footer from "./components/Footer";
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cantidadCarrito, setCantidadCarrito] = useState(0);  
+  
   const basedir = process.env.REACT_APP_BASEDIR;
 
   useEffect(() => {
@@ -48,11 +50,21 @@ function App() {
 
   return (
     <Router>
-      {user && <Navbar user={user} />}
+      {user && <Navbar user={user} cantidadCarrito={cantidadCarrito} />}
       <Routes>
         <Route path="/" element={<Navigate to={`${basedir}/login`} />} />
         <Route path={`${basedir}/login`} element={user ? <Navigate to={`${basedir}/productos`} /> : <Login />} />
-        <Route path={`${basedir}/productos`} element={user ? <ProductosEstructura user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
+        <Route path={`${basedir}/productos`} element={
+          user ? (
+            <ProductosEstructura
+              user={user}
+              basedir={basedir}
+              setCantidadCarrito={setCantidadCarrito}
+            />
+          ) : (
+            <Navigate to={`${basedir}/login`} />
+          )
+        } />
         <Route path={`${basedir}/nosotros`} element={user ? <Nosotros user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
         <Route path={`${basedir}/contacto`} element={user ? <Contacto user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
         <Route path={`${basedir}/admin/mensajes`} element={user ? <Mensajes user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />

@@ -6,7 +6,7 @@ import { apiFetch } from "../utils/apiFetch";
 import ProductosCard from "./ProductosCard";
 import { esVista } from "../utils/tokenUtils";
 
-const ProductosEstructura = ({ user, basedir }) => {
+const ProductosEstructura = ({ user, basedir, setCantidadCarrito }) => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,6 +25,17 @@ const ProductosEstructura = ({ user, basedir }) => {
             p._id === productoId ? { ...p, stock: res.stockActual } : p
           )
         );
+        
+        const data = await res;
+        setProductos(prev =>
+          prev.map(p =>
+            p._id === productoId ? { ...p, stock: data.stockActual } : p
+          )
+        );
+        if (data.cantidadCarrito !== undefined) {
+          setCantidadCarrito(data.cantidadCarrito); // 🟩 NUEVO
+        }
+
       }
     } catch (error) {
       console.error("Fallo al agregar al carrito", error);
