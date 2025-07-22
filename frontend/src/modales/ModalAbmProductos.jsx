@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import { apiFetch } from '../utils/apiFetch';
 import { FaSave, FaTrash, FaPowerOff } from 'react-icons/fa';
+import Swal from 'sweetalert2';
 
 const ModalAbmProductos = ({ show, onHide, producto }) => {
   const [formData, setFormData] = useState({
@@ -58,7 +59,13 @@ const ModalAbmProductos = ({ show, onHide, producto }) => {
       });
 
       if (res.error) throw new Error(res.error);
-      alert('Producto actualizado');
+
+      await Swal.fire({
+        title: 'Producto actualizado',
+        icon: 'success',
+        confirmButtonText: 'Aceptar'
+      });  
+
       onHide(true);
     } catch (err) {
       alert(`Error: ${err.message}`);
@@ -66,23 +73,42 @@ const ModalAbmProductos = ({ show, onHide, producto }) => {
   };
 
   const eliminarProducto = async () => {
-    if (!window.confirm('¿Eliminar este producto?')) return;
+    const confirmar = await Swal.fire({
+        title: '¿Eliminar producto?',
+        text: 'Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (!confirmar.isConfirmed) return;
+
     try {
-      const res = await apiFetch('/api/abm/elimina', {
+        const res = await apiFetch('/api/abm/elimina', {
         method: 'POST',
         body: JSON.stringify({ id: formData.id }),
         headers: { 'Content-Type': 'application/json' }
-      });
-      if (res.error) throw new Error(res.error);
-      alert('Producto eliminado');
-      onHide(true);
+        });
+        if (res.error) throw new Error(res.error);
+        Swal.fire('Eliminado', 'Producto eliminado correctamente', 'success');
+        onHide(true);
     } catch (err) {
-      alert(`Error: ${err.message}`);
+        Swal.fire('Error', err.message, 'error');
     }
   };
 
   const deshabilitarProducto = async () => {
-    if (!window.confirm('¿Deshabilitar este producto (stock = 0)?')) return;
+    const confirmar = await Swal.fire({
+    title: '¿Deshabilitar producto?',
+    text: 'El stock será puesto en cero.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, deshabilitar',
+    cancelButtonText: 'Cancelar'
+    });
+
+    if (!confirmar.isConfirmed) return;
     try {
       const res = await apiFetch('/api/abm/deshabilita', {
         method: 'POST',
