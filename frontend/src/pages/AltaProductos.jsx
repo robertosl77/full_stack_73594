@@ -1,6 +1,4 @@
-// src/pages/AltaProductos.jsx
 import React, { useEffect, useState } from 'react';
-import ModalAltaProductos from '../modales/ModalAltaProductos';
 import { apiFetch } from '../utils/apiFetch';
 import MarcoContenido from '../components/MarcoContenido';
 
@@ -9,7 +7,7 @@ const AltaProductos = () => {
     nombre: '', imagen: null, bodega: '', bodegaOtro: '', tipo: '', tipoOtro: '', precio_original: '', descuento: 0, stock: 0
   });
   const [errorImagen, setErrorImagen] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const [existentes, setExistentes] = useState({ nombres: [], bodegas: [], tipos: [] });
 
   useEffect(() => {
@@ -35,15 +33,14 @@ const AltaProductos = () => {
     const tipos = ['image/jpeg', 'image/png', 'image/webp'];
     if (file && !tipos.includes(file.type)) {
       setErrorImagen('Solo se permiten archivos JPEG, PNG o WebP.');
-      setShowModal(true);
       e.target.value = '';
     } else {
       setFormData(prev => ({ ...prev, imagen: file }));
+      setErrorImagen('');
     }
   };
 
   const validarExistente = (campo, valor) => existentes[campo].includes(valor.trim().toLowerCase());
-
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -59,20 +56,38 @@ const AltaProductos = () => {
       });
 
       if (!res || res.error) throw new Error(res.error || 'Error al guardar producto');
-      alert('Producto creado correctamente');
+      setSuccessMessage('Producto creado correctamente');
+      setErrorImagen('');
+      setTimeout(() => setSuccessMessage(''), 3000); // Oculta el mensaje después de 3 segundos
     } catch (err) {
-      setErrorImagen(err.message);
-      setShowModal(true);
+      setErrorImagen(err.message || 'Error desconocido al guardar el producto');
     }
   };
 
   return (
     <MarcoContenido titulo="Alta de Producto" ancho={1}>
+      {successMessage && (
+        <div className="alert alert-success d-flex justify-content-between align-items-center" role="alert">
+          <span>{successMessage}</span>
+          <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      )}
+      {errorImagen && (
+        <div className="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
+          <span>{errorImagen}</span>
+          <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      )}
       <form onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="mb-3">
           <label className="form-label">Nombre del producto</label>
           <input type="text" className="form-control" name="nombre" required value={formData.nombre} onChange={handleChange} />
-          {validarExistente('nombres', formData.nombre) && <div className="alert alert-danger mt-2">El nombre del producto ya existe.</div>}
+          {validarExistente('nombres', formData.nombre) && (
+            <div className="alert alert-danger mt-2 d-flex justify-content-between align-items-center" role="alert">
+              <span>El nombre del producto ya existe.</span>
+              <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          )}
         </div>
 
         <div className="mb-3">
@@ -92,7 +107,12 @@ const AltaProductos = () => {
           <div className="col-sm-6">
             <label className="form-label">Nueva bodega (si aplica)</label>
             <input className="form-control" name="bodegaOtro" disabled={formData.bodega !== 'otro'} required={formData.bodega === 'otro'} value={formData.bodegaOtro} onChange={handleChange} />
-            {formData.bodega === 'otro' && validarExistente('bodegas', formData.bodegaOtro) && <div className="alert alert-danger mt-2">Esa bodega ya existe.</div>}
+            {formData.bodega === 'otro' && validarExistente('bodegas', formData.bodegaOtro) && (
+              <div className="alert alert-danger mt-2 d-flex justify-content-between align-items-center" role="alert">
+                <span>Esa bodega ya existe.</span>
+                <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -108,7 +128,12 @@ const AltaProductos = () => {
           <div className="col-sm-6">
             <label className="form-label">Nuevo tipo (si aplica)</label>
             <input className="form-control" name="tipoOtro" disabled={formData.tipo !== 'otro'} required={formData.tipo === 'otro'} value={formData.tipoOtro} onChange={handleChange} />
-            {formData.tipo === 'otro' && validarExistente('tipos', formData.tipoOtro) && <div className="alert alert-danger mt-2">Ese tipo ya existe.</div>}
+            {formData.tipo === 'otro' && validarExistente('tipos', formData.tipoOtro) && (
+              <div className="alert alert-danger mt-2 d-flex justify-content-between align-items-center" role="alert">
+                <span>Ese tipo ya existe.</span>
+                <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -129,8 +154,6 @@ const AltaProductos = () => {
 
         <button type="submit" className="btn btn-success">Guardar producto</button>
       </form>
-
-      <ModalAltaProductos show={showModal} onHide={() => setShowModal(false)} mensaje={errorImagen} />
     </MarcoContenido>
   );
 };

@@ -57,9 +57,7 @@ router.post(
       // Verificar si el nombre del producto ya existe
       const existente = await Producto.findOne({ nombre });
       if (existente) {
-        return res.status(400).json({
-          error: 'El nombre del producto ya existe'
-        });
+        return res.status(400).send('El nombre del producto ya existe');
       }
 
       const bodegaFinal = obtenerCampoFinal(bodega, req.body.bodegaOtro);
