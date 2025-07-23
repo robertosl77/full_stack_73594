@@ -4,7 +4,8 @@ import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import { ImagenNoDisponible } from "../Utils/Funciones.jsx"
 
-const API_KEY = "29d19341"
+// Obtener API key desde variables de entorno
+const API_KEY = process.env.REACT_APP_OMDB_API_KEY
 
 function MovieDetail() {
   const { id } = useParams()
@@ -14,6 +15,14 @@ function MovieDetail() {
   const [imageError, setImageError] = useState(false)
 
   useEffect(() => {
+    // Verificar que la API key existe
+    if (!API_KEY) {
+      console.error("API Key no encontrada. Asegúrate de tener REACT_APP_OMDB_API_KEY en tu archivo .env")
+      setError(true)
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     setError(false)
     setImageError(false)
@@ -638,7 +647,7 @@ function MovieDetail() {
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                   <circle cx="9" cy="7" r="4" />
-                  <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+                  <path d="M16 3.13a4 4 0 010 7.75" />
                 </svg>
                 Reparto Principal
               </h3>

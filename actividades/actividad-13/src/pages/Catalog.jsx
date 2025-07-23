@@ -4,7 +4,8 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { ImagenNoDisponible } from "../Utils/Funciones.jsx"
 
-const API_KEY = "29d19341"
+// Obtener API key desde variables de entorno
+const API_KEY = process.env.REACT_APP_OMDB_API_KEY
 
 function Catalog() {
   const [peliculas, setPeliculas] = useState([])
@@ -13,11 +14,22 @@ function Catalog() {
   const [imageErrors, setImageErrors] = useState({})
 
   useEffect(() => {
+    // Verificar que la API key existe
+    if (!API_KEY) {
+      console.error("API Key no encontrada. Asegúrate de tener REACT_APP_OMDB_API_KEY en tu archivo .env")
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=matrix&type=movie`)
       .then((res) => res.json())
       .then((data) => {
         if (data.Search) setPeliculas(data.Search)
+        setLoading(false)
+      })
+      .catch((error) => {
+        console.error("Error fetching movies:", error)
         setLoading(false)
       })
   }, [])

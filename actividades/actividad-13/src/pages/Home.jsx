@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-const API_KEY = "29d19341"
+// Obtener API key desde variables de entorno
+const API_KEY = process.env.REACT_APP_OMDB_API_KEY
 const TERM_LIST = ["star", "man", "love", "war", "life"]
 
 function Home() {
@@ -12,6 +13,12 @@ function Home() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    // Verificar que la API key existe
+    if (!API_KEY) {
+      console.error("API Key no encontrada. Asegúrate de tener REACT_APP_OMDB_API_KEY en tu archivo .env")
+      return
+    }
+
     Promise.all(
       TERM_LIST.map((term) =>
         fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${term}&type=movie`)
@@ -48,7 +55,7 @@ function Home() {
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden;
+            --overflow: hidden;
           }
           
           body {
@@ -109,9 +116,9 @@ function Home() {
             align-items: stretch;
             max-width: 100%;
             margin: 0;
-            padding: 2rem 3rem;
+            padding: 0 3rem;
             width: 100%;
-            height: 80%;
+            --height: 70%;
           }
 
           .content-grid {
@@ -377,6 +384,44 @@ function Home() {
 
           .thumbnail {
             flex-shrink: 0;
+            width: 3.5rem;
+            height: 4.5rem;
+            border-radius: 0.6rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.6;
+            position: relative;
+          }
+
+          .thumbnail:hover {
+            opacity: 1;
+            transform: scale(1.1);
+          }
+
+          .thumbnail:hover::after {
+            content: 'Doble clic para ver detalles';
+            position: absolute;
+            bottom: -2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.3rem;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            z-index: 100;
+          }
+
+          .thumbnail.active {
+            opacity: 1;
+            transform: scale(1.15);
+            box-shadow: 0 0 0 3px #ef4444;
+          }
+
+          .thumbnail {
+            flex-shrink: 0;
             width: 5rem;
             height: 6.5rem;
             border-radius: 0.6rem;
@@ -384,10 +429,29 @@ function Home() {
             cursor: pointer;
             transition: all 0.3s ease;
             opacity: 0.6;
+            position: relative;
           }
 
           .thumbnail:hover {
             opacity: 1;
+            transform: scale(1.1);
+          }
+
+          .thumbnail:hover::after {
+            content: attr(title);
+            position: absolute;
+            bottom: -2.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.4rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 100;
+            pointer-events: none;
+            border: 1px solid rgba(239, 68, 68, 0.3);
           }
 
           .thumbnail.active {
@@ -642,10 +706,7 @@ function Home() {
               <div className="right-content">
                 {pelis.length > 0 && (
                   <div>
-                    <div
-                      className="featured-movie"
-                      onClick={() => navigate(`/catalogo?q=${encodeURIComponent(pelis[currentSlide].Title)}`)}
-                    >
+                    <div className="featured-movie" onClick={() => navigate(`/pelicula/${pelis[currentSlide].imdbID}`)}>
                       <div className="movie-container">
                         <img
                           src={pelis[currentSlide].Poster || "/placeholder.svg"}
@@ -691,8 +752,13 @@ function Home() {
                       {pelis.slice(0, 4).map((peli, index) => (
                         <button
                           key={peli.imdbID}
-                          onClick={() => setCurrentSlide(index)}
+                          onClick={(e) => {
+                            e.stopPropagation() // Evita conflictos
+                            setCurrentSlide(index)
+                          }}
+                          onDoubleClick={() => navigate(`/pelicula/${peli.imdbID}`)}
                           className={`thumbnail ${index === currentSlide ? "active" : ""}`}
+                          title="Doble clic para ver detalles"
                         >
                           <img src={peli.Poster || "/placeholder.svg"} alt={peli.Title} />
                         </button>
@@ -732,20 +798,20 @@ function Home() {
                 </a>
                 <a href="https://github.com/robertosl77" className="social-link github">
                   <svg className="social-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.022.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.759 1.088.759 1.762v2.715c0 .317.192.69.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                   </svg>
                 </a>
               </div>
 
-              <div className="copyright">© {new Date().getFullYear()} Todos los derechos reservados</div>
+              <div className="copyright">&copy; 2024 Roberto Sanchez Leiva. Todos los derechos reservados.</div>
             </div>
           </div>
         </div>
 
-        {/* Floating Elements */}
-        <div className="floating-dots dot-1"></div>
-        <div className="floating-dots dot-2"></div>
-        <div className="floating-dots dot-3"></div>
+        {/* Floating Dots */}
+        <div className="floating-dots dot-1" />
+        <div className="floating-dots dot-2" />
+        <div className="floating-dots dot-3" />
       </div>
     </>
   )
