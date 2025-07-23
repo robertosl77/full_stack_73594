@@ -5,7 +5,6 @@ const API_KEY = '29d19341';
 
 function Catalog() {
   const [peliculas, setPeliculas] = useState([]);
-  const [busqueda, setBusqueda] = useState('');
   const [filtro, setFiltro] = useState('');
 
   useEffect(() => {
