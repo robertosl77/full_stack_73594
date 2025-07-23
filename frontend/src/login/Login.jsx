@@ -1,14 +1,11 @@
-// import { useEffect } from "react";
 import LoginForm from "./LoginForm";
 import LoginGoogle from "./LoginGoogle";
 import LoginFacebook from "./LoginFacebook";
 import LoginInvitado from "./LoginInvitado";
 
 const Login = () => {
-
   return (
     <>
-      {/* HEAD EQUIVALENTE */}
       <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
         rel="stylesheet"
@@ -23,24 +20,26 @@ const Login = () => {
       />
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" crossOrigin="anonymous" />
 
-      {/* BODY */}
       <div className="d-flex align-items-center py-4 bg-body-tertiary min-vh-100">
-        <main className="form-signin w-100 m-auto">
-          <img className="mb-4" src="/img_logo/educacionit_logo.jpeg" alt="" width="100" />
-          <h1 className="h3 mb-3 fw-normal">Proyecto: Integrador3</h1>
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-12 col-md-6 col-lg-4">
+              <main className="form-signin w-100 m-auto">
+                <img className="mb-4" src="/img_logo/educacionit_logo.jpeg" alt="" width="100" />
+                <h1 className="h3 mb-3 fw-normal">Proyecto: Integrador3</h1>
 
-          <LoginForm />
+                <LoginForm />
+                <LoginGoogle />
+                <LoginFacebook />
+                <LoginInvitado />
 
-          <LoginGoogle />
-
-          <LoginFacebook />
-
-          <LoginInvitado />
-
-          <p className="mt-5 mb-3 text-body-secondary">
-            &copy; 2025 - Integrador3 - Desarrollado por robertosl77@gmail.com
-          </p>
-        </main>
+                <p className="mt-5 mb-3 text-body-secondary">
+                  &copy; 2025 - Integrador3 - Desarrollado por robertosl77@gmail.com
+                </p>
+              </main>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
