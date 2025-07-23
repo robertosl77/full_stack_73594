@@ -1,5 +1,0 @@
-npm init: crea json de inicio de proyecto
-npm init -y: similar pero con yes por defecto
-
-node --watch index.js
-
