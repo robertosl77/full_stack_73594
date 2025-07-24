@@ -21,6 +21,9 @@ function ModalCarrito({ show, onHide, user }) {
           reservados: productos.filter(p => p.estado === 2),
           comprados: productos.filter(p => p.estado === 3),
         });
+
+        console.log('Carrito cargado:', productos);
+
       } catch (err) {
         console.error('Error al cargar carrito', err);
       }
@@ -45,15 +48,23 @@ function ModalCarrito({ show, onHide, user }) {
         {items.map((item, i) => (
           <tr key={i}>
             <td>{item.nombre}</td>
-            <td>{item.cantidad}</td>
-            <td>${item.precio}</td>
-            <td>${item.precio * item.cantidad}</td>
+            <td>{item.cantidad_solicitada}</td>
+            <td>${item.precio_original}</td>
+            <td>${(item.precio_original * item.cantidad_solicitada).toFixed(2)}</td>
             {estado === 'activos' && (
               <td>
                 <Button
                   size="sm"
+                  variant="success"
+                  // onClick={() => modificarEstado(item.idProducto)}
+                  className="me-2"
+                >
+                  Comprar
+                </Button>                
+                <Button
+                  size="sm"
                   variant="warning"
-                  onClick={() => modificarEstado(item._id, 2)}
+                  onClick={() => modificarEstado(item.idProducto, 2)}
                   className="me-2"
                 >
                   Reservar
@@ -61,7 +72,7 @@ function ModalCarrito({ show, onHide, user }) {
                 <Button
                   size="sm"
                   variant="danger"
-                  onClick={() => eliminar(item._id)}
+                  onClick={() => eliminar(item.idProducto)}
                 >
                   Eliminar
                 </Button>
@@ -73,11 +84,17 @@ function ModalCarrito({ show, onHide, user }) {
     </Table>
   );
 
-  const modificarEstado = async (id, nuevoEstado) => {
-    await apiFetch(`/api/carrito/estado/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify({ estado: nuevoEstado }),
-    });
+  const modificarEstado = async (productoId, nuevoEstado) => {
+    await apiFetch(
+      nuevoEstado === 2 ? '/api/carrito/reservar' : '/api/carrito/cantidad',
+      {
+        method: 'PUT',
+        body: JSON.stringify({
+          usuarioId: user._id,
+          productoId,
+        }),
+      }
+    );
 
     const res = await apiFetch(`/api/carrito/${user._id}`);
     const productos = res.productos || [];
