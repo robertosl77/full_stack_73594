@@ -6,7 +6,7 @@ import { apiFetch } from "../utils/apiFetch";
 import { getBasedirFromToken } from "../utils/tokenUtils";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle";
 
-function Navbar({ user, cantidadCarrito }) {
+function Navbar({ user, cantidadCarrito, setShowModalCarrito }) {
   const location = useLocation();
   const basedir = getBasedirFromToken();
 
@@ -100,8 +100,7 @@ function Navbar({ user, cantidadCarrito }) {
                   <button
                     type="button"
                     className="btn btn-dark position-relative"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalCarrito"
+                    onClick={() => setShowModalCarrito(true)}
                   >
                     🛒
                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">

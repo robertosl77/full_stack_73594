@@ -10,11 +10,13 @@ import AbmProductos from "./pages/AbmProductos";
 import { jwtDecode } from "jwt-decode";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import ModalCarrito from "./modales/ModalCarrito";
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cantidadCarrito, setCantidadCarrito] = useState(0);  
+  const [showModalCarrito, setShowModalCarrito] = useState(false);
   
   const basedir = process.env.REACT_APP_BASEDIR;
 
@@ -55,7 +57,7 @@ function App() {
 
   return (
     <Router>
-      {user && <Navbar user={user} cantidadCarrito={cantidadCarrito} />}
+      {user && <Navbar user={user} cantidadCarrito={cantidadCarrito} setShowModalCarrito={setShowModalCarrito} />}
       <Routes>
         <Route path="/" element={<Navigate to={`${basedir}/login`} />} />
         <Route path={`${basedir}/login`} element={user ? <Navigate to={`${basedir}/productos`} /> : <Login />} />
@@ -76,8 +78,18 @@ function App() {
         <Route path={`${basedir}/admin/alta`} element={user ? <AltaProductos user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
         <Route path={`${basedir}/admin/abm`} element={user ? <AbmProductos user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
       </Routes>
+      {/* Modal de Carrito */}
+      {user && (
+        <ModalCarrito
+          show={showModalCarrito}
+          onHide={() => setShowModalCarrito(false)}
+          user={user}
+        />
+      )}
+      {/* Footer siempre visible */}
       {user && <Footer />}
     </Router>
+    
   );
 }
 

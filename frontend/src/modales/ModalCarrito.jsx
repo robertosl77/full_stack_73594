@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button, Tab, Nav, Table } from 'react-bootstrap';
+import { apiFetch } from "../utils/apiFetch";
 
-function ModalCarrito({ show, onHide }) {
+function ModalCarrito({ show, onHide, user }) {
   const [key, setKey] = useState('activos');
   const [carrito, setCarrito] = useState({
     activos: [],
@@ -10,19 +11,24 @@ function ModalCarrito({ show, onHide }) {
   });
 
   useEffect(() => {
-    if (show) {
-      fetch('/carrito/listar')
-        .then(res => res.json())
-        .then(data => {
-          setCarrito({
-            activos: data.activos || [],
-            reservados: data.reservados || [],
-            comprados: data.comprados || []
-          });
-        })
-        .catch(err => console.error('Error al cargar carrito', err));
-    }
-  }, [show]);
+    const cargarCarrito = async () => {
+      try {
+        const res = await apiFetch(`/api/carrito/${user._id}`, { method: 'GET' });
+        const productos = res.productos || [];
+
+        setCarrito({
+          activos: productos.filter(p => p.estado === 1),
+          reservados: productos.filter(p => p.estado === 2),
+          comprados: productos.filter(p => p.estado === 3),
+        });
+      } catch (err) {
+        console.error('Error al cargar carrito', err);
+      }
+    };
+
+    if (show) cargarCarrito();
+  }, [show, user]);
+
 
   const renderTabla = (items, estado) => (
     <Table striped bordered hover responsive>
@@ -68,31 +74,34 @@ function ModalCarrito({ show, onHide }) {
   );
 
   const modificarEstado = async (id, nuevoEstado) => {
-    await fetch(`/carrito/estado/${id}`, {
+    await apiFetch(`/api/carrito/estado/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ estado: nuevoEstado })
+      body: JSON.stringify({ estado: nuevoEstado }),
     });
-    // Refrescar
-    const r = await fetch('/carrito/listar');
-    const json = await r.json();
+
+    const res = await apiFetch(`/api/carrito/${user._id}`);
+    const productos = res.productos || [];
+
     setCarrito({
-      activos: json.activos || [],
-      reservados: json.reservados || [],
-      comprados: json.comprados || []
+      activos: productos.filter(p => p.estado === 1),
+      reservados: productos.filter(p => p.estado === 2),
+      comprados: productos.filter(p => p.estado === 3),
     });
   };
 
   const eliminar = async (id) => {
-    await fetch(`/carrito/eliminar/${id}`, { method: 'DELETE' });
-    const r = await fetch('/carrito/listar');
-    const json = await r.json();
+    await apiFetch(`/api/carrito/eliminar/${id}`, { method: 'DELETE' });
+
+    const res = await apiFetch(`/api/carrito/${user._id}`);
+    const productos = res.productos || [];
+
     setCarrito({
-      activos: json.activos || [],
-      reservados: json.reservados || [],
-      comprados: json.comprados || []
+      activos: productos.filter(p => p.estado === 1),
+      reservados: productos.filter(p => p.estado === 2),
+      comprados: productos.filter(p => p.estado === 3),
     });
   };
+
 
   return (
     <Modal show={show} onHide={onHide} size="lg" centered backdrop="static">
