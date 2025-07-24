@@ -127,9 +127,13 @@ router.post(
 
       // Recalcular cantidad actual en el carrito
       const carritoActualizado = await Carrito.findOne({ usuario: usuarioId });
+      // const totalCantidad = carritoActualizado.productos
+      //   .filter(p => p.estado === 1)
+      //   .reduce((acc, p) => acc + p.cantidad, 0);
+
       const totalCantidad = carritoActualizado.productos
         .filter(p => p.estado === 1)
-        .reduce((acc, p) => acc + p.cantidad, 0);
+        .length;
 
       // Obtener stock actual del producto
       const productoActualizado = await Producto.findById(productoId);

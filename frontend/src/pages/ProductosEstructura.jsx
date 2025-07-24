@@ -82,9 +82,7 @@ const ProductosEstructura = ({ user, basedir, setCantidadCarrito }) => {
 
                 <ProductosCard
                   producto={producto}
-                  onAgregar={(id, cantidad) => {
-                      agregarAlCarrito(id, cantidad);
-                  }}
+                  onAgregar={(id, cantidad) => agregarAlCarrito(id, cantidad)}
                   esVista={rolVista}
                 />
 

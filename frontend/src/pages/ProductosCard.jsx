@@ -5,7 +5,8 @@ const ProductosCard = ({ producto, onAgregar, esVista }) => {
   const basedir = getBasedirFromToken(); // obtiene la ruta base desde el token
 
   const [mensajeError, setMensajeError] = useState('');
-
+  const [bloqueado, setBloqueado] = useState(false);
+  
   const titleCase = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
   const validarCantidad = (productoId, cantidad, max) => {
@@ -19,13 +20,22 @@ const ProductosCard = ({ producto, onAgregar, esVista }) => {
     }
   };
 
-  const handleAgregar = () => {
-    const input = document.querySelector(`#cantidad${producto._id}`);
-    const cantidad = parseInt(input?.value || "1", 10);
-    if (validarCantidad(producto._id, cantidad, producto.stock)) {
-      onAgregar(producto._id, cantidad);
+  const handleAgregar = async () => {
+    if (bloqueado) return;
+    setBloqueado(true); // 🔒 antes de todo
+
+    try {
+      const input = document.querySelector(`#cantidad${producto._id}`);
+      const cantidad = parseInt(input?.value || "1", 10);
+
+      if (validarCantidad(producto._id, cantidad, producto.stock)) {
+        await onAgregar(producto._id, cantidad);
+      }
+    } finally {
+      setBloqueado(false); // 🔓 incluso si falla
     }
   };
+
 
   return (
     <div className="card h-100 rounded-3 p-3 text-center shadow position-relative">
@@ -91,7 +101,7 @@ const ProductosCard = ({ producto, onAgregar, esVista }) => {
 
             <button
               className={`btn w-100 mt-auto ${producto.stock > 0 ? "btn-primary" : "btn-secondary"}`}
-              disabled={producto.stock === 0}
+              disabled={producto.stock === 0 || bloqueado}
               style={producto.stock === 0 ? { background: "gray", cursor: "not-allowed" } : {}}
               onClick={handleAgregar}
             >
