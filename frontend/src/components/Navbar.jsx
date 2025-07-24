@@ -95,12 +95,18 @@ function Navbar({ user, cantidadCarrito }) {
 
           {user && (
             <ul className="navbar-nav">
-              <li className="nav-item d-flex align-items-center me-3" style={{ position: "relative" }}>
+              <li className="nav-item d-flex align-items-center me-3">
                 {showCart && (
-                  <button type="button" className="nav-link btn btn-link position-relative px-2" data-bs-toggle="modal" data-bs-target="#modalCarrito" style={{ textDecoration: "none" }}>
+                  <button
+                    type="button"
+                    className="btn btn-dark position-relative"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalCarrito"
+                  >
                     🛒
-                    <span className="position-absolute top-10 start-70 translate-middle badge rounded-pill bg-danger" style={{ fontSize: "0.7rem" }}>
-                      {cantidadCarrito || cartCount}
+                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                      {cantidadCarrito || cartCount}+
+                      <span className="visually-hidden">productos en el carrito</span>
                     </span>
                   </button>
                 )}
