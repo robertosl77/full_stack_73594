@@ -51,38 +51,102 @@ function ModalCarrito({ show, onHide, user }) {
             <td>{item.cantidad_solicitada}</td>
             <td>${item.precio_original}</td>
             <td>${(item.precio_original * item.cantidad_solicitada).toFixed(2)}</td>
-            {estado === 'activos' && (
-              <td>
+            <td>
+              {estado === 'activos' && (
+                <>
+                  <Button
+                    size="sm"
+                    variant="success"
+                    onClick={() => confirmarCompra(item.idProducto)}
+                    className="me-2"
+                  >
+                    Comprar
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="warning"
+                    onClick={() => modificarEstado(item.idProducto, 2)}
+                    className="me-2"
+                  >
+                    Reservar
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    onClick={() => eliminar(item.idProducto)}
+                  >
+                    Eliminar
+                  </Button>
+                </>
+              )}
+
+              {estado === 'reservados' && (
+                <>
+                  <Button
+                    size="sm"
+                    variant="success"
+                    onClick={() => confirmarCompra(item.idProducto)}
+                    className="me-2"
+                  >
+                    Comprar
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    onClick={() => eliminar(item.idProducto)}
+                  >
+                    Eliminar
+                  </Button>
+                </>
+              )}
+
+              {estado === 'comprados' && (
                 <Button
                   size="sm"
-                  variant="success"
-                  // onClick={() => modificarEstado(item.idProducto)}
-                  className="me-2"
+                  variant="info"
+                  onClick={() => verFacturacion(item.idProducto)}
                 >
-                  Comprar
-                </Button>                
-                <Button
-                  size="sm"
-                  variant="warning"
-                  onClick={() => modificarEstado(item.idProducto, 2)}
-                  className="me-2"
-                >
-                  Reservar
+                  Ver Facturación
                 </Button>
-                <Button
-                  size="sm"
-                  variant="danger"
-                  onClick={() => eliminar(item.idProducto)}
-                >
-                  Eliminar
-                </Button>
-              </td>
-            )}
+              )}
+            </td>
+
           </tr>
         ))}
       </tbody>
     </Table>
   );
+
+  const confirmarCompra = async (productoId) => {
+    try {
+      // Tomar todos los activos actuales desde el estado
+      const productosActivos = carrito.activos.map(p => ({
+        productoId: p.idProducto,
+        cantidad: p.cantidad_solicitada,
+        precio: p.precio_original,
+        descuento: p.descuento_original
+      }));
+
+      await apiFetch('/api/carrito/comprar', {
+        method: 'PUT',
+        body: JSON.stringify({
+          usuarioId: user._id,
+          productos: productosActivos
+        }),
+      });
+
+      const res = await apiFetch(`/api/carrito/${user._id}`);
+      const productos = res.productos || [];
+
+      setCarrito({
+        activos: productos.filter(p => p.estado === 1),
+        reservados: productos.filter(p => p.estado === 2),
+        comprados: productos.filter(p => p.estado === 3),
+      });
+    } catch (err) {
+      console.error("Error al confirmar compra:", err);
+    }
+  };
 
   const modificarEstado = async (productoId, nuevoEstado) => {
     await apiFetch(
@@ -107,8 +171,14 @@ function ModalCarrito({ show, onHide, user }) {
   };
 
   const eliminar = async (id) => {
-    await apiFetch(`/api/carrito/eliminar/${id}`, { method: 'DELETE' });
-
+    await apiFetch('/api/carrito', {
+      method: 'DELETE',
+      body: JSON.stringify({
+        usuarioId: user._id,
+        productoId: id
+      }),
+    });
+    // Actualizar el carrito después de eliminar
     const res = await apiFetch(`/api/carrito/${user._id}`);
     const productos = res.productos || [];
 
@@ -119,6 +189,10 @@ function ModalCarrito({ show, onHide, user }) {
     });
   };
 
+  const verFacturacion = (productoId) => {
+    alert(`Simulando vista de facturación para producto: ${productoId}`);
+    // futuro: abrir PDF, redirigir, o mostrar modal con detalle
+  };  
 
   return (
     <Modal show={show} onHide={onHide} size="lg" centered backdrop="static">

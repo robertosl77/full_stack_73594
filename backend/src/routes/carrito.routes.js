@@ -382,8 +382,6 @@ router.put(
         continue;
       }
 
-      console.log(pCarrito.cantidad);
-      console.log(producto.stock);
       if (pCarrito.cantidad > producto.stock) {
         respuesta.push({
           productoId: pFront.productoId,

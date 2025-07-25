@@ -35,4 +35,23 @@ router.get(
   }
 );
 
+// PATCH /api/mensajes/:id/leido – Marcar como leído
+router.patch(
+  '/api/mensajes/:id/leido',
+  verificarToken,
+  permitirSolo(['ROLE_ADMINISTRADOR']),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      await Contacto.findByIdAndUpdate(id, { leido: true });
+      res.json({ success: 'Mensaje marcado como leído' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error al marcar como leído' });
+    }
+  }
+);
+
+
+
 export default router;

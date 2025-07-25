@@ -23,6 +23,23 @@ const Mensajes = ({ user }) => {
     cargarMensajes();
   }, []);
 
+  const marcarComoLeido = async (id) => {
+    try {
+      const res = await apiFetch(`/api/mensajes/${id}/leido`, {
+        method: 'PATCH',
+      });
+
+      if (res.success) {
+        setMensajes(prev => prev.filter(msg => msg._id !== id));
+      } else {
+        alert("Error al marcar como leído");
+      }
+    } catch (error) {
+      console.error("Error al marcar mensaje como leído:", error);
+    }
+  };
+
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center min-vh-100">
@@ -43,6 +60,7 @@ const Mensajes = ({ user }) => {
               <th>Nombre</th>
               <th>Email</th>
               <th>Comentario</th>
+              <th>Acción</th>
             </tr>
           </thead>
           <tbody>
@@ -53,16 +71,25 @@ const Mensajes = ({ user }) => {
                   <td>{msg.nombre}</td>
                   <td>{msg.email}</td>
                   <td>{msg.comentario}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-success"
+                      onClick={() => marcarComoLeido(msg._id)}
+                    >
+                      Marcar como leído
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="text-center">
+                <td colSpan="5" className="text-center">
                   No hay mensajes no leídos.
                 </td>
               </tr>
             )}
           </tbody>
+
         </table>
       </div>
     </MarcoContenido>
