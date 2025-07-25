@@ -2,10 +2,13 @@
 import React, { useEffect, useState } from "react";
 import { apiFetch } from "../utils/apiFetch";
 import MarcoContenido from "../components/MarcoContenido";
+import ModalResponderMensaje from "../modales/ModalResponderMensaje";
 
 const Mensajes = ({ user }) => {
   const [mensajes, setMensajes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [destinatario, setDestinatario] = useState(null);  
 
   useEffect(() => {
     cargarMensajes();
@@ -40,6 +43,12 @@ const Mensajes = ({ user }) => {
     }
   };
 
+  const emailValido = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+
 
   if (loading) {
     return (
@@ -52,48 +61,67 @@ const Mensajes = ({ user }) => {
   }
 
   return (
-    <MarcoContenido titulo="Mensajes de Contacto" ancho={1}>
-      <div className="table-responsive">
-        <table className="table table-bordered table-striped align-middle">
-          <thead className="table-dark">
-            <tr>
-              <th>Fecha</th>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Comentario</th>
-              <th>Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {mensajes.length > 0 ? (
-              mensajes.map((msg) => (
-                <tr key={msg._id}>
-                  <td>{msg.tiempo}</td>
-                  <td>{msg.nombre}</td>
-                  <td>{msg.email}</td>
-                  <td>{msg.comentario}</td>
-                  <td>
-                    <button
-                      className="btn btn-sm btn-success"
-                      onClick={() => marcarComoLeido(msg._id)}
-                    >
-                      Marcar como leído
-                    </button>
+    <>
+      <MarcoContenido titulo="Mensajes de Contacto" ancho={1}>
+        <div className="table-responsive">
+          <table className="table table-bordered table-striped align-middle">
+            <thead className="table-dark">
+              <tr>
+                <th>Fecha</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Comentario</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {mensajes.length > 0 ? (
+                mensajes.map((msg) => (
+                  <tr key={msg._id}>
+                    <td>{msg.tiempo}</td>
+                    <td>{msg.nombre}</td>
+                    <td>{msg.email}</td>
+                    <td>{msg.comentario}</td>
+                    <td>
+                      <div className="d-flex flex-wrap gap-1 justify-content-center">
+                        <button
+                          className="btn btn-sm btn-primary"
+                          disabled={!emailValido(msg.email)}
+                          onClick={() => {
+                            setDestinatario(msg);
+                            setShowModal(true);
+                          }}
+                        >
+                          Responder
+                        </button>
+                        <button
+                          className="btn btn-sm btn-success"
+                          onClick={() => marcarComoLeido(msg._id)}
+                        >
+                          Leído
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="text-center">
+                    No hay mensajes no leídos.
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="text-center">
-                  No hay mensajes no leídos.
-                </td>
-              </tr>
-            )}
-          </tbody>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </MarcoContenido>
 
-        </table>
-      </div>
-    </MarcoContenido>
+      <ModalResponderMensaje
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        destinatario={destinatario}
+      />
+    </>
   );
 };
 

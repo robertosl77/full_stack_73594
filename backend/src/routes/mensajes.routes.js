@@ -52,6 +52,33 @@ router.patch(
   }
 );
 
+// POST /api/mensajes/responder – Enviar respuesta por email
+router.post(
+  '/api/mensajes/responder',
+  verificarToken,
+  permitirSolo(['ROLE_ADMINISTRADOR']),
+  async (req, res) => {
+    const { email, nombre, asunto, mensaje } = req.body;
+
+    if (!email || !nombre || !asunto || !mensaje) {
+      return res.status(400).json({ error: 'Faltan datos obligatorios.' });
+    }
+
+    try {
+      // Acá va tu lógica real de envío de email. Simulamos por ahora:
+      console.log(`Enviando email a ${email}`);
+      console.log(`Asunto: ${asunto}`);
+      console.log(`Mensaje:\n${mensaje}`);
+
+      // Simulación OK
+      res.json({ success: 'Respuesta enviada correctamente.' });
+    } catch (error) {
+      console.error('Error al enviar respuesta:', error);
+      res.status(500).json({ error: 'No se pudo enviar el email.' });
+    }
+  }
+);
+
 
 
 export default router;
