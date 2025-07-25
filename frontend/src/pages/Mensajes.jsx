@@ -8,20 +8,20 @@ const Mensajes = ({ user }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const cargarMensajes = async () => {
-      try {
-        const res = await apiFetch(`/api/mensajes`);
-        const resData = await res;
-        setMensajes(resData.mensajes || []);
-      } catch (error) {
-        console.error("Error al cargar mensajes:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     cargarMensajes();
   }, []);
+
+  const cargarMensajes = async () => {
+    try {
+      const res = await apiFetch(`/api/mensajes`);
+      const resData = await res;
+      setMensajes(resData.mensajes || []);
+    } catch (error) {
+      console.error("Error al cargar mensajes:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const marcarComoLeido = async (id) => {
     try {
@@ -30,7 +30,8 @@ const Mensajes = ({ user }) => {
       });
 
       if (res.success) {
-        setMensajes(prev => prev.filter(msg => msg._id !== id));
+        // setMensajes(prev => prev.filter(msg => msg._id !== id));
+        cargarMensajes(); // reutilizás el useEffect original
       } else {
         alert("Error al marcar como leído");
       }
