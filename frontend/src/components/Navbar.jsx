@@ -1,8 +1,6 @@
-// src/components/Navbar.jsx
-import React, { useState, useEffect, useCallback } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { logout } from "../login/Logout";
-import { apiFetch } from "../utils/apiFetch";
 import { getBasedirFromToken } from "../utils/tokenUtils";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle";
 
@@ -10,36 +8,12 @@ function Navbar({ user, cantidadCarrito, setShowModalCarrito }) {
   const location = useLocation();
   const basedir = getBasedirFromToken();
 
-  const [cartCount, setCartCount] = useState(0);
-  const [showCart, setShowCart] = useState(false);
-
-  const updateCartCount = useCallback(async () => {
-    try {
-      if (user.rol === "ROLE_CONSULTA") return;
-
-      const res = await apiFetch(`/api/carrito/cantidad`, { method: "GET" });
-      const resData = await res;
-      setCartCount(resData.cantidad || 0);
-      setShowCart((resData.cantidad || 0) > 0);
-    } catch (err) {
-      console.error("Error al actualizar carrito:", err);
-    }
-  }, [user]);
-
   const cerrarMenu = () => {
     const navbar = document.getElementById("navbarNav");
     if (navbar && navbar.classList.contains("show")) {
       new bootstrap.Collapse(navbar).hide();
     }
   };
-
-  useEffect(() => {
-    if (user) updateCartCount();
-  }, [user, updateCartCount]);
-
-  useEffect(() => {
-    setShowCart(user && cantidadCarrito > 0);
-  }, [user, cantidadCarrito]);
 
   const isAdmin = user?.rol === "ROLE_ADMINISTRADOR";
 
@@ -100,7 +74,6 @@ function Navbar({ user, cantidadCarrito, setShowModalCarrito }) {
 
             {isAdmin && (
               <li className="nav-item dropdown">
-                {/* sin cerrarMenu aquí */}
                 <button
                   className="nav-link dropdown-toggle btn btn-link"
                   id="gestionesDropdown"
@@ -150,7 +123,7 @@ function Navbar({ user, cantidadCarrito, setShowModalCarrito }) {
           {user && (
             <ul className="navbar-nav">
               <li className="nav-item d-flex align-items-center me-3">
-                {showCart && (
+                {cantidadCarrito > 0 && (
                   <button
                     type="button"
                     className="btn btn-dark position-relative"
@@ -158,10 +131,8 @@ function Navbar({ user, cantidadCarrito, setShowModalCarrito }) {
                   >
                     🛒
                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                      {(cantidadCarrito || cartCount) + "+"}
-                      <span className="visually-hidden">
-                        productos en el carrito
-                      </span>
+                      {cantidadCarrito}
+                      <span className="visually-hidden">productos en el carrito</span>
                     </span>
                   </button>
                 )}

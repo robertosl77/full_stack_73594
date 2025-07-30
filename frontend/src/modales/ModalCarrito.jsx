@@ -1,37 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, Button, Tab, Nav, Table } from 'react-bootstrap';
+import React, { useEffect, useState } from "react";
+import { Modal, Button, Tab, Nav, Table } from "react-bootstrap";
 import { apiFetch } from "../utils/apiFetch";
 
-function ModalCarrito({ show, onHide, user }) {
-  const [key, setKey] = useState('activos');
+function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito }) {
+  const [key, setKey] = useState("activos");
   const [carrito, setCarrito] = useState({
     activos: [],
     reservados: [],
-    comprados: []
+    comprados: [],
   });
 
   useEffect(() => {
     const cargarCarrito = async () => {
       try {
-        const res = await apiFetch(`/api/carrito/${user._id}`, { method: 'GET' });
+        const res = await apiFetch(`/api/carrito/${user._id}`, { method: "GET" });
         const productos = res.productos || [];
 
         setCarrito({
-          activos: productos.filter(p => p.estado === 1),
-          reservados: productos.filter(p => p.estado === 2),
-          comprados: productos.filter(p => p.estado === 3),
+          activos: productos.filter((p) => p.estado === 1),
+          reservados: productos.filter((p) => p.estado === 2),
+          comprados: productos.filter((p) => p.estado === 3),
         });
 
-        console.log('Carrito cargado:', productos);
+        const cantidadTotal = productos.filter((p) => p.estado === 1).reduce(
+          (sum, item) => sum + item.cantidad_solicitada,
+          0
+        );
+        setCantidadCarrito(cantidadTotal);
 
       } catch (err) {
-        console.error('Error al cargar carrito', err);
+        console.error("Error al cargar carrito", err);
       }
     };
 
     if (show) cargarCarrito();
-  }, [show, user]);
-
+  }, [show, user, setCantidadCarrito]);
 
   const renderTabla = (items, estado) => (
     <Table striped bordered hover responsive>
@@ -41,7 +44,7 @@ function ModalCarrito({ show, onHide, user }) {
           <th>Cantidad</th>
           <th>Precio</th>
           <th>Total</th>
-          {estado === 'activos' && <th>Acciones</th>}
+          {estado === "activos" && <th>Acciones</th>}
         </tr>
       </thead>
       <tbody>
@@ -52,7 +55,7 @@ function ModalCarrito({ show, onHide, user }) {
             <td>${item.precio_original}</td>
             <td>${(item.precio_original * item.cantidad_solicitada).toFixed(2)}</td>
             <td>
-              {estado === 'activos' && (
+              {estado === "activos" && (
                 <>
                   <Button
                     size="sm"
@@ -73,14 +76,13 @@ function ModalCarrito({ show, onHide, user }) {
                   <Button
                     size="sm"
                     variant="danger"
-                    onClick={() => eliminar(item.idProducto)}
+                    onClick={() => eliminar(item.idProducto, item.cantidad_solicitada)}
                   >
                     Eliminar
                   </Button>
                 </>
               )}
-
-              {estado === 'reservados' && (
+              {estado === "reservados" && (
                 <>
                   <Button
                     size="sm"
@@ -93,14 +95,13 @@ function ModalCarrito({ show, onHide, user }) {
                   <Button
                     size="sm"
                     variant="danger"
-                    onClick={() => eliminar(item.idProducto)}
+                    onClick={() => eliminar(item.idProducto, item.cantidad_solicitada)}
                   >
                     Eliminar
                   </Button>
                 </>
               )}
-
-              {estado === 'comprados' && (
+              {estado === "comprados" && (
                 <Button
                   size="sm"
                   variant="info"
@@ -110,7 +111,6 @@ function ModalCarrito({ show, onHide, user }) {
                 </Button>
               )}
             </td>
-
           </tr>
         ))}
       </tbody>
@@ -119,19 +119,18 @@ function ModalCarrito({ show, onHide, user }) {
 
   const confirmarCompra = async (productoId) => {
     try {
-      // Tomar todos los activos actuales desde el estado
-      const productosActivos = carrito.activos.map(p => ({
+      const productosActivos = carrito.activos.map((p) => ({
         productoId: p.idProducto,
         cantidad: p.cantidad_solicitada,
         precio: p.precio_original,
-        descuento: p.descuento_original
+        descuento: p.descuento_original,
       }));
 
-      await apiFetch('/api/carrito/comprar', {
-        method: 'PUT',
+      await apiFetch("/api/carrito/comprar", {
+        method: "PUT",
         body: JSON.stringify({
           usuarioId: user._id,
-          productos: productosActivos
+          productos: productosActivos,
         }),
       });
 
@@ -139,60 +138,90 @@ function ModalCarrito({ show, onHide, user }) {
       const productos = res.productos || [];
 
       setCarrito({
-        activos: productos.filter(p => p.estado === 1),
-        reservados: productos.filter(p => p.estado === 2),
-        comprados: productos.filter(p => p.estado === 3),
+        activos: productos.filter((p) => p.estado === 1),
+        reservados: productos.filter((p) => p.estado === 2),
+        comprados: productos.filter((p) => p.estado === 3),
       });
+
+      const cantidadTotal = productos.filter((p) => p.estado === 1).reduce(
+        (sum, item) => sum + item.cantidad_solicitada,
+        0
+      );
+      setCantidadCarrito(cantidadTotal);
     } catch (err) {
       console.error("Error al confirmar compra:", err);
     }
   };
 
   const modificarEstado = async (productoId, nuevoEstado) => {
-    await apiFetch(
-      nuevoEstado === 2 ? '/api/carrito/reservar' : '/api/carrito/cantidad',
-      {
-        method: 'PUT',
+    try {
+      await apiFetch(
+        nuevoEstado === 2 ? "/api/carrito/reservar" : "/api/carrito/cantidad",
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            usuarioId: user._id,
+            productoId,
+          }),
+        }
+      );
+
+      const res = await apiFetch(`/api/carrito/${user._id}`);
+      const productos = res.productos || [];
+
+      setCarrito({
+        activos: productos.filter((p) => p.estado === 1),
+        reservados: productos.filter((p) => p.estado === 2),
+        comprados: productos.filter((p) => p.estado === 3),
+      });
+
+      const cantidadTotal = productos.filter((p) => p.estado === 1).reduce(
+        (sum, item) => sum + item.cantidad_solicitada,
+        0
+      );
+      setCantidadCarrito(cantidadTotal);
+    } catch (err) {
+      console.error("Error al modificar estado:", err);
+    }
+  };
+
+  const eliminar = async (productoId, cantidad) => {
+    try {
+      const res = await apiFetch("/api/carrito", {
+        method: "DELETE",
         body: JSON.stringify({
           usuarioId: user._id,
           productoId,
         }),
+      });
+
+      const data = await res;
+      if (data.stockActual !== undefined) {
+        actualizarStock(productoId, data.stockActual);
       }
-    );
 
-    const res = await apiFetch(`/api/carrito/${user._id}`);
-    const productos = res.productos || [];
+      const resCarrito = await apiFetch(`/api/carrito/${user._id}`);
+      const productos = resCarrito.productos || [];
 
-    setCarrito({
-      activos: productos.filter(p => p.estado === 1),
-      reservados: productos.filter(p => p.estado === 2),
-      comprados: productos.filter(p => p.estado === 3),
-    });
-  };
+      setCarrito({
+        activos: productos.filter((p) => p.estado === 1),
+        reservados: productos.filter((p) => p.estado === 2),
+        comprados: productos.filter((p) => p.estado === 3),
+      });
 
-  const eliminar = async (id) => {
-    await apiFetch('/api/carrito', {
-      method: 'DELETE',
-      body: JSON.stringify({
-        usuarioId: user._id,
-        productoId: id
-      }),
-    });
-    // Actualizar el carrito después de eliminar
-    const res = await apiFetch(`/api/carrito/${user._id}`);
-    const productos = res.productos || [];
-
-    setCarrito({
-      activos: productos.filter(p => p.estado === 1),
-      reservados: productos.filter(p => p.estado === 2),
-      comprados: productos.filter(p => p.estado === 3),
-    });
+      const cantidadTotal = productos.filter((p) => p.estado === 1).reduce(
+        (sum, item) => sum + item.cantidad_solicitada,
+        0
+      );
+      setCantidadCarrito(cantidadTotal);
+    } catch (err) {
+      console.error("Error al eliminar producto del carrito:", err);
+    }
   };
 
   const verFacturacion = (productoId) => {
     alert(`Simulando vista de facturación para producto: ${productoId}`);
-    // futuro: abrir PDF, redirigir, o mostrar modal con detalle
-  };  
+  };
 
   return (
     <Modal show={show} onHide={onHide} size="lg" centered backdrop="static">
@@ -213,20 +242,16 @@ function ModalCarrito({ show, onHide, user }) {
             </Nav.Item>
           </Nav>
           <Tab.Content className="mt-3">
-            <Tab.Pane eventKey="activos">
-              {renderTabla(carrito.activos, 'activos')}
-            </Tab.Pane>
-            <Tab.Pane eventKey="reservados">
-              {renderTabla(carrito.reservados, 'reservados')}
-            </Tab.Pane>
-            <Tab.Pane eventKey="comprados">
-              {renderTabla(carrito.comprados, 'comprados')}
-            </Tab.Pane>
+            <Tab.Pane eventKey="activos">{renderTabla(carrito.activos, "activos")}</Tab.Pane>
+            <Tab.Pane eventKey="reservados">{renderTabla(carrito.reservados, "reservados")}</Tab.Pane>
+            <Tab.Pane eventKey="comprados">{renderTabla(carrito.comprados, "comprados")}</Tab.Pane>
           </Tab.Content>
         </Tab.Container>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>Cerrar</Button>
+        <Button variant="secondary" onClick={onHide}>
+          Cerrar
+        </Button>
       </Modal.Footer>
     </Modal>
   );

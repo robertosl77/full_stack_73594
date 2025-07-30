@@ -11,19 +11,20 @@ import { jwtDecode } from "jwt-decode";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ModalCarrito from "./modales/ModalCarrito";
+import { apiFetch } from "./utils/apiFetch";
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [cantidadCarrito, setCantidadCarrito] = useState(0);  
+  const [cantidadCarrito, setCantidadCarrito] = useState(0);
   const [showModalCarrito, setShowModalCarrito] = useState(false);
-  
+  const [productos, setProductos] = useState([]);
   const basedir = process.env.REACT_APP_BASEDIR;
 
   useEffect(() => {
-    document.body.style.backgroundColor = '#f8f9fa';
+    document.body.style.backgroundColor = "#f8f9fa";
     document.body.style.backgroundImage = "url('https://www.transparenttextures.com/patterns/wine-cork.png')";
-  }, []);  
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -45,6 +46,25 @@ function App() {
     setLoading(false);
   }, [basedir]);
 
+  useEffect(() => {
+    const cargarProductos = async () => {
+      try {
+        const res = await apiFetch(`/api/productos`);
+        const resData = await res;
+        setProductos(resData.productos || []);
+      } catch (error) {
+        console.error("Error al cargar productos:", error);
+      }
+    };
+    if (user) cargarProductos();
+  }, [user, basedir]);
+
+  const actualizarStock = (productoId, nuevoStock) => {
+    setProductos((prev) =>
+      prev.map((p) => (p._id === productoId ? { ...p, stock: nuevoStock } : p))
+    );
+  };
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center min-vh-100">
@@ -57,39 +77,97 @@ function App() {
 
   return (
     <Router>
-      {user && <Navbar user={user} cantidadCarrito={cantidadCarrito} setShowModalCarrito={setShowModalCarrito} />}
+      {user && (
+        <Navbar
+          user={user}
+          cantidadCarrito={cantidadCarrito}
+          setShowModalCarrito={setShowModalCarrito}
+        />
+      )}
       <Routes>
         <Route path="/" element={<Navigate to={`${basedir}/login`} />} />
-        <Route path={`${basedir}/login`} element={user ? <Navigate to={`${basedir}/productos`} /> : <Login />} />
-        <Route path={`${basedir}/productos`} element={
-          user ? (
-            <ProductosEstructura
-              user={user}
-              basedir={basedir}
-              setCantidadCarrito={setCantidadCarrito}
-            />
-          ) : (
-            <Navigate to={`${basedir}/login`} />
-          )
-        } />
-        <Route path={`${basedir}/nosotros`} element={user ? <Nosotros user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
-        <Route path={`${basedir}/contacto`} element={user ? <Contacto user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
-        <Route path={`${basedir}/admin/mensajes`} element={user ? <Mensajes user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
-        <Route path={`${basedir}/admin/alta`} element={user ? <AltaProductos user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
-        <Route path={`${basedir}/admin/abm`} element={user ? <AbmProductos user={user} basedir={basedir} /> : <Navigate to={`${basedir}/login`} />} />
+        <Route
+          path={`${basedir}/login`}
+          element={user ? <Navigate to={`${basedir}/productos`} /> : <Login />}
+        />
+        <Route
+          path={`${basedir}/productos`}
+          element={
+            user ? (
+              <ProductosEstructura
+                user={user}
+                basedir={basedir}
+                setCantidadCarrito={setCantidadCarrito}
+                productos={productos}
+                actualizarStock={actualizarStock}
+              />
+            ) : (
+              <Navigate to={`${basedir}/login`} />
+            )
+          }
+        />
+        <Route
+          path={`${basedir}/nosotros`}
+          element={
+            user ? (
+              <Nosotros user={user} basedir={basedir} />
+            ) : (
+              <Navigate to={`${basedir}/login`} />
+            )
+          }
+        />
+        <Route
+          path={`${basedir}/contacto`}
+          element={
+            user ? (
+              <Contacto user={user} basedir={basedir} />
+            ) : (
+              <Navigate to={`${basedir}/login`} />
+            )
+          }
+        />
+        <Route
+          path={`${basedir}/admin/mensajes`}
+          element={
+            user ? (
+              <Mensajes user={user} basedir={basedir} />
+            ) : (
+              <Navigate to={`${basedir}/login`} />
+            )
+          }
+        />
+        <Route
+          path={`${basedir}/admin/alta`}
+          element={
+            user ? (
+              <AltaProductos user={user} basedir={basedir} />
+            ) : (
+              <Navigate to={`${basedir}/login`} />
+            )
+          }
+        />
+        <Route
+          path={`${basedir}/admin/abm`}
+          element={
+            user ? (
+              <AbmProductos user={user} basedir={basedir} />
+            ) : (
+              <Navigate to={`${basedir}/login`} />
+            )
+          }
+        />
       </Routes>
-      {/* Modal de Carrito */}
       {user && (
         <ModalCarrito
           show={showModalCarrito}
           onHide={() => setShowModalCarrito(false)}
           user={user}
+          actualizarStock={actualizarStock}
+          setCantidadCarrito={setCantidadCarrito}
         />
       )}
-      {/* Footer siempre visible */}
       {user && <Footer />}
     </Router>
-    
   );
 }
 
