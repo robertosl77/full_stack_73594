@@ -5,6 +5,8 @@ import MarcoContenido from "../components/MarcoContenido";
 import ModalResponderMensaje from "../modales/ModalResponderMensaje";
 import { Modal, Button } from "react-bootstrap";
 
+const MS_EN_DIA = 86400000;
+
 const Mensajes = () => {
   /* -------------------- estado -------------------- */
   const [mensajes, setMensajes] = useState([]);
@@ -45,6 +47,25 @@ const Mensajes = () => {
 
   const emailValido = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+  const headerVariant = (msg) => {
+    if (msg.leido) return "secondary";       // gris
+    if (msg.respondido) return "success";    // verde
+
+    const dias = Math.floor(
+      (Date.now() - new Date(msg.fecha).getTime()) / MS_EN_DIA
+    );
+
+    if (dias < 1) return "info";             // azul claro
+    if (dias < 3) return "warning";          // amarillo
+    return "danger";                         // rojo
+  };
+
+  /* ---------- handler cierre modal responder ---------- */
+  const cerrarModalRespuesta = (actualizar) => {
+    setShowModalRespuesta(false);
+    if (actualizar) cargarMensajes();        // refresca colores/estado
+  };
+
   /* -------------------- cargando -------------------- */
   if (loading) {
     return (
@@ -67,18 +88,22 @@ const Mensajes = () => {
             {mensajes.map((msg) => (
               <div className="col" key={msg._id}>
                 <div className="card h-100 shadow-sm">
-                  <div className="card-body d-flex flex-column">
-                    {/* encabezado */}
-                    <h6 className="card-title mb-1">
-                      {msg.nombre}{" "}
-                      <span className="badge bg-secondary ms-2">{msg.tiempo}</span>
-                    </h6>
-                    <p className="small text-muted mb-2">{msg.email}</p>
+                  {/* ---------- cabecera coloreada ---------- */}
+                  <div
+                    className={`px-2 py-1 rounded-top bg-${headerVariant(
+                      msg
+                    )} ${headerVariant(msg) !== "warning" ? "text-white" : ""}`}
+                  >
+                    <strong>{msg.nombre}</strong>
+                    <span className="badge bg-light text-dark ms-2">
+                      {msg.tiempo}
+                    </span>
+                  </div>
 
-                    {/* comentario */}
+                  <div className="card-body d-flex flex-column">
+                    <p className="small text-muted mb-2">{msg.email}</p>
                     <p className="card-text flex-grow-1">{msg.comentario}</p>
 
-                    {/* botones */}
                     <div className="mt-2 d-flex flex-wrap gap-2">
                       <button
                         className="btn btn-outline-secondary btn-sm"
@@ -122,7 +147,7 @@ const Mensajes = () => {
       {/* ---------- modal responder ---------- */}
       <ModalResponderMensaje
         show={showModalRespuesta}
-        onHide={() => setShowModalRespuesta(false)}
+        onHide={cerrarModalRespuesta}   // ← actualiza al cerrar si corresponde
         destinatario={destinatario}
       />
 

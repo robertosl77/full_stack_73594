@@ -45,7 +45,7 @@ router.get(
     try {
       const limite = Number(req.query.limite) || 10;          // default 10
 
-      const contactos = await Contacto.find()                 // ← SIN filtro extra
+      const contactos = await Contacto.find({ leido: false })
         .sort({ fecha: -1 })
         .limit(limite)
         .lean();

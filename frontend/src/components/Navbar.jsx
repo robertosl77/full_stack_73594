@@ -15,16 +15,14 @@ function Navbar({ user, cantidadCarrito, setShowModalCarrito }) {
 
   const updateCartCount = useCallback(async () => {
     try {
-      if (user.rol === 'ROLE_CONSULTA') {
-        return;
-      }
-      
+      if (user.rol === "ROLE_CONSULTA") return;
+
       const res = await apiFetch(`/api/carrito/cantidad`, { method: "GET" });
       const resData = await res;
       setCartCount(resData.cantidad || 0);
-      setShowCart(resData.cantidad > 0);
-    } catch (error) {
-      console.error("Error al actualizar carrito:", error);
+      setShowCart((resData.cantidad || 0) > 0);
+    } catch (err) {
+      console.error("Error al actualizar carrito:", err);
     }
   }, [user]);
 
@@ -33,60 +31,116 @@ function Navbar({ user, cantidadCarrito, setShowModalCarrito }) {
     if (navbar && navbar.classList.contains("show")) {
       new bootstrap.Collapse(navbar).hide();
     }
-  };  
+  };
 
   useEffect(() => {
     if (user) updateCartCount();
   }, [user, updateCartCount]);
 
   useEffect(() => {
-    if (user && cantidadCarrito > 0) {
-      setShowCart(true);
-    } else {
-      setShowCart(false);
-    }
-  }, [user, cantidadCarrito]);  
+    setShowCart(user && cantidadCarrito > 0);
+  }, [user, cantidadCarrito]);
 
   const isAdmin = user?.rol === "ROLE_ADMINISTRADOR";
 
   return (
-    <nav className="navbar navbar-expand-lg bg-dark border-bottom border-body fixed-top" data-bs-theme="dark">
+    <nav
+      className="navbar navbar-expand-lg bg-dark border-bottom border-body fixed-top"
+      data-bs-theme="dark"
+    >
       <div className="container-fluid">
         <Link className="navbar-brand" to={`${basedir}/productos`}>
           <img src="/img_logo/logo.png" alt="Logo" style={{ height: "40px" }} />
         </Link>
 
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
           <span className="navbar-toggler-icon"></span>
         </button>
 
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto">
             <li className="nav-item">
-              <Link className={`nav-link ${location.pathname === `${basedir}/productos` ? 'active' : ''}`} to={`${basedir}/productos`} onClick={cerrarMenu}>Inicio</Link>
+              <Link
+                className={`nav-link ${
+                  location.pathname === `${basedir}/productos` ? "active" : ""
+                }`}
+                to={`${basedir}/productos`}
+                onClick={cerrarMenu}
+              >
+                Inicio
+              </Link>
             </li>
             <li className="nav-item">
-              <Link className={`nav-link ${location.pathname === `${basedir}/nosotros` ? 'active' : ''}`} to={`${basedir}/nosotros`} onClick={cerrarMenu}>Nosotros</Link>
+              <Link
+                className={`nav-link ${
+                  location.pathname === `${basedir}/nosotros` ? "active" : ""
+                }`}
+                to={`${basedir}/nosotros`}
+                onClick={cerrarMenu}
+              >
+                Nosotros
+              </Link>
             </li>
             <li className="nav-item">
-              <Link className={`nav-link ${location.pathname === `${basedir}/contacto` ? 'active' : ''}`} to={`${basedir}/contacto`} onClick={cerrarMenu}>Contactenos</Link>
+              <Link
+                className={`nav-link ${
+                  location.pathname === `${basedir}/contacto` ? "active" : ""
+                }`}
+                to={`${basedir}/contacto`}
+                onClick={cerrarMenu}
+              >
+                Contactenos
+              </Link>
             </li>
 
             {isAdmin && (
               <li className="nav-item dropdown">
-                <button className="nav-link dropdown-toggle btn btn-link" id="productosDropdown" data-bs-toggle="dropdown" type="button" style={{ textDecoration: "none" }} onClick={cerrarMenu}>
+                {/* sin cerrarMenu aquí */}
+                <button
+                  className="nav-link dropdown-toggle btn btn-link"
+                  id="gestionesDropdown"
+                  data-bs-toggle="dropdown"
+                  type="button"
+                  style={{ textDecoration: "none" }}
+                >
                   Gestiones
                 </button>
-                <ul className="dropdown-menu" aria-labelledby="productosDropdown">
+
+                <ul className="dropdown-menu" aria-labelledby="gestionesDropdown">
                   <li>
-                    <Link className="dropdown-item" to={`${basedir}/admin/mensajes`} onClick={cerrarMenu}>Mensajes</Link>
+                    <Link
+                      className="dropdown-item"
+                      to={`${basedir}/admin/mensajes`}
+                      onClick={cerrarMenu}
+                    >
+                      Mensajes
+                    </Link>
                   </li>
-                  <li><hr className="dropdown-divider" /></li>
                   <li>
-                    <Link className="dropdown-item" to={`${basedir}/admin/abm`} onClick={cerrarMenu}>Gestión de Productos</Link>
+                    <hr className="dropdown-divider" />
                   </li>
                   <li>
-                    <Link className="dropdown-item" to={`${basedir}/admin/alta`} onClick={cerrarMenu}>Nuevo Producto</Link>
+                    <Link
+                      className="dropdown-item"
+                      to={`${basedir}/admin/abm`}
+                      onClick={cerrarMenu}
+                    >
+                      Gestión de Productos
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="dropdown-item"
+                      to={`${basedir}/admin/alta`}
+                      onClick={cerrarMenu}
+                    >
+                      Nuevo Producto
+                    </Link>
                   </li>
                 </ul>
               </li>
@@ -104,8 +158,10 @@ function Navbar({ user, cantidadCarrito, setShowModalCarrito }) {
                   >
                     🛒
                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                      {cantidadCarrito || cartCount}+
-                      <span className="visually-hidden">productos en el carrito</span>
+                      {(cantidadCarrito || cartCount) + "+"}
+                      <span className="visually-hidden">
+                        productos en el carrito
+                      </span>
                     </span>
                   </button>
                 )}
@@ -116,7 +172,12 @@ function Navbar({ user, cantidadCarrito, setShowModalCarrito }) {
                 </span>
               </li>
               <li className="nav-item">
-                <button className="nav-link btn btn-link" style={{ textDecoration: "none" }} onClick={logout} type="button">
+                <button
+                  className="nav-link btn btn-link"
+                  style={{ textDecoration: "none" }}
+                  onClick={logout}
+                  type="button"
+                >
                   Cerrar sesión
                 </button>
               </li>
