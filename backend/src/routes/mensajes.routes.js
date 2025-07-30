@@ -36,6 +36,38 @@ router.get(
   }
 );
 
+// GET /api/mensajes-con-respuestas  → últimos 10 (sin filtros nuevos)
+router.get(
+  '/api/mensajes-con-respuestas',
+  verificarToken,
+  permitirSolo(['ROLE_ADMINISTRADOR']),
+  async (req, res) => {
+    try {
+      const limite = Number(req.query.limite) || 10;          // default 10
+
+      const contactos = await Contacto.find()                 // ← SIN filtro extra
+        .sort({ fecha: -1 })
+        .limit(limite)
+        .lean();
+
+      const mensajes = contactos.map(c => ({
+        ...c,
+        tiempo: tiempoTranscurrido(c.fecha),
+        respuestas: (c.respuestas || []).map(r => ({
+          ...r,
+          tiempoRespuesta: tiempoTranscurrido(r.fecha)
+        }))
+      }));
+
+      res.json({ mensajes, cantidadMensajes: mensajes.length });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Error al obtener mensajes' });
+    }
+  }
+);
+
+
 // PATCH /api/mensajes/:id/leido – Marcar como leído
 router.patch(
   '/api/mensajes/:id/leido',
