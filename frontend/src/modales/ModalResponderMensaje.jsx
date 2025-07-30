@@ -19,6 +19,7 @@ const ModalResponderMensaje = ({ show, onHide, destinatario }) => {
     setEnviando(true);
 
     const datos = {
+      id: destinatario._id,
       email: destinatario.email,
       nombre: destinatario.nombre,
       asunto: 'Tu consulta fue respondida',

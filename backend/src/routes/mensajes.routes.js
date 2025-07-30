@@ -59,30 +59,38 @@ router.post(
   verificarToken,
   permitirSolo(['ROLE_ADMINISTRADOR']),
   async (req, res) => {
-    const { email, nombre, asunto, mensaje } = req.body;
+    const { email, nombre, asunto, mensaje, id } = req.body;
 
-    if (!email || !nombre || !asunto || !mensaje) {
+    if (!email || !nombre || !asunto || !mensaje || !id) {
       return res.status(400).json({ error: 'Faltan datos obligatorios.' });
     }
 
     try {
-
       await enviarEmail({
         to: email,
         subject: asunto,
         text: mensaje
       });
 
-      res.json({ success: 'Respuesta enviada correctamente.' });
+      await Contacto.findByIdAndUpdate(id, {
+        respondido: true,
+        $push: {
+          respuestas: {
+            fecha: new Date(),
+            usuario: req.user.usuario,
+            mensaje
+          }
+        }
+      });      
 
-      
+      res.json({ success: 'Respuesta enviada y registrada correctamente.' });
+
     } catch (error) {
       console.error('Error al enviar respuesta:', error);
       res.status(500).json({ error: 'No se pudo enviar el email.' });
     }
   }
 );
-
 
 
 export default router;
