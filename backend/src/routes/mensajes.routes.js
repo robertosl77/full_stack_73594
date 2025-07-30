@@ -3,6 +3,7 @@ import express from 'express';
 import Contacto from '../models/contacto.js';
 import { tiempoTranscurrido } from '../utils/funciones.js';
 import { verificarToken, permitirSolo } from '../utils/token.js';
+import { enviarEmail } from '../utils/email.js';
 
 const router = express.Router();
 
@@ -65,13 +66,16 @@ router.post(
     }
 
     try {
-      // Acá va tu lógica real de envío de email. Simulamos por ahora:
-      console.log(`Enviando email a ${email}`);
-      console.log(`Asunto: ${asunto}`);
-      console.log(`Mensaje:\n${mensaje}`);
 
-      // Simulación OK
+      await enviarEmail({
+        to: email,
+        subject: asunto,
+        text: mensaje
+      });
+
       res.json({ success: 'Respuesta enviada correctamente.' });
+
+      
     } catch (error) {
       console.error('Error al enviar respuesta:', error);
       res.status(500).json({ error: 'No se pudo enviar el email.' });
