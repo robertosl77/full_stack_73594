@@ -1,20 +1,10 @@
-import cors from 'cors';
+import app from './app.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Convertir la lista de orígenes permitidos en array
-const allowedOrigins = process.env.ORIGENES_PERMITIDOS?.split(',') || [];
+const PORT = process.env.PORT || 8081;
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('No autorizado por CORS: ' + origin));
-    }
-  },
-  credentials: true
-};
-
-app.use(cors(corsOptions));
+app.listen(PORT, () => {
+  console.info(`Servidor corriendo en http://localhost:${PORT}${process.env.BASEDIR}`);
+});
