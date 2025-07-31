@@ -22,11 +22,10 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
           comprados: productos.filter((p) => p.estado === 3),
         });
 
-        const cantidadTotal = productos.filter((p) => p.estado === 1).reduce(
-          (sum, item) => sum + item.cantidad_solicitada,
-          0
-        );
-        setCantidadCarrito(cantidadTotal);
+        const cantidadProductos = productos.filter(
+          (p) => p.estado === 1 || p.estado === 2
+        ).length;
+        setCantidadCarrito(cantidadProductos);
 
       } catch (err) {
         console.error("Error al cargar carrito", err);
@@ -143,11 +142,11 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
         comprados: productos.filter((p) => p.estado === 3),
       });
 
-      const cantidadTotal = productos.filter((p) => p.estado === 1).reduce(
-        (sum, item) => sum + item.cantidad_solicitada,
-        0
-      );
-      setCantidadCarrito(cantidadTotal);
+      const cantidadProductos = productos.filter(
+        (p) => p.estado === 1 || p.estado === 2
+      ).length;
+      setCantidadCarrito(cantidadProductos);
+      
     } catch (err) {
       console.error("Error al confirmar compra:", err);
     }
@@ -175,11 +174,11 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
         comprados: productos.filter((p) => p.estado === 3),
       });
 
-      const cantidadTotal = productos.filter((p) => p.estado === 1).reduce(
-        (sum, item) => sum + item.cantidad_solicitada,
-        0
-      );
-      setCantidadCarrito(cantidadTotal);
+      const cantidadProductos = productos.filter(
+        (p) => p.estado === 1 || p.estado === 2
+      ).length;
+      setCantidadCarrito(cantidadProductos);
+      
     } catch (err) {
       console.error("Error al modificar estado:", err);
     }
@@ -209,11 +208,11 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
         comprados: productos.filter((p) => p.estado === 3),
       });
 
-      const cantidadTotal = productos.filter((p) => p.estado === 1).reduce(
-        (sum, item) => sum + item.cantidad_solicitada,
-        0
-      );
-      setCantidadCarrito(cantidadTotal);
+      const cantidadProductos = productos.filter(
+        (p) => p.estado === 1 || p.estado === 2
+      ).length;
+      setCantidadCarrito(cantidadProductos);
+      
     } catch (err) {
       console.error("Error al eliminar producto del carrito:", err);
     }

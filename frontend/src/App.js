@@ -27,6 +27,24 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const obtenerCantidadCarrito = async () => {
+      try {
+        const res = await apiFetch(`/api/carrito/cantidad`);
+        const resData = await res;
+        if (typeof resData.cantidad === "number") {
+          setCantidadCarrito(resData.cantidad);
+        }
+      } catch (error) {
+        console.error("Error al obtener cantidad del carrito:", error);
+      }
+    };
+  
+    if (user) {
+      obtenerCantidadCarrito();
+    }
+  }, [user]);  
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
