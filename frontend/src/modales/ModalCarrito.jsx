@@ -1,8 +1,60 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Modal, Button, Tab, Nav, Table } from "react-bootstrap"
+import { Modal, Button, Tab, Nav, Table, Card, Dropdown } from "react-bootstrap" // Importar Dropdown
 import { apiFetch } from "../utils/apiFetch"
+
+// Componente para renderizar cada producto como una tarjeta en pantallas pequeñas
+function ProductCard({ item, estado, confirmarCompra, modificarEstado, eliminar, verFacturacion }) {
+  return (
+    <Card className="mb-3 product-card">
+      <Card.Body>
+        <Card.Title className="product-card-title">{item.nombre}</Card.Title>
+        <div className="product-card-details">
+          <p>
+            <strong>Cantidad:</strong> {item.cantidad_solicitada}
+          </p>
+          <p>
+            <strong>Precio:</strong> ${item.precio_original}
+          </p>
+          <p>
+            <strong>Total:</strong> ${(item.precio_original * item.cantidad_solicitada).toFixed(2)}
+          </p>
+        </div>
+        <div className="product-card-actions">
+          <Dropdown className="w-100">
+            <Dropdown.Toggle variant="primary" id={`dropdown-actions-${item.idProducto}`} className="w-100">
+              Acciones
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu className="w-100">
+              {estado === "activos" && (
+                <>
+                  <Dropdown.Item onClick={() => confirmarCompra(item.idProducto)}>Comprar</Dropdown.Item>
+                  <Dropdown.Item onClick={() => modificarEstado(item.idProducto, 2)}>Reservar</Dropdown.Item>
+                  <Dropdown.Item onClick={() => eliminar(item.idProducto, item.cantidad_solicitada)}>
+                    Eliminar
+                  </Dropdown.Item>
+                </>
+              )}
+              {estado === "reservados" && (
+                <>
+                  <Dropdown.Item onClick={() => confirmarCompra(item.idProducto)}>Comprar</Dropdown.Item>
+                  <Dropdown.Item onClick={() => eliminar(item.idProducto, item.cantidad_solicitada)}>
+                    Eliminar
+                  </Dropdown.Item>
+                </>
+              )}
+              {estado === "comprados" && (
+                <Dropdown.Item onClick={() => verFacturacion(item.idProducto)}>Ver Facturación</Dropdown.Item>
+              )}
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
+      </Card.Body>
+    </Card>
+  )
+}
 
 function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito }) {
   const [key, setKey] = useState("activos")
@@ -11,6 +63,23 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
     reservados: [],
     comprados: [],
   })
+  const [isMobile, setIsMobile] = useState(false) // Estado para detectar móvil
+
+  useEffect(() => {
+    const handleResize = () => {
+      // Consideramos móvil si el ancho de la ventana es menor a 1200px (breakpoint xl de Bootstrap)
+      setIsMobile(window.innerWidth < 1200)
+    }
+
+    // Establecer el estado inicial
+    handleResize()
+
+    // Añadir el event listener
+    window.addEventListener("resize", handleResize)
+
+    // Limpiar el event listener al desmontar el componente
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   useEffect(() => {
     const cargarCarrito = async () => {
@@ -30,74 +99,6 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
     }
     if (show) cargarCarrito()
   }, [show, user, setCantidadCarrito])
-
-  const renderTabla = (items, estado) => (
-    <Table striped bordered hover responsive>
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Cantidad</th>
-          <th>Precio</th>
-          <th>Total</th>
-          {/* Se agrega la columna de Acciones para todos los estados */}
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {items.map((item, i) => (
-          <tr key={i}>
-            <td>{item.nombre}</td>
-            <td>{item.cantidad_solicitada}</td>
-            <td>${item.precio_original}</td>
-            <td>${(item.precio_original * item.cantidad_solicitada).toFixed(2)}</td>
-            <td>
-              {estado === "activos" && (
-                <>
-                  <Button size="sm" variant="success" onClick={() => confirmarCompra(item.idProducto)} className="me-2">
-                    Comprar
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="warning"
-                    onClick={() => modificarEstado(item.idProducto, 2)}
-                    className="me-2"
-                  >
-                    Reservar
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="danger"
-                    onClick={() => eliminar(item.idProducto, item.cantidad_solicitada)}
-                  >
-                    Eliminar
-                  </Button>
-                </>
-              )}
-              {estado === "reservados" && (
-                <>
-                  <Button size="sm" variant="success" onClick={() => confirmarCompra(item.idProducto)} className="me-2">
-                    Comprar
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="danger"
-                    onClick={() => eliminar(item.idProducto, item.cantidad_solicitada)}
-                  >
-                    Eliminar
-                  </Button>
-                </>
-              )}
-              {estado === "comprados" && (
-                <Button size="sm" variant="info" onClick={() => verFacturacion(item.idProducto)}>
-                  Ver Facturación
-                </Button>
-              )}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
-  )
 
   const confirmarCompra = async (productoId) => {
     try {
@@ -182,14 +183,123 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
     alert(`Simulando vista de facturación para producto: ${productoId}`)
   }
 
+  const renderContent = (items, estado) => {
+    if (isMobile) {
+      return (
+        <div className="product-cards-container">
+          {items.length > 0 ? (
+            items.map((item, i) => (
+              <ProductCard
+                key={i}
+                item={item}
+                estado={estado}
+                confirmarCompra={confirmarCompra}
+                modificarEstado={modificarEstado}
+                eliminar={eliminar}
+                verFacturacion={verFacturacion}
+              />
+            ))
+          ) : (
+            <p className="text-center text-muted">No hay productos en esta sección.</p>
+          )}
+        </div>
+      )
+    } else {
+      return (
+        <Table striped bordered hover responsive>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Precio</th>
+              <th>Total</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.length > 0 ? (
+              items.map((item, i) => (
+                <tr key={i}>
+                  <td>{item.nombre}</td>
+                  <td>{item.cantidad_solicitada}</td>
+                  <td>${item.precio_original}</td>
+                  <td>${(item.precio_original * item.cantidad_solicitada).toFixed(2)}</td>
+                  <td>
+                    {estado === "activos" && (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="success"
+                          onClick={() => confirmarCompra(item.idProducto)}
+                          className="me-2"
+                        >
+                          Comprar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="warning"
+                          onClick={() => modificarEstado(item.idProducto, 2)}
+                          className="me-2"
+                        >
+                          Reservar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="danger"
+                          onClick={() => eliminar(item.idProducto, item.cantidad_solicitada)}
+                        >
+                          Eliminar
+                        </Button>
+                      </>
+                    )}
+                    {estado === "reservados" && (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="success"
+                          onClick={() => confirmarCompra(item.idProducto)}
+                          className="me-2"
+                        >
+                          Comprar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="danger"
+                          onClick={() => eliminar(item.idProducto, item.cantidad_solicitada)}
+                        >
+                          Eliminar
+                        </Button>
+                      </>
+                    )}
+                    {estado === "comprados" && (
+                      <Button size="sm" variant="info" onClick={() => verFacturacion(item.idProducto)}>
+                        Ver Facturación
+                      </Button>
+                    )}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center text-muted">
+                  No hay productos en esta sección.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      )
+    }
+  }
+
   return (
-    <Modal show={show} onHide={onHide} size="lg" centered backdrop="static">
+    <Modal show={show} onHide={onHide} size="xl" centered backdrop="static">
       <Modal.Header closeButton>
         <Modal.Title>Carrito de Compras</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Tab.Container activeKey={key} onSelect={(k) => setKey(k)}>
-          <Nav variant="tabs">
+          <Nav variant="tabs" className={isMobile ? "flex-column" : ""}>
             <Nav.Item>
               <Nav.Link eventKey="activos">Activos</Nav.Link>
             </Nav.Item>
@@ -201,9 +311,9 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
             </Nav.Item>
           </Nav>
           <Tab.Content className="mt-3">
-            <Tab.Pane eventKey="activos">{renderTabla(carrito.activos, "activos")}</Tab.Pane>
-            <Tab.Pane eventKey="reservados">{renderTabla(carrito.reservados, "reservados")}</Tab.Pane>
-            <Tab.Pane eventKey="comprados">{renderTabla(carrito.comprados, "comprados")}</Tab.Pane>
+            <Tab.Pane eventKey="activos">{renderContent(carrito.activos, "activos")}</Tab.Pane>
+            <Tab.Pane eventKey="reservados">{renderContent(carrito.reservados, "reservados")}</Tab.Pane>
+            <Tab.Pane eventKey="comprados">{renderContent(carrito.comprados, "comprados")}</Tab.Pane>
           </Tab.Content>
         </Tab.Container>
       </Modal.Body>
