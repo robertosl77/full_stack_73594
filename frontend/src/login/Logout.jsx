@@ -1,10 +1,13 @@
 export const logout = async () => {
+  const basedir = process.env.REACT_APP_BASEDIR;
+  const url = process.env.REACT_APP_URL;
+
   // Borrar token del frontend
   localStorage.removeItem("token");
 
   // Notificar al backend por si hay sesión activa
   try {
-    await fetch("http://localhost:8081/integrador3/api/logout", {
+    await fetch(`${url}/${basedir}/api/logout`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -15,6 +18,6 @@ export const logout = async () => {
     // Ignorar error
   } finally {
     // Redirigir siempre
-    window.location.href = "/integrador3/login";
+    window.location.href = `/${basedir}/login`;
   }
 };

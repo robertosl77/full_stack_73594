@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { getBasedirFromToken } from "../utils/tokenUtils"
+// import { getBasedirFromToken } from "../utils/tokenUtils"
 
 const ProductosCard = ({ producto, onAgregar, esVista }) => {
-  const basedir = getBasedirFromToken(); // obtiene la ruta base desde el token
+  // const basedir = getBasedirFromToken(); // obtiene la ruta base desde el token
+  const basedir = process.env.REACT_APP_BASEDIR;
+  const url = process.env.REACT_APP_URL;
 
   const [mensajeError, setMensajeError] = useState('');
   const [bloqueado, setBloqueado] = useState(false);
@@ -48,7 +50,7 @@ const ProductosCard = ({ producto, onAgregar, esVista }) => {
       <div className="d-flex justify-content-center align-items-center" style={{ height: "200px", overflow: "hidden" }}>
         <img
           // src={`/${producto.imagen}`} 
-          src={`http://localhost:8081${basedir}/${producto.imagen}`} 
+          src={`${url}/${basedir}/${producto.imagen}`} 
           alt={titleCase(producto.nombre)}
           className="img-fluid"
           style={{ objectFit: "cover", maxHeight: "100%" }}

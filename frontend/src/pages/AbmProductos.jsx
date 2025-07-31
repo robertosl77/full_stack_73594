@@ -4,10 +4,13 @@ import { useEffect, useState } from "react"
 import { apiFetch } from "../utils/apiFetch"
 import MarcoContenido from "../components/MarcoContenido"
 import ModalAbmProductos from "../modales/ModalAbmProductos"
-import { getBasedirFromToken } from "../utils/tokenUtils"
+// import { getBasedirFromToken } from "../utils/tokenUtils"
 
 const AbmProductos = () => {
-  const basedir = getBasedirFromToken() // obtiene la ruta base desde el token
+  // const basedir = getBasedirFromToken() // obtiene la ruta base desde el token
+  const basedir = process.env.REACT_APP_BASEDIR;
+  const url = process.env.REACT_APP_URL;
+
   const [productos, setProductos] = useState([])
   const [productoSeleccionado, setProductoSeleccionado] = useState(null)
   const [mostrarModal, setMostrarModal] = useState(false)
@@ -57,7 +60,7 @@ const AbmProductos = () => {
               <tr key={prod._id} onClick={() => handleSeleccionar(prod)} className="table-row-clickable">
                 <td>
                   <img
-                    src={`http://localhost:8081${basedir}/${prod.imagen}`}
+                    src={`${url}/${basedir}/${prod.imagen}`}
                     alt="imagen"
                     className="product-thumbnail"
                     onError={(e) => {

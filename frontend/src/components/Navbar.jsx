@@ -1,12 +1,13 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { logout } from "../login/Logout";
-import { getBasedirFromToken } from "../utils/tokenUtils";
+// import { getBasedirFromToken } from "../utils/tokenUtils";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle";
 
 function Navbar({ user, cantidadCarrito, setShowModalCarrito }) {
+  // const basedir = getBasedirFromToken();
+  const basedir = process.env.REACT_APP_BASEDIR;
   const location = useLocation();
-  const basedir = getBasedirFromToken();
 
   const cerrarMenu = () => {
     const navbar = document.getElementById("navbarNav");

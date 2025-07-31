@@ -31,6 +31,9 @@ import React, { useEffect, useState } from 'react';
 /* global FB */
 
 function LoginFacebook() {
+  const basedir = process.env.REACT_APP_BASEDIR;
+  const url = process.env.REACT_APP_URL;
+
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -62,8 +65,9 @@ function LoginFacebook() {
   };
 
   const loginBackend = async (accessToken) => {
+    console.log(basedir);
     try {
-      const res = await fetch(`http://localhost:8081/integrador3/api/loginFacebook`, {
+      const res = await fetch(`${url}/${basedir}/api/loginFacebook`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ accessToken })

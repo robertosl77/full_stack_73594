@@ -1,6 +1,9 @@
 import { useState } from "react";
 
 const LoginForm = () => {
+  const basedir = process.env.REACT_APP_BASEDIR;
+  const url = process.env.REACT_APP_URL;
+
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -9,7 +12,7 @@ const LoginForm = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:8081/integrador3/api/loginForm", {
+      const res = await fetch(`${url}/${basedir}/api/loginForm`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ usuario, password }),

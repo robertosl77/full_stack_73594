@@ -41,6 +41,9 @@ const firebaseConfig = {
 const auth = getAuth(initializeApp(firebaseConfig));
 
 function LoginGoogle() {
+  const basedir = process.env.REACT_APP_BASEDIR;
+  const url = process.env.REACT_APP_URL;
+
   const [error, setError] = useState("");
 
   const loginGoogle = async () => {
@@ -62,7 +65,7 @@ function LoginGoogle() {
         rol: 'operador'
       };        
 
-      const res = await fetch(`http://localhost:8081/integrador3/api/loginGoogle`, {
+      const res = await fetch(`${url}/${basedir}/api/loginGoogle`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(datos)

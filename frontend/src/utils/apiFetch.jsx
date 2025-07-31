@@ -1,8 +1,11 @@
-import { getBasedirFromToken } from "../utils/tokenUtils"
+// import { getBasedirFromToken } from "../utils/tokenUtils"
 
 // src/utils/apiFetch.js
 export async function apiFetch(api, options = {}) {
-  const basedir = getBasedirFromToken(); // obtiene la ruta base desde el token
+  // const basedir = getBasedirFromToken(); // obtiene la ruta base desde el token
+  const basedir = process.env.REACT_APP_BASEDIR;
+  const url = process.env.REACT_APP_URL;
+
   const token = localStorage.getItem("token"); // token JWT almacenado
 
   // arma los headers con Authorization, y si no es FormData, también Content-Type
@@ -24,8 +27,8 @@ export async function apiFetch(api, options = {}) {
   };
 
   try {
-    const url = `http://localhost:8081${basedir}${api}`; // URL completa
-    const response = await fetch(url, config); // hace el fetch
+    const urlApi = `${url}/${basedir}${api}`; // URL completa
+    const response = await fetch(urlApi, config); // hace el fetch
 
     // si el token es inválido, redirige a login
     if (response.status === 401) {

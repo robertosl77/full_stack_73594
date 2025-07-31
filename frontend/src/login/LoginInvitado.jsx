@@ -1,6 +1,9 @@
 import { useState } from "react";
 
 const LoginInvitado = () => {
+  const basedir = process.env.REACT_APP_BASEDIR;
+  const url = process.env.REACT_APP_URL;
+
   const [error, setError] = useState("");
 
   const handleLoginInvitado = async () => {
@@ -13,7 +16,7 @@ const LoginInvitado = () => {
     };
 
     try {
-      const res = await fetch("http://localhost:8081/integrador3/api/loginInvitado", {
+      const res = await fetch(`${url}/${basedir}/api/loginInvitado`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datos),
