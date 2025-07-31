@@ -308,9 +308,10 @@ input[type="number"]:focus {
   border-radius: var(--border-radius-md);
   overflow: hidden;
   box-shadow: 0 6px 20px var(--shadow-light);
-  background-color: var(--glass-light); /* Fondo de tabla con glass más transparente */
+  background-color: var(--pastel-purple); /* Fondo de tabla con color pastel */
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(0, 0, 0, 0.15); /* Borde más visible */
 }
 
 .table thead {
@@ -323,6 +324,7 @@ input[type="number"]:focus {
   padding: 0.8rem 1rem; /* Padding ajustado para TH */
   border-bottom: 2px solid rgba(0, 0, 0, 0.3); /* Borde inferior más oscuro */
   border-right: 1px solid rgba(0, 0, 0, 0.2); /* Borde derecho más oscuro */
+  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-purple-dark) 100%) !important; /* Asegura el fondo morado */
   color: var(--text-light) !important; /* Color del texto de los TH a blanco */
 }
 
@@ -331,15 +333,29 @@ input[type="number"]:focus {
 }
 
 .table tbody tr {
-  background-color: var(--glass-medium); /* Fondo más opaco para las filas */
+  background-color: var(--glass-light); /* Fondo más transparente para las filas */
   transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Borde inferior más visible */
 }
 
 .table tbody tr:hover {
-  background-color: var(--pastel-purple); /* Fondo más suave en hover */
+  background-color: var(--pastel-pink); /* Fondo pastel suave en hover */
   cursor: pointer;
   transform: translateY(-2px); /* Efecto más pronunciado */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Sombra sutil en hover */
+}
+
+/* Estilo para filas de tabla clickeables */
+.table-row-clickable {
+  cursor: pointer;
+}
+
+/* Estilo para las imágenes en la tabla de productos */
+.product-thumbnail {
+  height: 50px;
+  width: auto; /* Mantener la proporción */
+  object-fit: contain; /* Asegurar que la imagen se ajuste sin recortarse */
+  border-radius: var(--border-radius-sm); /* Pequeño borde redondeado */
 }
 
 /* Alertas coloridas con iconos */
@@ -800,5 +816,14 @@ footer small {
   .sin-stock::after {
     font-size: 1rem;
     padding: 0.4rem 0.8rem;
+  }
+  .table thead th,
+  .table tbody td {
+    padding: 0.5rem 0.6rem; /* Reducir padding para TH y TD */
+    font-size: 0.8rem; /* Reducir tamaño de fuente para TD */
+  }
+
+  .product-thumbnail {
+    height: 40px; /* Reducir altura de la imagen en la tabla para móvil */
   }
 }

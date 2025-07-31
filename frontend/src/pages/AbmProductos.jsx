@@ -1,45 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import { apiFetch } from '../utils/apiFetch';
-import MarcoContenido from '../components/MarcoContenido';
-import ModalAbmProductos from '../modales/ModalAbmProductos';
+"use client"
+
+import { useEffect, useState } from "react"
+import { apiFetch } from "../utils/apiFetch"
+import MarcoContenido from "../components/MarcoContenido"
+import ModalAbmProductos from "../modales/ModalAbmProductos"
 import { getBasedirFromToken } from "../utils/tokenUtils"
 
 const AbmProductos = () => {
-  const basedir = getBasedirFromToken(); // obtiene la ruta base desde el token
-
-  const [productos, setProductos] = useState([]);
-  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
-  const [mostrarModal, setMostrarModal] = useState(false);
+  const basedir = getBasedirFromToken() // obtiene la ruta base desde el token
+  const [productos, setProductos] = useState([])
+  const [productoSeleccionado, setProductoSeleccionado] = useState(null)
+  const [mostrarModal, setMostrarModal] = useState(false)
 
   const cargarProductos = async () => {
     try {
-      const res = await apiFetch('/api/abm');
-      if (res?.productos) setProductos(res.productos);
+      const res = await apiFetch("/api/abm")
+      if (res?.productos) setProductos(res.productos)
     } catch (err) {
-      console.error('Error cargando productos', err);
+      console.error("Error cargando productos", err)
     }
-  };
+  }
 
   useEffect(() => {
-    cargarProductos();
-  }, []);
+    cargarProductos()
+  }, [])
 
   const handleSeleccionar = (producto) => {
-    setProductoSeleccionado(producto);
-    setMostrarModal(true);
-  };
+    setProductoSeleccionado(producto)
+    setMostrarModal(true)
+  }
 
   const cerrarModal = (actualizado = false) => {
-    setMostrarModal(false);
-    setProductoSeleccionado(null);
-    if (actualizado) cargarProductos();
-  };
+    setMostrarModal(false)
+    setProductoSeleccionado(null)
+    if (actualizado) cargarProductos()
+  }
 
   return (
     <MarcoContenido titulo="Gestión de Productos">
       <div className="table-responsive">
         <table className="table table-hover align-middle">
-          <thead className="table-light">
+          <thead>
             <tr>
               <th>Imagen</th>
               <th>Nombre</th>
@@ -52,11 +53,17 @@ const AbmProductos = () => {
             </tr>
           </thead>
           <tbody>
-            {productos.map(prod => (
-              <tr key={prod._id} onClick={() => handleSeleccionar(prod)} style={{ cursor: 'pointer' }}>
+            {productos.map((prod) => (
+              <tr key={prod._id} onClick={() => handleSeleccionar(prod)} className="table-row-clickable">
                 <td>
-                  <img src={`http://localhost:8081${basedir}/${prod.imagen}`} alt="imagen" style={{ height: '50px' }}
-                    onError={(e) => { e.target.style.display = 'none'; }} />
+                  <img
+                    src={`http://localhost:8081${basedir}/${prod.imagen}`}
+                    alt="imagen"
+                    className="product-thumbnail"
+                    onError={(e) => {
+                      e.target.style.display = "none"
+                    }}
+                  />
                 </td>
                 <td>{prod.nombre}</td>
                 <td>{prod.bodega}</td>
@@ -64,22 +71,15 @@ const AbmProductos = () => {
                 <td>${prod.precio_original}</td>
                 <td>{prod.descuento}%</td>
                 <td>{prod.stock}</td>
-                <td>{prod.estado ? 'Activo' : 'Desactivo'}</td>
+                <td>{prod.estado ? "Activo" : "Desactivo"}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      {productoSeleccionado && (
-        <ModalAbmProductos
-          show={mostrarModal}
-          onHide={cerrarModal}
-          producto={productoSeleccionado}
-        />
-      )}
+      {mostrarModal && <ModalAbmProductos show={mostrarModal} onHide={cerrarModal} producto={productoSeleccionado} />}
     </MarcoContenido>
-  );
-};
+  )
+}
 
-export default AbmProductos;
+export default AbmProductos
