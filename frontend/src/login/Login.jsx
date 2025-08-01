@@ -7,40 +7,60 @@ import LoginAdmin from "./LoginAdmin";
 const Login = () => {
   return (
     <>
-      <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        crossOrigin="anonymous"
-      />
-      <link rel="stylesheet" href="/css/sign-in.css" />
-      <link
-        rel="icon"
-        href="https://getbootstrap.com/docs/5.3/assets/img/favicons/favicon-32x32.png"
-        type="image/png"
-        sizes="32x32"
-      />
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" crossOrigin="anonymous" />
-
-      <div className="d-flex align-items-center py-4 bg-body-tertiary min-vh-100">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-12 col-md-6 col-lg-4">
-              <main className="form-signin w-100 m-auto">
-                <img className="mb-4" src="/img_logo/educacionit_logo.jpeg" alt="" width="100" />
-                <h1 className="h3 mb-3 fw-normal">Proyecto: Integrador3</h1>
-
-                <LoginForm />
-                <LoginGoogle />
-                <LoginFacebook />
-                <LoginInvitado />
-                <LoginAdmin />
-
-                <p className="mt-5 mb-3 text-body-secondary">
-                  &copy; 2025 - Integrador3 - Desarrollado por robertosl77@gmail.com
-                </p>
-              </main>
-            </div>
+      <div
+        className="d-flex align-items-start justify-content-center min-vh-100"
+        style={{
+          backgroundImage: `url('/img_bodega/fondo_viñedo.jpg')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div
+          className="p-4"
+          style={{
+            background: "rgba(255, 255, 255, 0.85)",
+            backdropFilter: "blur(10px)",
+            borderRadius: "1rem",
+            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
+            maxWidth: "420px",
+            width: "100%",
+          }}
+        >
+          <div className="text-center mb-4">
+            <img
+              src="/img_logo/educacionit_logo.jpeg"
+              alt="Logo"
+              width="100"
+              className="mb-2"
+              style={{
+                filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
+              }}
+            />
+            <h1 className="h4 fw-bold" style={{ fontFamily: "Playfair Display, serif", color: "#6a1b9a" }}>
+              Ingreso a la Bodega
+            </h1>
+            <p className="text-muted mb-1" style={{ fontSize: "0.95rem" }}>
+              Proyecto Integrador3
+            </p>
+            <hr />
           </div>
+
+          <LoginForm />
+
+          <div className="text-center my-3">
+            <span className="text-muted">O ingresa con</span>
+          </div>
+
+          <div className="d-grid gap-2">
+            <LoginGoogle />
+            <LoginFacebook />
+            <LoginInvitado />
+            <LoginAdmin />
+          </div>
+
+          <p className="mt-4 mb-0 text-center text-secondary" style={{ fontSize: "0.8rem" }}>
+            &copy; 2025 - Integrador3 <br /> Desarrollado por <a href="mailto:robertosl77@gmail.com">robertosl77@gmail.com</a>
+          </p>
         </div>
       </div>
     </>
