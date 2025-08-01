@@ -2,6 +2,7 @@ import LoginForm from "./LoginForm";
 import LoginGoogle from "./LoginGoogle";
 import LoginFacebook from "./LoginFacebook";
 import LoginInvitado from "./LoginInvitado";
+import LoginAdmin from "./LoginAdmin";
 
 const Login = () => {
   return (
@@ -32,6 +33,7 @@ const Login = () => {
                 <LoginGoogle />
                 <LoginFacebook />
                 <LoginInvitado />
+                <LoginAdmin />
 
                 <p className="mt-5 mb-3 text-body-secondary">
                   &copy; 2025 - Integrador3 - Desarrollado por robertosl77@gmail.com

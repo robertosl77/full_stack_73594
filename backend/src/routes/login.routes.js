@@ -56,6 +56,39 @@ router.post("/api/loginInvitado", async (req, res) => {
   }
 });
 
+router.post("/api/loginAdmin", async (req, res) => {
+  const { proveedor, usuario, email, nombre, apellido } = req.body;
+
+  try {
+    if (!proveedor || !usuario || !email) {
+      throw new Error("Datos incompletos");
+    }
+
+    const sessionUser = {
+      _id: null,
+      usuario,
+      nombre: nombre || "",
+      apellido: apellido || "",
+      email,
+      rol: "ROLE_ADMINISTRADOR",
+      origen: proveedor,
+    };
+
+    const { token, payload } = generarTokenUsuario(sessionUser, proveedor);
+
+    req.session.user = payload;
+
+    res.json({
+      success: true,
+      redirect: `${res.locals.basedir}/productos`,
+      token,
+    });
+  } catch (err) {
+    console.error("Error en /loginInvitado:", err);
+    res.status(500).json({ success: false, error: "Error al procesar login" });
+  }
+});
+
 router.post("/api/loginForm", async (req, res) => {
   const { usuario, password } = req.body;
 
