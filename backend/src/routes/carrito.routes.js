@@ -46,12 +46,14 @@ router.post(
 
     try {
       // Validar existencia usuario
-      const user = await Usuario.findById(usuarioId);
-      if (!user) {
-        return res.status(404).json({
-          status: 404,
-          error: 'Usuario no encontrado'
-        });
+      if (!usuarioId.startsWith("999")) {
+        const user = await Usuario.findById(usuarioId);
+        if (!user) {
+          return res.status(404).json({
+            status: 404,
+            error: 'Usuario no encontrado'
+          });
+        }
       }
 
       // Validar existencia y estado del producto

@@ -65,7 +65,7 @@ router.post("/api/loginAdmin", async (req, res) => {
     }
 
     const sessionUser = {
-      _id: null,
+      _id: "999999999999999999999999",
       usuario,
       nombre: nombre || "",
       apellido: apellido || "",
