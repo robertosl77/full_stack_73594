@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { Modal, Button, Tab, Nav, Table, Card, Dropdown } from "react-bootstrap" // Importar Dropdown
 import { apiFetch } from "../utils/apiFetch"
+import CantidadSelector from "../components/CantidadSelector"
 
 // Componente para renderizar cada producto como una tarjeta en pantallas pequeñas
 function ProductCard({ item, estado, confirmarCompra, modificarEstado, eliminar, verFacturacion }) {
@@ -237,7 +238,15 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                     )}
                   </td>
                   )}
-                  <td>{item.cantidad_solicitada}</td>
+                  <td className="text-end">
+                    <CantidadSelector
+                      cantidad={item.cantidad_solicitada}
+                      stock={item.stock_actual}
+                      productoId={item.idProducto}
+                      usuarioId={user._id}
+                      onCambio={refrescarCarrito}
+                    />
+                  </td>                  
                   <td>${item.precio_original}</td>
                   <td>${(item.precio_original * item.cantidad_solicitada).toFixed(2)}</td>
                   <td>
@@ -308,6 +317,22 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
           </tbody>
         </Table>
       )
+    }
+  }
+
+  const refrescarCarrito = async () => {
+    try {
+      const res = await apiFetch(`/api/carrito/${user._id}`)
+      const productos = res.productos || []
+      setCarrito({
+        activos: productos.filter((p) => p.estado === 1),
+        reservados: productos.filter((p) => p.estado === 2),
+        comprados: productos.filter((p) => p.estado === 3),
+      })
+      const cantidadProductos = productos.filter((p) => p.estado === 1 || p.estado === 2).length
+      setCantidadCarrito(cantidadProductos)
+    } catch (err) {
+      console.error("Error al refrescar carrito", err)
     }
   }
 

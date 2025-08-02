@@ -828,3 +828,9 @@ footer small {
   }
 }
 
+.cantidad-selector .btn,
+.cantidad-selector .form-control {
+  height: 32px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
