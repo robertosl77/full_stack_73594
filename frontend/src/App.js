@@ -12,6 +12,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ModalCarrito from "./modales/ModalCarrito";
 import { apiFetch } from "./utils/apiFetch";
+import PingSpinner from './components/PingSpinner';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -95,96 +96,98 @@ function App() {
 
   return (
     <Router>
-      {user && (
-        <Navbar
-          user={user}
-          cantidadCarrito={cantidadCarrito}
-          setShowModalCarrito={setShowModalCarrito}
-        />
-      )}
-      <Routes>
-        <Route path="/" element={<Navigate to={`${basedir}/login`} />} />
-        <Route
-          path={`${basedir}/login`}
-          element={user ? <Navigate to={`${basedir}/productos`} /> : <Login />}
-        />
-        <Route
-          path={`${basedir}/productos`}
-          element={
-            user ? (
-              <ProductosEstructura
-                user={user}
-                basedir={basedir}
-                setCantidadCarrito={setCantidadCarrito}
-                productos={productos}
-                actualizarStock={actualizarStock}
-              />
-            ) : (
-              <Navigate to={`${basedir}/login`} />
-            )
-          }
-        />
-        <Route
-          path={`${basedir}/nosotros`}
-          element={
-            user ? (
-              <Nosotros user={user} basedir={basedir} />
-            ) : (
-              <Navigate to={`${basedir}/login`} />
-            )
-          }
-        />
-        <Route
-          path={`${basedir}/contacto`}
-          element={
-            user ? (
-              <Contacto user={user} basedir={basedir} />
-            ) : (
-              <Navigate to={`${basedir}/login`} />
-            )
-          }
-        />
-        <Route
-          path={`${basedir}/admin/mensajes`}
-          element={
-            user ? (
-              <Mensajes user={user} basedir={basedir} />
-            ) : (
-              <Navigate to={`${basedir}/login`} />
-            )
-          }
-        />
-        <Route
-          path={`${basedir}/admin/alta`}
-          element={
-            user ? (
-              <AltaProductos user={user} basedir={basedir} />
-            ) : (
-              <Navigate to={`${basedir}/login`} />
-            )
-          }
-        />
-        <Route
-          path={`${basedir}/admin/abm`}
-          element={
-            user ? (
-              <AbmProductos user={user} basedir={basedir} />
-            ) : (
-              <Navigate to={`${basedir}/login`} />
-            )
-          }
-        />
-      </Routes>
-      {user && (
-        <ModalCarrito
-          show={showModalCarrito}
-          onHide={() => setShowModalCarrito(false)}
-          user={user}
-          actualizarStock={actualizarStock}
-          setCantidadCarrito={setCantidadCarrito}
-        />
-      )}
-      {user && <Footer />}
+      <PingSpinner>
+        {user && (
+          <Navbar
+            user={user}
+            cantidadCarrito={cantidadCarrito}
+            setShowModalCarrito={setShowModalCarrito}
+          />
+        )}
+        <Routes>
+          <Route path="/" element={<Navigate to={`${basedir}/login`} />} />
+          <Route
+            path={`${basedir}/login`}
+            element={user ? <Navigate to={`${basedir}/productos`} /> : <Login />}
+          />
+          <Route
+            path={`${basedir}/productos`}
+            element={
+              user ? (
+                <ProductosEstructura
+                  user={user}
+                  basedir={basedir}
+                  setCantidadCarrito={setCantidadCarrito}
+                  productos={productos}
+                  actualizarStock={actualizarStock}
+                />
+              ) : (
+                <Navigate to={`${basedir}/login`} />
+              )
+            }
+          />
+          <Route
+            path={`${basedir}/nosotros`}
+            element={
+              user ? (
+                <Nosotros user={user} basedir={basedir} />
+              ) : (
+                <Navigate to={`${basedir}/login`} />
+              )
+            }
+          />
+          <Route
+            path={`${basedir}/contacto`}
+            element={
+              user ? (
+                <Contacto user={user} basedir={basedir} />
+              ) : (
+                <Navigate to={`${basedir}/login`} />
+              )
+            }
+          />
+          <Route
+            path={`${basedir}/admin/mensajes`}
+            element={
+              user ? (
+                <Mensajes user={user} basedir={basedir} />
+              ) : (
+                <Navigate to={`${basedir}/login`} />
+              )
+            }
+          />
+          <Route
+            path={`${basedir}/admin/alta`}
+            element={
+              user ? (
+                <AltaProductos user={user} basedir={basedir} />
+              ) : (
+                <Navigate to={`${basedir}/login`} />
+              )
+            }
+          />
+          <Route
+            path={`${basedir}/admin/abm`}
+            element={
+              user ? (
+                <AbmProductos user={user} basedir={basedir} />
+              ) : (
+                <Navigate to={`${basedir}/login`} />
+              )
+            }
+          />
+        </Routes>
+        {user && (
+          <ModalCarrito
+            show={showModalCarrito}
+            onHide={() => setShowModalCarrito(false)}
+            user={user}
+            actualizarStock={actualizarStock}
+            setCantidadCarrito={setCantidadCarrito}
+          />
+        )}
+        {user && <Footer />}
+      </PingSpinner>
     </Router>
   );
 }

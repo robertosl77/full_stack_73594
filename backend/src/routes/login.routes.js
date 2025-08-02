@@ -6,6 +6,11 @@ import { generarTokenUsuario } from "../utils/token.js"
 
 const router = express.Router()
 
+// Agregar esto en login.routes.js
+router.get('/api/ping', (req, res) => {
+  res.json({ success: true, message: 'pong', timestamp: Date.now() });
+});
+
 router.get("/api/logout", (req, res) => {
   console.info("=== LOGOUT SOLICITADO ===");
   if (req.session?.user) {
