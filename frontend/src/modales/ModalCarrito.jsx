@@ -11,16 +11,17 @@ function ProductCard({ item, estado, confirmarCompra, modificarEstado, eliminar,
       <Card.Body>
         <Card.Title className="product-card-title">{item.nombre}</Card.Title>
         <div className="product-card-details">
-          <p>
-            <strong>Cantidad:</strong> {item.cantidad_solicitada}
-          </p>
-          <p>
-            <strong>Precio:</strong> ${item.precio_original}
-          </p>
-          <p>
-            <strong>Total:</strong> ${(item.precio_original * item.cantidad_solicitada).toFixed(2)}
-          </p>
+          <p><strong>Cantidad:</strong> {item.cantidad_solicitada}</p>
+          <p><strong>Stock actual:</strong> {item.stock_actual}</p>
+          <p><strong>Precio:</strong> ${item.precio_original}</p>
+          <p><strong>Total:</strong> ${(item.precio_original * item.cantidad_solicitada).toFixed(2)}</p>
+          {item.cantidad_solicitada > item.stock_actual && (
+            <p className="text-danger fw-bold mt-1">
+              Stock insuficiente
+            </p>
+          )}
         </div>
+
         <div className="product-card-actions">
           <Dropdown className="w-100">
             <Dropdown.Toggle variant="primary" id={`dropdown-actions-${item.idProducto}`} className="w-100">
@@ -30,7 +31,13 @@ function ProductCard({ item, estado, confirmarCompra, modificarEstado, eliminar,
             <Dropdown.Menu className="w-100">
               {estado === "activos" && (
                 <>
-                  <Dropdown.Item onClick={() => confirmarCompra(item.idProducto)}>Comprar</Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => confirmarCompra(item.idProducto)}
+                    disabled={item.cantidad_solicitada > item.stock_actual}
+                  >
+                    Comprar
+                  </Dropdown.Item>
+
                   <Dropdown.Item onClick={() => modificarEstado(item.idProducto, 2)}>Reservar</Dropdown.Item>
                   <Dropdown.Item onClick={() => eliminar(item.idProducto, item.cantidad_solicitada)}>
                     Eliminar
@@ -210,6 +217,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
           <thead>
             <tr>
               <th>Producto</th>
+              {estado !== "comprados" && <th>Stock</th>}
               <th>Cantidad</th>
               <th>Precio</th>
               <th>Total</th>
@@ -221,6 +229,14 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
               items.map((item, i) => (
                 <tr key={i}>
                   <td>{item.nombre}</td>
+                  {estado !== "comprados" && (
+                  <td>
+                    {item.stock_actual}
+                    {item.cantidad_solicitada > item.stock_actual && (
+                      <span className="ms-2 badge bg-danger">¡Insuficiente!</span>
+                    )}
+                  </td>
+                  )}
                   <td>{item.cantidad_solicitada}</td>
                   <td>${item.precio_original}</td>
                   <td>${(item.precio_original * item.cantidad_solicitada).toFixed(2)}</td>
@@ -232,9 +248,11 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                           variant="success"
                           onClick={() => confirmarCompra(item.idProducto)}
                           className="me-2"
+                          disabled={item.cantidad_solicitada > item.stock_actual}
                         >
                           Comprar
                         </Button>
+
                         <Button
                           size="sm"
                           variant="warning"
@@ -243,6 +261,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                         >
                           Reservar
                         </Button>
+
                         <Button
                           size="sm"
                           variant="danger"
