@@ -22,6 +22,7 @@ const ProductosEstructura = ({ user, basedir, setCantidadCarrito, productos, act
     } catch (error) {
       console.error("Fallo al agregar al carrito", error);
     }
+    console.log("Producto agregado al carrito:", productoId, cantidad);
   };
 
   const rolVista = esVista();

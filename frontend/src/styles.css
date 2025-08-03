@@ -292,6 +292,16 @@ input[type="number"] {
   color: var(--text-dark);
 }
 
+.form-floating + .form-floating {
+  margin-top: 0.5rem; /* separación entre campos */
+}
+
+.form-floating > input,
+.form-floating > label {
+  padding: 0.3rem 0.75rem; /* menos alto */
+  font-size: 0.9rem;       /* más compacto */
+}
+
 .form-control:focus,
 .form-select:focus,
 input[type="number"]:focus {

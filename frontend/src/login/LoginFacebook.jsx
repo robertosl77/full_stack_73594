@@ -96,7 +96,7 @@ function LoginFacebook() {
         type="button" 
         id="facebookLoginBtn"    
         className="btn btn-primary w-100" 
-        style={{ backgroundColor: '#4267B2', marginTop: '10px' }}
+        style={{ backgroundColor: '#4267B2', marginTop: '6px' }}
         onClick={iniciarLogin} 
       >
         Iniciar sesión con Facebook

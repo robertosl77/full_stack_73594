@@ -13,7 +13,8 @@ export const generarTokenUsuario = (usuarioBase, origen = "loginLocal") => {
   };
 
   const token = jwt.sign(payload, process.env.JWT_SECRET || "clave-secreta", {
-    expiresIn: "2h",
+    // expiresIn: "2h",
+    expiresIn: "60000s", // Para pruebas rápidas
   });
 
   return { token, payload };

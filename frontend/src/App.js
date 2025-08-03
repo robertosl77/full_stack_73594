@@ -13,6 +13,7 @@ import Footer from "./components/Footer";
 import ModalCarrito from "./modales/ModalCarrito";
 import { apiFetch } from "./utils/apiFetch";
 import PingSpinner from './components/PingSpinner';
+import { esVista } from "./utils/tokenUtils";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -29,6 +30,8 @@ function App() {
 
   useEffect(() => {
     const obtenerCantidadCarrito = async () => {
+      if (esVista()) return; // No cargar cantidad si es vista
+
       try {
         const res = await apiFetch(`/api/carrito/cantidad`);
         const resData = await res;
@@ -54,12 +57,14 @@ function App() {
         if (userData.exp && userData.exp < now) {
           console.warn("Token expirado");
           localStorage.removeItem("token");
+          window.location.href = "/";
         } else {
           setUser(userData);
         }
       } catch (err) {
         console.error("Token inválido:", err);
         localStorage.removeItem("token");
+        window.location.href = "/";
       }
     }
     setLoading(false);
@@ -122,7 +127,7 @@ function App() {
                   actualizarStock={actualizarStock}
                 />
               ) : (
-                <Navigate to={`${basedir}/login`} />
+                <Navigate to={`/`} />
               )
             }
           />
@@ -132,7 +137,7 @@ function App() {
               user ? (
                 <Nosotros user={user} basedir={basedir} />
               ) : (
-                <Navigate to={`${basedir}/login`} />
+                <Navigate to={`/`} />
               )
             }
           />
@@ -142,7 +147,7 @@ function App() {
               user ? (
                 <Contacto user={user} basedir={basedir} />
               ) : (
-                <Navigate to={`${basedir}/login`} />
+                <Navigate to={`/`} />
               )
             }
           />
@@ -152,7 +157,7 @@ function App() {
               user ? (
                 <Mensajes user={user} basedir={basedir} />
               ) : (
-                <Navigate to={`${basedir}/login`} />
+                <Navigate to={`/`} />
               )
             }
           />
@@ -162,7 +167,7 @@ function App() {
               user ? (
                 <AltaProductos user={user} basedir={basedir} />
               ) : (
-                <Navigate to={`${basedir}/login`} />
+                <Navigate to={`/`} />
               )
             }
           />
@@ -172,7 +177,7 @@ function App() {
               user ? (
                 <AbmProductos user={user} basedir={basedir} />
               ) : (
-                <Navigate to={`${basedir}/login`} />
+                <Navigate to={`/`} />
               )
             }
           />

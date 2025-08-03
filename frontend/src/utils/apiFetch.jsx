@@ -37,6 +37,12 @@ export async function apiFetch(api, options = {}) {
       return;
     }
 
+    if (response.status === 403) {
+      console.warn("Acceso denegado. Redirigiendo a login.");
+      window.location.href = basedir + "/login";
+      return;
+    }
+
     // si la respuesta no es exitosa, lanza error con texto
     if (!response.ok) {
       const error = await response.text();

@@ -3,7 +3,6 @@ import LoginForm from "./LoginForm";
 import LoginGoogle from "./LoginGoogle";
 import LoginFacebook from "./LoginFacebook";
 import LoginInvitado from "./LoginInvitado";
-import LoginAdmin from "./LoginAdmin";
 
 const Login = () => {
   return (
@@ -42,7 +41,8 @@ const Login = () => {
             no-repeat center center/cover fixed;
           min-height: 100vh;
           display: flex;
-          align-items: start;
+          align-items: center;
+          padding-top: 0px;
           justify-content: center;
         }
 
@@ -84,7 +84,7 @@ const Login = () => {
         .divider-bodega {
           display: flex;
           align-items: center;
-          margin: 1rem 0;
+          margin: 0.5rem 0 0.25rem;
           color: var(--bodega-gold);
           font-size: 0.9rem;
         }
@@ -137,15 +137,25 @@ const Login = () => {
         <LoginForm />
 
         <div className="divider-bodega">o continúa con</div>
-        <div className="d-grid gap-2">
+        <div className="d-grid gap-0">
           <LoginGoogle />
           <LoginFacebook />
         </div>
 
         <div className="divider-bodega">¿Eres visitante?</div>
-        <div className="d-grid gap-2">
-          <LoginInvitado />
-          <LoginAdmin />
+        <div className="d-grid gap-0">
+          <LoginInvitado 
+            rol="ROLE_CONSULTA"
+            caption="Ingresar como Invitado"
+          />
+          <LoginInvitado 
+            rol="ROLE_CLIENTE"
+            caption="Ingresar como Cliente"
+          />
+          <LoginInvitado 
+            rol="ROLE_ADMINISTRADOR"
+            caption="Ingresar como Administrador"
+          />
         </div>
 
         <p className="footer-bodega">

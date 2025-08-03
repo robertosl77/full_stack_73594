@@ -1,18 +1,21 @@
 import { useState } from "react";
 
-const LoginInvitado = () => {
+const LoginInvitado = ({ rol, caption }) => {
   const basedir = process.env.REACT_APP_BASEDIR;
   const url = process.env.REACT_APP_URL;
 
   const [error, setError] = useState("");
 
   const handleLoginInvitado = async () => {
+    const nombre= rol === "ROLE_ADMINISTRADOR" ? "Administrador" : rol === "ROLE_CLIENTE" ? "Cliente" : "Invitado";
+
     const datos = {
       proveedor: "demo",
       usuario: "demo_user",
-      email: "invitado@demo.com",
-      nombre: "Invitado",
+      email: "admin@demo.com",
+      nombre: nombre,
       apellido: "Demo",
+      rol: rol,
     };
 
     try {
@@ -43,7 +46,7 @@ const LoginInvitado = () => {
     <>
       <div className="mt-2">
         <button type="button" className="btn btn-secondary w-100" onClick={handleLoginInvitado}>
-          Ingresar como Invitado
+          {caption}
         </button>
       </div>
 
