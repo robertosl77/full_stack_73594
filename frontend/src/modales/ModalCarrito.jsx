@@ -343,17 +343,35 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
       </Modal.Header>
       <Modal.Body>
         <Tab.Container activeKey={key} onSelect={(k) => setKey(k)}>
-          <Nav variant="tabs" className={isMobile ? "flex-column" : ""}>
-            <Nav.Item>
-              <Nav.Link eventKey="activos">Activos</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="reservados">Reservados</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="comprados">Comprados</Nav.Link>
-            </Nav.Item>
-          </Nav>
+          <div className={`d-flex flex-wrap align-items-start ${isMobile ? "flex-column" : "justify-content-between"}`}>
+            <div className="d-flex">
+              <Nav variant="tabs" className={isMobile ? "w-100 mb-2" : ""}>
+                <Nav.Item>
+                  <Nav.Link eventKey="activos">Activos</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="reservados">Reservados</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="comprados">Comprados</Nav.Link>
+                </Nav.Item>
+              </Nav>
+            </div>
+
+            {key === "activos" && (
+              <div className="ms-auto">
+                <Button
+                  variant="success"
+                  className="fw-bold text-white px-3 py-1 rounded text-uppercase border-2 shadow-sm"
+                  style={{ fontSize: "0.9rem", height: "38px", lineHeight: "1", display: "flex", alignItems: "center" }}
+                  onClick={() => confirmarCompra()}
+                  disabled={carrito.activos.length === 0 || carrito.activos.some(p => p.cantidad_solicitada > p.stock_actual)}
+                >
+                  🛒 Comprar todo
+                </Button>
+              </div>
+            )}
+          </div>
           <Tab.Content className="mt-3">
             <Tab.Pane eventKey="activos">{renderContent(carrito.activos, "activos")}</Tab.Pane>
             <Tab.Pane eventKey="reservados">{renderContent(carrito.reservados, "reservados")}</Tab.Pane>
