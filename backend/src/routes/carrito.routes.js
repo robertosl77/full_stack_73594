@@ -292,7 +292,7 @@ router.put(
     }
 
     const item = carrito.productos.find(p =>
-      p.producto.toString() === productoId && p.estado !== 0
+      p.producto.toString() === productoId && p.estado === 1
     );
 
     if (!item) {
