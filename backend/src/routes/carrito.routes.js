@@ -319,6 +319,62 @@ router.put(
   }
 });
 
+// Comprar un solo producto del carrito (marca como comprado)
+router.put(
+  '/api/carrito/comprarUno',
+  verificarToken,
+  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
+  async (req, res) => {
+    const { usuarioId, productoId, cantidad, precio, descuento } = req.body;
+
+    if (!usuarioId || !productoId) {
+      return res.status(400).json({ error: 'Faltan datos requeridos' });
+    }
+
+    try {
+      const carrito = await Carrito.findOne({ usuario: usuarioId });
+      if (!carrito) {
+        return res.status(404).json({ error: 'Carrito no encontrado' });
+      }
+
+      const productoEnCarrito = carrito.productos.find(p => 
+        p.producto.toString() === productoId && p.estado === 1
+      );
+
+      if (!productoEnCarrito) {
+        return res.status(400).json({ error: 'Producto no activo en el carrito' });
+      }
+
+      const producto = await Producto.findById(productoId);
+      if (!producto || !producto.estado) {
+        return res.status(400).json({ error: 'Producto no disponible' });
+      }
+
+      if (productoEnCarrito.cantidad > producto.stock) {
+        return res.status(400).json({ error: 'Stock insuficiente', stock: producto.stock });
+      }
+
+      if (producto.precio_original !== precio || producto.descuento !== descuento) {
+        return res.status(400).json({ error: 'Precio o descuento desactualizado' });
+      }
+
+      // Marcar comprado
+      productoEnCarrito.estado = 3;
+      productoEnCarrito.fecha_eliminado = new Date();
+
+      producto.stock -= productoEnCarrito.cantidad;
+
+      await producto.save();
+      await carrito.save();
+
+      res.json({ success: 'Producto comprado con éxito' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error al procesar la compra del producto' });
+    }
+  }
+);
+
 // Confirmar compra: pasa productos activos o reservados a estado 3
 router.put(
   '/api/carrito/comprar', 

@@ -110,32 +110,50 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
 
   const confirmarCompra = async (productoId) => {
     try {
-      const productosActivos = carrito.activos.map((p) => ({
-        productoId: p.idProducto,
-        cantidad: p.cantidad_solicitada,
-        precio: p.precio_original,
-        descuento: p.descuento_original,
-      }))
-      await apiFetch("/api/carrito/comprar", {
-        method: "PUT",
-        body: JSON.stringify({
-          usuarioId: user._id,
-          productos: productosActivos,
-        }),
-      })
-      const res = await apiFetch(`/api/carrito/${user._id}`)
-      const productos = res.productos || []
+      if (productoId) {
+        // Compra individual
+        const p = carrito.activos.find((p) => p.idProducto === productoId);
+        await apiFetch("/api/carrito/comprarUno", {
+          method: "PUT",
+          body: JSON.stringify({
+            usuarioId: user._id,
+            productoId: p.idProducto,
+            cantidad: p.cantidad_solicitada,
+            precio: p.precio_original,
+            descuento: p.descuento_original,
+          }),
+        });
+      } else {
+        // Compra total
+        const productosActivos = carrito.activos.map((p) => ({
+          productoId: p.idProducto,
+          cantidad: p.cantidad_solicitada,
+          precio: p.precio_original,
+          descuento: p.descuento_original,
+        }));
+        await apiFetch("/api/carrito/comprar", {
+          method: "PUT",
+          body: JSON.stringify({
+            usuarioId: user._id,
+            productos: productosActivos,
+          }),
+        });
+      }
+
+      // Refrescar carrito luego de compra
+      const res = await apiFetch(`/api/carrito/${user._id}`);
+      const productos = res.productos || [];
       setCarrito({
         activos: productos.filter((p) => p.estado === 1),
         reservados: productos.filter((p) => p.estado === 2),
         comprados: productos.filter((p) => p.estado === 3),
-      })
-      const cantidadProductos = productos.filter((p) => p.estado === 1 || p.estado === 2).length
-      setCantidadCarrito(cantidadProductos)
+      });
+      const cantidadProductos = productos.filter((p) => p.estado === 1 || p.estado === 2).length;
+      setCantidadCarrito(cantidadProductos);
     } catch (err) {
-      console.error("Error al confirmar compra:", err)
+      console.error("Error al confirmar compra:", err);
     }
-  }
+  };
 
   const modificarEstado = async (productoId, nuevoEstado) => {
     try {
