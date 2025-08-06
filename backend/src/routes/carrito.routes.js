@@ -357,15 +357,15 @@ router.put(
   }
 });
 
-// Comprar un solo producto del carrito (marca como comprado)
+// Confirmar compra: pasa productos activos o reservados a estado 3
 router.put(
-  '/api/carrito/comprarUno',
+  '/api/carrito/comprar',
   verificarToken,
   permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
   async (req, res) => {
-    const { usuarioId, productoId, cantidad, precio, descuento } = req.body;
+    const { usuarioId, productos: productosFront } = req.body;
 
-    if (!usuarioId || !productoId) {
+    if (!usuarioId || !Array.isArray(productosFront) || productosFront.length === 0) {
       return res.status(400).json({ error: 'Faltan datos requeridos' });
     }
 
@@ -375,182 +375,122 @@ router.put(
         return res.status(404).json({ error: 'Carrito no encontrado' });
       }
 
-      const productoEnCarrito = carrito.productos.find(p => 
-        p.producto.toString() === productoId && p.estado === 1
-      );
+      const respuesta = [];
+      const ahora = new Date();
 
-      if (!productoEnCarrito) {
-        return res.status(400).json({ error: 'Producto no activo en el carrito' });
+      for (const pFront of productosFront) {
+        const pCarrito = carrito.productos.find(
+          p => p.producto.toString() === pFront.productoId && (p.estado === 1 || p.estado === 2)
+        );
+
+        if (!pCarrito) {
+          respuesta.push({
+            productoId: pFront.productoId,
+            estado_final: 'error',
+            motivo: 'producto no activo o reservado en el carrito'
+          });
+          continue;
+        }
+
+        const producto = await Producto.findById(pFront.productoId);
+
+        if (!producto) {
+          respuesta.push({
+            productoId: pFront.productoId,
+            estado_final: 'error',
+            motivo: 'producto eliminado'
+          });
+          continue;
+        }
+
+        if (!producto.estado) {
+          respuesta.push({
+            productoId: pFront.productoId,
+            estado_final: 'error',
+            motivo: 'producto deshabilitado'
+          });
+          continue;
+        }
+
+        if (pCarrito.cantidad > producto.stock) {
+          respuesta.push({
+            productoId: pFront.productoId,
+            estado_final: 'error',
+            motivo: 'stock insuficiente',
+            stock_maximo_permitido: producto.stock
+          });
+          continue;
+        }
+
+        if (pCarrito.cantidad !== pFront.cantidad) {
+          respuesta.push({
+            productoId: pFront.productoId,
+            estado_final: 'error',
+            motivo: 'cantidad inconsistente',
+            cantidad_actual: pCarrito.cantidad
+          });
+          continue;
+        }
+
+        if (producto.precio_original !== pFront.precio) {
+          respuesta.push({
+            productoId: pFront.productoId,
+            estado_final: 'error',
+            motivo: 'precio desactualizado',
+            precio_actual: producto.precio_original
+          });
+          continue;
+        }
+
+        if (producto.descuento !== pFront.descuento) {
+          respuesta.push({
+            productoId: pFront.productoId,
+            estado_final: 'error',
+            motivo: 'descuento desactualizado',
+            descuento_actual: producto.descuento
+          });
+          continue;
+        }
+
+        respuesta.push({
+          productoId: pFront.productoId,
+          estado_final: 'ok'
+        });
       }
 
-      const producto = await Producto.findById(productoId);
-      if (!producto || !producto.estado) {
-        return res.status(400).json({ error: 'Producto no disponible' });
+      const hayErrores = respuesta.some(p => p.estado_final === 'error');
+      if (hayErrores) {
+        return res.status(400).json({
+          error: 'validaciones_fallidas',
+          productos: respuesta
+        });
       }
 
-      if (productoEnCarrito.cantidad > producto.stock) {
-        return res.status(400).json({ error: 'Stock insuficiente', stock: producto.stock });
+      // Marcar como comprados solo los productos validados
+      for (const p of productosFront) {
+        const item = carrito.productos.find(
+          c => c.producto.toString() === p.productoId && (c.estado === 1 || c.estado === 2)
+        );
+
+        if (item) {
+          item.estado = 3;
+          item.fecha_eliminado = ahora;
+          const producto = await Producto.findById(item.producto);
+          producto.stock -= item.cantidad;
+          await producto.save();
+        }
       }
 
-      if (producto.precio_original !== precio || producto.descuento !== descuento) {
-        return res.status(400).json({ error: 'Precio o descuento desactualizado' });
-      }
-
-      // Marcar comprado
-      productoEnCarrito.estado = 3;
-      productoEnCarrito.fecha_eliminado = new Date();
-
-      producto.stock -= productoEnCarrito.cantidad;
-
-      await producto.save();
       await carrito.save();
+      res.json({ success: 'Compra realizada con éxito' });
 
-      res.json({ success: 'Producto comprado con éxito' });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Error al procesar la compra del producto' });
+      res.status(500).json({ error: 'Error al procesar la compra' });
     }
   }
 );
 
-// Confirmar compra: pasa productos activos o reservados a estado 3
-router.put(
-  '/api/carrito/comprar', 
-  verificarToken,
-  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
-  async (req, res) => {
-  const { usuarioId, productos: productosFront } = req.body;
-
-  if (!usuarioId || !Array.isArray(productosFront)) {
-    return res.status(400).json({ error: 'Faltan datos requeridos' });
-  }
-
-  try {
-    const carrito = await Carrito.findOne({ usuario: usuarioId });
-    if (!carrito) {
-      return res.status(404).json({ error: 'Carrito no encontrado' });
-    }
-
-    const respuesta = [];
-    const ahora = new Date();
-
-    // Validar consistencia: cantidad de productos debe coincidir con los del carrito
-    const carritoActivos = carrito.productos.filter(p => p.estado === 1);
-
-    if (carritoActivos.length !== productosFront.length) {
-      return res.status(400).json({
-        error: 'inconsistencia_detectada',
-        mensaje: 'La información del carrito no coincide con la registrada. Actualizá la página para sincronizar.',
-        accion_sugerida: 'refresh'
-      });
-    }
-
-    // Validar productos uno a uno
-    for (const pFront of productosFront) {
-      const pCarrito = carritoActivos.find(p => p.producto.toString() === pFront.productoId);
-
-      if (!pCarrito) {
-        respuesta.push({
-          productoId: pFront.productoId,
-          estado_final: 'error',
-          motivo: 'producto no registrado en el carrito'
-        });
-        continue;
-      }
-
-      const producto = await Producto.findById(pFront.productoId);
-
-      if (!producto) {
-        respuesta.push({
-          productoId: pFront.productoId,
-          estado_final: 'error',
-          motivo: 'producto eliminado'
-        });
-        continue;
-      }
-
-      if (!producto.estado) {
-        respuesta.push({
-          productoId: pFront.productoId,
-          estado_final: 'error',
-          motivo: 'producto deshabilitado'
-        });
-        continue;
-      }
-
-      if (pCarrito.cantidad > producto.stock) {
-        respuesta.push({
-          productoId: pFront.productoId,
-          estado_final: 'error',
-          motivo: 'stock insuficiente',
-          stock_maximo_permitido: producto.stock
-        });
-        continue;
-      }
-
-      if (pCarrito.cantidad !== pFront.cantidad) {
-        respuesta.push({
-          productoId: pFront.productoId,
-          estado_final: 'error',
-          motivo: 'cantidad inconsistente',
-          cantidad_actual: pCarrito.cantidad
-        });
-        continue;
-      }
-
-      if (producto.precio_original !== pFront.precio) {
-        respuesta.push({
-          productoId: pFront.productoId,
-          estado_final: 'error',
-          motivo: 'precio desactualizado',
-          precio_actual: producto.precio_original
-        });
-        continue;
-      }
-
-      if (producto.descuento !== pFront.descuento) {
-        respuesta.push({
-          productoId: pFront.productoId,
-          estado_final: 'error',
-          motivo: 'descuento desactualizado',
-          descuento_actual: producto.descuento
-        });
-        continue;
-      }
-
-      // Producto validado correctamente
-      respuesta.push({
-        productoId: pFront.productoId,
-        estado_final: 'ok'
-      });
-    }
-
-    // Verificar si hubo errores
-    const hayErrores = respuesta.some(p => p.estado_final === 'error');
-    if (hayErrores) {
-      return res.status(400).json({
-        error: 'validaciones_fallidas',
-        productos: respuesta
-      });
-    }
-
-    // Si todo está bien, proceder a marcar estado 3 y descontar stock
-    for (const p of carritoActivos) {
-      p.estado = 3;
-      p.fecha_eliminado = ahora;
-      const producto = await Producto.findById(p.producto);
-      producto.stock -= p.cantidad;
-      await producto.save();
-    }
-
-    await carrito.save();
-    res.json({ success: 'Compra realizada con éxito' });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al procesar la compra' });
-  }
-});
 
 // Obtener productos del carrito con validaciones
 router.get(
