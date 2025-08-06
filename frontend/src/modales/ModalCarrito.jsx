@@ -247,8 +247,8 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                       onCambio={refrescarCarrito}
                     />
                   </td>                  
-                  <td>${item.precio_original}</td>
-                  <td>${(item.precio_original * item.cantidad_solicitada).toFixed(2)}</td>
+                  <td>${item.precio_original.toLocaleString("es-AR", { minimumFractionDigits: 2 })}</td>
+                  <td>${(item.precio_original * item.cantidad_solicitada).toLocaleString("es-AR", { minimumFractionDigits: 2 })}</td>
                   <td>
                     {estado === "activos" && (
                       <>
@@ -336,6 +336,11 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
     }
   }
 
+  const totalActivos = carrito.activos.reduce(
+    (acc, item) => acc + item.precio_original * item.cantidad_solicitada,
+    0
+  )  
+
   return (
     <Modal show={show} onHide={onHide} size="xl" centered backdrop="static">
       <Modal.Header closeButton>
@@ -359,7 +364,13 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
             </div>
 
             {key === "activos" && (
-              <div className="ms-auto">
+              <div className="d-flex align-items-center ms-auto gap-3">
+                <div className="text-end pe-2">
+                  <div className="text-muted" style={{ fontSize: "0.75rem", lineHeight: "1" }}>Total a pagar</div>
+                  <div className="fw-bold text-success" style={{ fontSize: "1.1rem" }}>
+                    ${totalActivos.toLocaleString("es-AR", { minimumFractionDigits: 2 })}
+                  </div>
+                </div>
                 <Button
                   variant="success"
                   className="fw-bold text-white px-3 py-1 rounded text-uppercase border-2 shadow-sm"
@@ -371,6 +382,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                 </Button>
               </div>
             )}
+
           </div>
           <Tab.Content className="mt-3">
             <Tab.Pane eventKey="activos">{renderContent(carrito.activos, "activos")}</Tab.Pane>
