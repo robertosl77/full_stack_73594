@@ -157,6 +157,81 @@ router.post(
   }
 );
 
+// Reservar producto del carrito (cambia estado a 2)
+router.put(
+  '/api/carrito/reservar', 
+  verificarToken,
+  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
+  async (req, res) => {
+  const { usuarioId, productoId } = req.body;
+
+  if (!usuarioId || !productoId) {
+    return res.status(400).json({ error: 'Faltan usuarioId o productoId' });
+  }
+
+  try {
+    const carrito = await Carrito.findOne({ usuario: usuarioId });
+    if (!carrito) {
+      return res.status(404).json({ error: 'Carrito no encontrado' });
+    }
+
+    const producto = carrito.productos.find(p =>
+      p.producto.toString() === productoId && p.estado === 1
+    );
+
+    if (!producto) {
+      return res.status(404).json({ error: 'Producto activo no encontrado en el carrito' });
+    }
+
+    producto.estado = 2;
+    await carrito.save();
+
+    res.json({ success: 'Producto reservado correctamente' });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al reservar el producto' });
+  }
+});
+
+// Mover producto reservado a activo (estado 2 → 1)
+router.put(
+  '/api/carrito/activar', 
+  verificarToken,
+  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
+  async (req, res) => {
+    const { usuarioId, productoId } = req.body;
+
+    if (!usuarioId || !productoId) {
+      return res.status(400).json({ error: 'Faltan usuarioId o productoId' });
+    }
+
+    try {
+      const carrito = await Carrito.findOne({ usuario: usuarioId });
+      if (!carrito) {
+        return res.status(404).json({ error: 'Carrito no encontrado' });
+      }
+
+      const producto = carrito.productos.find(p =>
+        p.producto.toString() === productoId && p.estado === 2
+      );
+
+      if (!producto) {
+        return res.status(404).json({ error: 'Producto reservado no encontrado' });
+      }
+
+      producto.estado = 1;
+      await carrito.save();
+
+      res.json({ success: 'Producto movido a En Carrito' });
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error al mover producto a En Carrito' });
+    }
+  }
+);
+
 // Eliminar producto del carrito (marca como eliminado)
 router.delete(
   '/api/carrito', 
@@ -233,43 +308,6 @@ router.delete(
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al vaciar el carrito' });
-  }
-});
-
-// Reservar producto del carrito (cambia estado a 2)
-router.put(
-  '/api/carrito/reservar', 
-  verificarToken,
-  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
-  async (req, res) => {
-  const { usuarioId, productoId } = req.body;
-
-  if (!usuarioId || !productoId) {
-    return res.status(400).json({ error: 'Faltan usuarioId o productoId' });
-  }
-
-  try {
-    const carrito = await Carrito.findOne({ usuario: usuarioId });
-    if (!carrito) {
-      return res.status(404).json({ error: 'Carrito no encontrado' });
-    }
-
-    const producto = carrito.productos.find(p =>
-      p.producto.toString() === productoId && p.estado === 1
-    );
-
-    if (!producto) {
-      return res.status(404).json({ error: 'Producto activo no encontrado en el carrito' });
-    }
-
-    producto.estado = 2;
-    await carrito.save();
-
-    res.json({ success: 'Producto reservado correctamente' });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al reservar el producto' });
   }
 });
 

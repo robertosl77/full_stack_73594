@@ -38,16 +38,24 @@ function ProductCard({ item, estado, confirmarCompra, modificarEstado, eliminar,
                   >
                     Comprar
                   </Dropdown.Item>
-
-                  <Dropdown.Item onClick={() => modificarEstado(item.idProducto, 2)}>Reservar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => eliminar(item.idProducto, item.cantidad_solicitada)}>
+                  <Dropdown.Item 
+                    onClick={() => modificarEstado(item.idProducto, 2)}
+                  >
+                    Reservar
+                  </Dropdown.Item>
+                  <Dropdown.Item 
+                    onClick={() => eliminar(item.idProducto, item.cantidad_solicitada)}
+                  >
                     Eliminar
                   </Dropdown.Item>
                 </>
               )}
               {estado === "reservados" && (
                 <>
-                  <Dropdown.Item onClick={() => confirmarCompra(item.idProducto)}>Comprar</Dropdown.Item>
+                  {/* <Dropdown.Item onClick={() => confirmarCompra(item.idProducto)}>Comprar</Dropdown.Item> */}
+                  <Dropdown.Item onClick={() => modificarEstado(item.idProducto, 1)}>
+                    Pasar a En Carrito
+                  </Dropdown.Item>                  
                   <Dropdown.Item onClick={() => eliminar(item.idProducto, item.cantidad_solicitada)}>
                     Eliminar
                   </Dropdown.Item>
@@ -157,7 +165,11 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
 
   const modificarEstado = async (productoId, nuevoEstado) => {
     try {
-      await apiFetch(nuevoEstado === 2 ? "/api/carrito/reservar" : "/api/carrito/cantidad", {
+      let endpoint = "";
+      if (nuevoEstado === 2) endpoint = "/api/carrito/reservar";
+      else if (nuevoEstado === 1) endpoint = "/api/carrito/activar";
+
+      await apiFetch(endpoint, {      
         method: "PUT",
         body: JSON.stringify({
           usuarioId: user._id,
@@ -257,14 +269,18 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                   </td>
                   )}
                   <td className="text-end">
-                    <CantidadSelector
-                      cantidad={item.cantidad_solicitada}
-                      stock={item.stock_actual}
-                      productoId={item.idProducto}
-                      usuarioId={user._id}
-                      onCambio={refrescarCarrito}
-                    />
-                  </td>                  
+                    {estado === "activos" ? (
+                      <CantidadSelector
+                        cantidad={item.cantidad_solicitada}
+                        stock={item.stock_actual}
+                        productoId={item.idProducto}
+                        usuarioId={user._id}
+                        onCambio={refrescarCarrito}
+                      />
+                    ) : (
+                      item.cantidad_solicitada
+                    )}
+                  </td>           
                   <td>${item.precio_original.toLocaleString("es-AR", { minimumFractionDigits: 2 })}</td>
                   <td>${(item.precio_original * item.cantidad_solicitada).toLocaleString("es-AR", { minimumFractionDigits: 2 })}</td>
                   <td>
@@ -303,7 +319,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                     )}
                     {estado === "reservados" && (
                       <>
-                        <Button
+                        {/* <Button
                           name="btnComprar"
                           size="sm"
                           variant="success"
@@ -311,7 +327,16 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                           className="me-2"
                         >
                           Comprar
-                        </Button>
+                        </Button> */}
+                        <Button
+                          name="btnActivar"
+                          size="sm"
+                          variant="warning"
+                          onClick={() => modificarEstado(item.idProducto, 1)}
+                          className="me-2"
+                        >
+                          Pasar a En Carrito
+                        </Button>                       
                         <Button
                           name="btnEliminar"
                           size="sm"
@@ -337,7 +362,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center text-muted">
+                <td colSpan={estado !== "comprados" ? 6 : 5} className="text-center text-muted">
                   No hay productos en esta sección.
                 </td>
               </tr>
@@ -380,7 +405,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
             <div className="d-flex">
               <Nav variant="tabs" className={isMobile ? "w-100 mb-2" : ""}>
                 <Nav.Item>
-                  <Nav.Link eventKey="activos">Activos</Nav.Link>
+                  <Nav.Link eventKey="activos">En Carrito</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
                   <Nav.Link eventKey="reservados">Reservados</Nav.Link>
