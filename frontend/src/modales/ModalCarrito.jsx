@@ -253,6 +253,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                     {estado === "activos" && (
                       <>
                         <Button
+                          name="btnComprar"
                           size="sm"
                           variant="success"
                           onClick={() => confirmarCompra(item.idProducto)}
@@ -263,6 +264,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                         </Button>
 
                         <Button
+                          name="btnReservar"
                           size="sm"
                           variant="warning"
                           onClick={() => modificarEstado(item.idProducto, 2)}
@@ -272,6 +274,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                         </Button>
 
                         <Button
+                          name="btnEliminar"
                           size="sm"
                           variant="danger"
                           onClick={() => eliminar(item.idProducto, item.cantidad_solicitada)}
@@ -283,6 +286,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                     {estado === "reservados" && (
                       <>
                         <Button
+                          name="btnComprar"
                           size="sm"
                           variant="success"
                           onClick={() => confirmarCompra(item.idProducto)}
@@ -291,6 +295,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                           Comprar
                         </Button>
                         <Button
+                          name="btnEliminar"
                           size="sm"
                           variant="danger"
                           onClick={() => eliminar(item.idProducto, item.cantidad_solicitada)}
@@ -300,7 +305,12 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                       </>
                     )}
                     {estado === "comprados" && (
-                      <Button size="sm" variant="info" onClick={() => verFacturacion(item.idProducto)}>
+                      <Button 
+                        name="btnVerFacturacion"
+                        size="sm" 
+                        variant="info" 
+                        onClick={() => verFacturacion(item.idProducto)}
+                      >
                         Ver Facturación
                       </Button>
                     )}
@@ -372,6 +382,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                   </div>
                 </div>
                 <Button
+                  name="btnComprarTodo"
                   variant="success"
                   className="fw-bold text-white px-3 py-1 rounded text-uppercase border-2 shadow-sm"
                   style={{ fontSize: "0.9rem", height: "38px", lineHeight: "1", display: "flex", alignItems: "center" }}
@@ -392,8 +403,12 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
         </Tab.Container>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>
-          Cerrar
+        <Button 
+          name="btnCerrar"
+          variant="secondary" 
+          onClick={onHide}
+        >
+            Cerrar
         </Button>
       </Modal.Footer>
     </Modal>
