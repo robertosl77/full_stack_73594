@@ -2,7 +2,11 @@ import express from 'express';
 import Carrito from '../models/carrito.js';
 import Producto from '../models/producto.js';
 import Usuario from '../models/usuario.js';
-import { validaImagenProductos, tiempoTranscurrido } from '../utils/funciones.js';
+import { 
+  validaImagenProductos
+  , tiempoTranscurrido 
+  , verificarProductoCarrito
+} from '../utils/funciones.js';
 import { verificarToken, permitirSolo } from "../utils/token.js"
 
 const router = express.Router();
@@ -357,11 +361,20 @@ router.put(
   }
 });
 
-// Confirmar compra: pasa productos activos o reservados a estado 3
+/**
+ * PUT /api/carrito/comprar
+ * Body: { usuarioId: string, productos: [{ productoId, cantidad, precio, descuento }] }
+ * Middlewares: verificarToken, permitirSolo(["ROLE_ADMINISTRADOR","ROLE_CLIENTE"])
+ * Comportamiento:
+ *  - Valida que cada producto esté en el carrito (estado 1 o 2) y coincidan cantidad/precio/descuento
+ *  - Usa verificarProductoCarrito para validar existencia, estado, stock, precio y descuento
+ *  - Si hay errores -> 400 { error:'validaciones_fallidas', productos:[...] }
+ *  - Si todo OK -> pasa a estado 3 y descuenta stock. Devuelve { success:'Compra realizada con éxito' }
+ */
 router.put(
   '/api/carrito/comprar',
   verificarToken,
-  permitirSolo(["ROLE_ADMINISTRADOR", "ROLE_CLIENTE"]),
+  permitirSolo(['ROLE_ADMINISTRADOR', 'ROLE_CLIENTE']),
   async (req, res) => {
     const { usuarioId, productos: productosFront } = req.body;
 
@@ -376,85 +389,64 @@ router.put(
       }
 
       const respuesta = [];
-      const ahora = new Date();
+      const productosOkMap = new Map(); // productoId -> Producto (para no reconsultar luego)
 
+      // ============== VALIDACIONES ==============
       for (const pFront of productosFront) {
+        // 1) Debe existir en carrito y estar activo (1) o reservado (2)
         const pCarrito = carrito.productos.find(
-          p => p.producto.toString() === pFront.productoId && (p.estado === 1 || p.estado === 2)
+          p =>
+            p.producto.toString() === pFront.productoId &&
+            (p.estado === 1 || p.estado === 2)
         );
 
         if (!pCarrito) {
           respuesta.push({
             productoId: pFront.productoId,
             estado_final: 'error',
-            motivo: 'producto no activo o reservado en el carrito'
+            motivo: 'producto no activo o reservado en el carrito',
           });
           continue;
         }
 
-        const producto = await Producto.findById(pFront.productoId);
-
-        if (!producto) {
-          respuesta.push({
-            productoId: pFront.productoId,
-            estado_final: 'error',
-            motivo: 'producto eliminado'
-          });
-          continue;
-        }
-
-        if (!producto.estado) {
-          respuesta.push({
-            productoId: pFront.productoId,
-            estado_final: 'error',
-            motivo: 'producto deshabilitado'
-          });
-          continue;
-        }
-
-        if (pCarrito.cantidad > producto.stock) {
-          respuesta.push({
-            productoId: pFront.productoId,
-            estado_final: 'error',
-            motivo: 'stock insuficiente',
-            stock_maximo_permitido: producto.stock
-          });
-          continue;
-        }
-
+        // 2) Cantidad del front debe coincidir con la del carrito
         if (pCarrito.cantidad !== pFront.cantidad) {
           respuesta.push({
             productoId: pFront.productoId,
             estado_final: 'error',
             motivo: 'cantidad inconsistente',
-            cantidad_actual: pCarrito.cantidad
+            cantidad_actual: pCarrito.cantidad,
           });
           continue;
         }
 
-        if (producto.precio_original !== pFront.precio) {
-          respuesta.push({
+        // 3) Validaciones centralizadas (existencia, estado, stock, precio, descuento)
+        const check = await verificarProductoCarrito({
+          productoId: pFront.productoId,
+          cantidad: pFront.cantidad,
+          precio: pFront.precio,
+          descuento: pFront.descuento,
+        });
+
+        if (!check.valido) {
+          const err = {
             productoId: pFront.productoId,
             estado_final: 'error',
-            motivo: 'precio desactualizado',
-            precio_actual: producto.precio_original
-          });
+            motivo: check.motivo,
+          };
+          if (check.precio_actual !== undefined) err.precio_actual = check.precio_actual;
+          if (check.descuento_actual !== undefined) err.descuento_actual = check.descuento_actual;
+          if (check.stock_maximo_permitido !== undefined) err.stock_maximo_permitido = check.stock_maximo_permitido;
+
+          respuesta.push(err);
           continue;
         }
 
-        if (producto.descuento !== pFront.descuento) {
-          respuesta.push({
-            productoId: pFront.productoId,
-            estado_final: 'error',
-            motivo: 'descuento desactualizado',
-            descuento_actual: producto.descuento
-          });
-          continue;
-        }
-
+        // Ok
+        productosOkMap.set(pFront.productoId, check.producto);
         respuesta.push({
           productoId: pFront.productoId,
-          estado_final: 'ok'
+          estado_final: 'ok',
         });
       }
 
@@ -462,35 +454,44 @@ router.put(
       if (hayErrores) {
         return res.status(400).json({
           error: 'validaciones_fallidas',
-          productos: respuesta
+          productos: respuesta,
         });
       }
 
-      // Marcar como comprados solo los productos validados
-      for (const p of productosFront) {
+      // ============== ACTUALIZACIONES (estado y stock) ==============
+      const ahora = new Date();
+
+      // Pasar a estado 3 y descontar stock SOLO de los validados
+      for (const pFront of productosFront) {
         const item = carrito.productos.find(
-          c => c.producto.toString() === p.productoId && (c.estado === 1 || c.estado === 2)
+          c =>
+            c.producto.toString() === pFront.productoId &&
+            (c.estado === 1 || c.estado === 2)
         );
 
         if (item) {
           item.estado = 3;
           item.fecha_eliminado = ahora;
-          const producto = await Producto.findById(item.producto);
-          producto.stock -= item.cantidad;
-          await producto.save();
+
+          // Usamos el producto ya cargado en validación para no reconsultar
+          const producto = productosOkMap.get(pFront.productoId) ||
+                           (await Producto.findById(item.producto)); // fallback
+          if (producto) {
+            producto.stock = Math.max(0, (producto.stock || 0) - item.cantidad);
+            await producto.save();
+          }
         }
       }
 
       await carrito.save();
-      res.json({ success: 'Compra realizada con éxito' });
+      return res.json({ success: 'Compra realizada con éxito' });
 
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Error al procesar la compra' });
+      console.error('Error en /api/carrito/comprar:', error);
+      return res.status(500).json({ error: 'Error al procesar la compra' });
     }
   }
 );
-
 
 // Obtener productos del carrito con validaciones
 router.get(

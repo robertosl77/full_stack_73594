@@ -16,6 +16,11 @@ function ProductCard({ item, estado, confirmarCompra, modificarEstado, eliminar,
           <p><strong>Stock actual:</strong> {item.stock_actual}</p>
           <p><strong>Precio:</strong> ${item.precio_original}</p>
           <p><strong>Total:</strong> ${(item.precio_original * item.cantidad_solicitada).toFixed(2)}</p>
+
+          {estado === "comprados" && (
+            <p><strong>Fecha compra:</strong> {item.fecha_eliminado ? new Date(item.fecha_eliminado).toLocaleString("es-AR") : "-"}</p>
+          )}
+
           {item.cantidad_solicitada > item.stock_actual && (
             <p className="text-danger fw-bold mt-1">
               Stock insuficiente
@@ -239,6 +244,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
               <th>Producto</th>
               {estado !== "comprados" && <th>Stock</th>}
               <th>Cantidad</th>
+              {estado === "comprados" && <th>Fecha compra</th>}
               <th>Precio</th>
               <th>Total</th>
               <th>Acciones</th>
@@ -269,7 +275,10 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                     ) : (
                       item.cantidad_solicitada
                     )}
-                  </td>           
+                  </td>       
+                  {estado === "comprados" && (
+                    <td>{item.fecha_eliminado ? new Date(item.fecha_eliminado).toLocaleString("es-AR") : "-"}</td>
+                  )}                      
                   <td>${item.precio_original.toLocaleString("es-AR", { minimumFractionDigits: 2 })}</td>
                   <td>${(item.precio_original * item.cantidad_solicitada).toLocaleString("es-AR", { minimumFractionDigits: 2 })}</td>
                   <td>
@@ -351,7 +360,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
               ))
             ) : (
               <tr>
-                <td colSpan={estado !== "comprados" ? 6 : 5} className="text-center text-muted">
+                <td colSpan={6} className="text-center text-muted">
                   No hay productos en esta sección.
                 </td>
               </tr>

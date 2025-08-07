@@ -838,9 +838,17 @@ footer small {
   }
 }
 
+/* CantidadSelector: mismo alto que los botones de la tabla */
 .cantidad-selector .btn,
 .cantidad-selector .form-control {
-  height: 32px;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  height: 24px;          /* ≈ btn-sm del modal */
+  padding: 0 .5rem;      /* igual que tus botones */
+  font-size: .7rem;      /* igual al modal */
+  line-height: 1;        /* evita que “crezca” por line-height */
+}
+
+/* el input no necesita padding vertical */
+.cantidad-selector .form-control {
+  padding-top: 0;
+  padding-bottom: 0;
 }

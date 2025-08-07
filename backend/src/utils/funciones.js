@@ -96,3 +96,30 @@ export function ajustarStockConCarrito(productos, carrito) {
   return productos;
 }
 
+
+// Valida si un producto es válido para operación de carrito
+export async function verificarProductoCarrito({ productoId, cantidad, precio, descuento }) {
+  const producto = await Producto.findById(productoId);
+
+  if (!producto) {
+    return { valido: false, motivo: 'producto eliminado' };
+  }
+
+  if (!producto.estado) {
+    return { valido: false, motivo: 'producto deshabilitado' };
+  }
+
+  if (cantidad > producto.stock) {
+    return { valido: false, motivo: 'stock insuficiente', stock_maximo_permitido: producto.stock };
+  }
+
+  if (producto.precio_original !== precio) {
+    return { valido: false, motivo: 'precio desactualizado', precio_actual: producto.precio_original };
+  }
+
+  if (producto.descuento !== descuento) {
+    return { valido: false, motivo: 'descuento desactualizado', descuento_actual: producto.descuento };
+  }
+
+  return { valido: true, producto };
+}
