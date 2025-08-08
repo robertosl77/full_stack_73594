@@ -143,6 +143,27 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
         }));
       }
 
+      // 1) Acción de dirección (pendiente)
+      // TODO: solicitar dirección antes de pagar
+
+      // 2) Generar URL de pago con Mercado Pago
+      const mpRes = await apiFetch("/api/carrito/comprar/mercadopago", {
+        method: "POST",
+        body: JSON.stringify({
+          usuarioId: user._id,
+          productos: productosParaComprar,
+        }),
+      });
+
+      if (!mpRes.success) {
+        alert("Error al generar pago: " + (mpRes.error || "Desconocido"));
+        return;
+      }
+
+      // Redirigir al pago
+      window.location.href = mpRes.init_point;
+
+      // 3) Confirmar compra (estado 3)
       await apiFetch("/api/carrito/comprar", {
         method: "PUT",
         body: JSON.stringify({

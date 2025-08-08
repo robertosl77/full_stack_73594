@@ -2,6 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import Producto from '../models/producto.js';
+import mongoose from 'mongoose';
 
 export function tiempoTranscurrido(fecha) {
     if (!fecha) return '';
@@ -99,27 +100,113 @@ export function ajustarStockConCarrito(productos, carrito) {
 
 // Valida si un producto es válido para operación de carrito
 export async function verificarProductoCarrito({ productoId, cantidad, precio, descuento }) {
-  const producto = await Producto.findById(productoId);
+  try {
+    // 1. Validar formato del productoId
+    if (!mongoose.Types.ObjectId.isValid(productoId)) {
+      return { valido: false, motivo: 'ID de producto inválido' };
+    }
 
-  if (!producto) {
-    return { valido: false, motivo: 'producto eliminado' };
+    // 2. Validar que cantidad, precio y descuento sean válidos
+    if (!Number.isInteger(cantidad) || cantidad <= 0) {
+      return { valido: false, motivo: 'Cantidad debe ser un número entero positivo' };
+    }
+    if (typeof precio !== 'number' || precio < 0) {
+      return { valido: false, motivo: 'Precio debe ser un número no negativo' };
+    }
+    if (typeof descuento !== 'number' || descuento < 0 || descuento > 100) {
+      return { valido: false, motivo: 'Descuento debe ser un número entre 0 y 100' };
+    }
+
+    // 3. Buscar el producto
+    const producto = await Producto.findById(productoId);
+    if (!producto) {
+      return { valido: false, motivo: 'Producto eliminado o no encontrado' };
+    }
+
+    // 4. Validar estado y habilitación
+    if (!producto.estado) {
+      return { valido: false, motivo: 'Producto deshabilitado' };
+    }
+    if (producto.habilitado === false) {
+      return { valido: false, motivo: 'Producto no habilitado para la venta' };
+    }
+
+    // 5. Validar stock
+    if (cantidad > producto.stock) {
+      return {
+        valido: false,
+        motivo: 'Stock insuficiente',
+        stock_maximo_permitido: producto.stock,
+      };
+    }
+
+    // 6. Validar límite de unidades por compra (si aplica)
+    if (producto.max_unidades_por_compra && cantidad > producto.max_unidades_por_compra) {
+      return {
+        valido: false,
+        motivo: `Máximo ${producto.max_unidades_por_compra} unidades permitidas por compra`,
+        max_unidades_permitidas: producto.max_unidades_por_compra,
+      };
+    }
+
+    // 7. Validar precio
+    if (producto.precio_original !== precio) {
+      return {
+        valido: false,
+        motivo: 'Precio desactualizado',
+        precio_actual: producto.precio_original,
+      };
+    }
+
+    // 8. Validar descuento
+    if (producto.descuento !== descuento) {
+      return {
+        valido: false,
+        motivo: 'Descuento desactualizado',
+        descuento_actual: producto.descuento,
+      };
+    }
+
+    // 9. Validar precio final para Mercado Pago (mínimo 1 ARS)
+    const precioFinal = descuento > 0 ? precio * (1 - descuento / 100) : precio;
+    if (precioFinal < 1) {
+      return {
+        valido: false,
+        motivo: 'El precio final del producto debe ser al menos 1 ARS para Mercado Pago',
+      };
+    }
+
+    // 10. Validar vigencia de oferta (si aplica)
+    if (producto.fecha_vigencia_oferta && new Date() > new Date(producto.fecha_vigencia_oferta)) {
+      return {
+        valido: false,
+        motivo: 'La oferta del producto ha expirado',
+        fecha_vigencia: producto.fecha_vigencia_oferta,
+      };
+    }
+
+    // 11. Validar cambios recientes (concurrencia)
+    const haceCincoMinutos = new Date(Date.now() - 5 * 60 * 1000);
+    if (producto.updatedAt && new Date(producto.updatedAt) > haceCincoMinutos) {
+      return {
+        valido: false,
+        motivo: 'El producto fue modificado recientemente, verifica los datos',
+        ultima_modificacion: producto.updatedAt,
+      };
+    }
+
+    // 12. Validar que el producto no esté agotado o en reabastecimiento
+    if (producto.stock === 0 || (producto.estado_stock && producto.estado_stock === 'reabastecimiento')) {
+      return {
+        valido: false,
+        motivo: 'Producto agotado o en reabastecimiento',
+      };
+    }
+
+    // Todo válido
+    return { valido: true, producto };
+  } catch (error) {
+    console.error('Error en verificarProductoCarrito:', error);
+    return { valido: false, motivo: 'Error interno al verificar el producto' };
   }
-
-  if (!producto.estado) {
-    return { valido: false, motivo: 'producto deshabilitado' };
-  }
-
-  if (cantidad > producto.stock) {
-    return { valido: false, motivo: 'stock insuficiente', stock_maximo_permitido: producto.stock };
-  }
-
-  if (producto.precio_original !== precio) {
-    return { valido: false, motivo: 'precio desactualizado', precio_actual: producto.precio_original };
-  }
-
-  if (producto.descuento !== descuento) {
-    return { valido: false, motivo: 'descuento desactualizado', descuento_actual: producto.descuento };
-  }
-
-  return { valido: true, producto };
 }

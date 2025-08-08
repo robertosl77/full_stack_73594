@@ -8,8 +8,15 @@ import {
   , verificarProductoCarrito
 } from '../utils/funciones.js';
 import { verificarToken, permitirSolo } from "../utils/token.js"
+import { MercadoPagoConfig, Preference } from 'mercadopago';
+
+// Configuración de la cuenta vendedor
+const mpClient = new MercadoPagoConfig({
+  accessToken: 'TEST-4943175425916915-080618-fbd7f90c7bc08a3df133f723b3a5cffe-11191160'
+});
 
 const router = express.Router();
+
 
 // src/routes/carrito.routes.js
 router.get(
@@ -378,78 +385,54 @@ router.put(
   async (req, res) => {
     const { usuarioId, productos: productosFront } = req.body;
 
+    // Basic input validation
     if (!usuarioId || !Array.isArray(productosFront) || productosFront.length === 0) {
       return res.status(400).json({ error: 'Faltan datos requeridos' });
     }
 
     try {
+      // Fetch the cart
       const carrito = await Carrito.findOne({ usuario: usuarioId });
       if (!carrito) {
         return res.status(404).json({ error: 'Carrito no encontrado' });
       }
 
       const respuesta = [];
-      const productosOkMap = new Map(); // productoId -> Producto (para no reconsultar luego)
+      const productosOkMap = new Map(); // productoId -> Producto
 
-      // ============== VALIDACIONES ==============
+      // Validate all products using verificarProductoCarrito
       for (const pFront of productosFront) {
-        // 1) Debe existir en carrito y estar activo (1) o reservado (2)
-        const pCarrito = carrito.productos.find(
-          p =>
-            p.producto.toString() === pFront.productoId &&
-            (p.estado === 1 || p.estado === 2)
-        );
-
-        if (!pCarrito) {
-          respuesta.push({
-            productoId: pFront.productoId,
-            estado_final: 'error',
-            motivo: 'producto no activo o reservado en el carrito',
-          });
-          continue;
-        }
-
-        // 2) Cantidad del front debe coincidir con la del carrito
-        if (pCarrito.cantidad !== pFront.cantidad) {
-          respuesta.push({
-            productoId: pFront.productoId,
-            estado_final: 'error',
-            motivo: 'cantidad inconsistente',
-            cantidad_actual: pCarrito.cantidad,
-          });
-          continue;
-        }
-
-        // 3) Validaciones centralizadas (existencia, estado, stock, precio, descuento)
         const check = await verificarProductoCarrito({
           productoId: pFront.productoId,
           cantidad: pFront.cantidad,
           precio: pFront.precio,
           descuento: pFront.descuento,
+          carrito,
         });
 
-        if (!check.valido) {
-          const err = {
-            productoId: pFront.productoId,
-            estado_final: 'error',
-            motivo: check.motivo,
-          };
-          if (check.precio_actual !== undefined) err.precio_actual = check.precio_actual;
-          if (check.descuento_actual !== undefined) err.descuento_actual = check.descuento_actual;
-          if (check.stock_maximo_permitido !== undefined) err.stock_maximo_permitido = check.stock_maximo_permitido;
+        const responseItem = {
+          productoId: pFront.productoId,
+          estado_final: check.valido ? 'ok' : 'error',
+          motivo: check.valido ? undefined : check.motivo,
+        };
 
-          respuesta.push(err);
-          continue;
+        // Include additional error details if present
+        if (!check.valido) {
+          if (check.cantidad_actual !== undefined) responseItem.cantidad_actual = check.cantidad_actual;
+          if (check.precio_actual !== undefined) responseItem.precio_actual = check.precio_actual;
+          if (check.descuento_actual !== undefined) responseItem.descuento_actual = check.descuento_actual;
+          if (check.stock_maximo_permitido !== undefined) responseItem.stock_maximo_permitido = check.stock_maximo_permitido;
+          if (check.max_unidades_permitidas !== undefined) responseItem.max_unidades_permitidas = check.max_unidades_permitidas;
+          if (check.fecha_vigencia !== undefined) responseItem.fecha_vigencia = check.fecha_vigencia;
+          if (check.ultima_modificacion !== undefined) responseItem.ultima_modificacion = check.ultima_modificacion;
+        } else {
+          productosOkMap.set(pFront.productoId, check.producto);
         }
 
-        // Ok
-        productosOkMap.set(pFront.productoId, check.producto);
-        respuesta.push({
-          productoId: pFront.productoId,
-          estado_final: 'ok',
-        });
+        respuesta.push(responseItem);
       }
 
+      // Check for errors
       const hayErrores = respuesta.some(p => p.estado_final === 'error');
       if (hayErrores) {
         return res.status(400).json({
@@ -458,24 +441,18 @@ router.put(
         });
       }
 
-      // ============== ACTUALIZACIONES (estado y stock) ==============
+      // Update cart and stock
       const ahora = new Date();
-
-      // Pasar a estado 3 y descontar stock SOLO de los validados
       for (const pFront of productosFront) {
         const item = carrito.productos.find(
-          c =>
-            c.producto.toString() === pFront.productoId &&
-            (c.estado === 1 || c.estado === 2)
+          c => c.producto.toString() === pFront.productoId && (c.estado === 1 || c.estado === 2)
         );
 
         if (item) {
           item.estado = 3;
           item.fecha_eliminado = ahora;
 
-          // Usamos el producto ya cargado en validación para no reconsultar
-          const producto = productosOkMap.get(pFront.productoId) ||
-                           (await Producto.findById(item.producto)); // fallback
+          const producto = productosOkMap.get(pFront.productoId);
           if (producto) {
             producto.stock = Math.max(0, (producto.stock || 0) - item.cantidad);
             await producto.save();
@@ -485,7 +462,6 @@ router.put(
 
       await carrito.save();
       return res.json({ success: 'Compra realizada con éxito' });
-
     } catch (error) {
       console.error('Error en /api/carrito/comprar:', error);
       return res.status(500).json({ error: 'Error al procesar la compra' });
@@ -541,6 +517,109 @@ router.get(
 });
 
 
+/**
+ * POST /api/carrito/comprar/mercadopago
+ * Recibe: { usuarioId, productos: [{ productoId, cantidad, precio, descuento }] }
+ * Devuelve: { init_point } -> URL para redirigir al pago
+ */
+router.post(
+  '/api/carrito/comprar/mercadopago',
+  verificarToken,
+  permitirSolo(['ROLE_ADMINISTRADOR', 'ROLE_CLIENTE']),
+  async (req, res) => {
+    const { usuarioId, productos: productosFront } = req.body;
+
+    // Basic input validation
+    if (!usuarioId || !Array.isArray(productosFront) || productosFront.length === 0) {
+      return res.status(400).json({ error: 'Faltan datos requeridos' });
+    }
+
+    try {
+      // Fetch the cart
+      const carrito = await Carrito.findOne({ usuario: usuarioId });
+      if (!carrito) {
+        return res.status(404).json({ error: 'Carrito no encontrado' });
+      }
+
+      const itemsMP = [];
+      const respuesta = [];
+
+      // Validate all products using verificarProductoCarrito
+      for (const pFront of productosFront) {
+        const check = await verificarProductoCarrito({
+          productoId: pFront.productoId,
+          cantidad: pFront.cantidad,
+          precio: pFront.precio,
+          descuento: pFront.descuento,
+          carrito,
+        });
+
+        const responseItem = {
+          productoId: pFront.productoId,
+          estado_final: check.valido ? 'ok' : 'error',
+          motivo: check.valido ? undefined : check.motivo,
+        };
+
+        // Include additional error details if present
+        if (!check.valido) {
+          if (check.cantidad_actual !== undefined) responseItem.cantidad_actual = check.cantidad_actual;
+          if (check.precio_actual !== undefined) responseItem.precio_actual = check.precio_actual;
+          if (check.descuento_actual !== undefined) responseItem.descuento_actual = check.descuento_actual;
+          if (check.stock_maximo_permitido !== undefined) responseItem.stock_maximo_permitido = check.stock_maximo_permitido;
+          if (check.max_unidades_permitidas !== undefined) responseItem.max_unidades_permitidas = check.max_unidades_permitidas;
+          if (check.fecha_vigencia !== undefined) responseItem.fecha_vigencia = check.fecha_vigencia;
+          if (check.ultima_modificacion !== undefined) responseItem.ultima_modificacion = check.ultima_modificacion;
+        } else {
+          // Add item for Mercado Pago
+          const precioFinal = pFront.descuento
+            ? pFront.precio * (1 - pFront.descuento / 100)
+            : pFront.precio;
+          itemsMP.push({
+            title: check.producto.nombre,
+            quantity: pFront.cantidad,
+            currency_id: 'ARS',
+            unit_price: Number(precioFinal.toFixed(2)),
+          });
+        }
+
+        respuesta.push(responseItem);
+      }
+
+      // Check for errors
+      if (respuesta.some(p => p.estado_final === 'error')) {
+        return res.status(400).json({
+          error: 'validaciones_fallidas',
+          productos: respuesta,
+        });
+      }
+
+      // Create Mercado Pago preference
+      const preference = new Preference(mpClient);
+
+      const result = await preference.create({ body: {
+        items: itemsMP,
+        back_urls: {
+          success: 'http://localhost:3000/success',
+          failure: 'http://localhost:3000/failure',
+          pending: 'http://localhost:3000/pending',
+        },
+        // auto_return: 'approved'
+      }});
+
+      const { init_point, sandbox_init_point } = result; // result ya es el body
+
+      return res.json({
+        success: true,
+        init_point,
+        sandbox_init_point,
+      });
+
+    } catch (error) {
+      console.error('Error en /api/carrito/comprar/mercadopago:', error);
+      return res.status(500).json({ error: 'Error interno al generar preferencia' });
+    }
+  }
+);
 
 
 export default router;
