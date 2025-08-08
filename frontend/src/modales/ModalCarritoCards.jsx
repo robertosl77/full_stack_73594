@@ -11,21 +11,24 @@ function ModalCarritoCards({ items, estado, confirmarCompra, modificarEstado, el
   return (
     <div className="product-cards-container">
       {items.length > 0 ? (
-        items.map((item) => (
-          <Card key={`${estado}-${item.idProducto}`} className="mb-3 product-card">
+        items.map((item, index) => (
+          <Card key={`${estado}-${item.idProducto}-${index}`} className="mb-3 product-card">
             <Card.Body>
               <Card.Title className="product-card-title">{item.nombre}</Card.Title>
               <div className="product-card-details">
                 <div className="d-flex align-items-center gap-2">
                   <strong className="mb-0">Cantidad:</strong>
                   {estado === "activos" ? (
-                    <CantidadSelector
-                      cantidad={item.cantidad_solicitada}
-                      stock={item.stock_actual}
-                      productoId={item.idProducto}
-                      usuarioId={usuarioId}
-                      onCambio={onCambio}
-                    />
+                    <div className="w-25">
+                        <CantidadSelector
+                        className="cantidad-selector-limit"
+                        cantidad={item.cantidad_solicitada}
+                        stock={item.stock_actual}
+                        productoId={item.idProducto}
+                        usuarioId={usuarioId}
+                        onCambio={onCambio}
+                        />
+                    </div>
                   ) : (
                     item.cantidad_solicitada
                   )}
