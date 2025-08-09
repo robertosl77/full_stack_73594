@@ -10,13 +10,14 @@ import {
 import { verificarToken, permitirSolo } from "../utils/token.js"
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 
+import 'dotenv/config';
+
 // Configuración de la cuenta vendedor
 const mpClient = new MercadoPagoConfig({
-  accessToken: 'TEST-4943175425916915-080618-fbd7f90c7bc08a3df133f723b3a5cffe-11191160'
+  accessToken: 'APP_USR-7864491171995430-080913-00048a198de625715fb144dd73a58a23-2611935094'
 });
 
 const router = express.Router();
-
 
 // src/routes/carrito.routes.js
 router.get(
@@ -596,14 +597,18 @@ router.post(
       // Create Mercado Pago preference
       const preference = new Preference(mpClient);
 
+      // tomar de .env y quitar / final si lo hubiera
+      const FRONTEND_URL = (process.env.FRONTEND_URL || 'http://localhost:3000/integrador3').replace(/\/$/, '');
+      console.log('FRONTEND_URL:', FRONTEND_URL);
+
       const result = await preference.create({ body: {
         items: itemsMP,
         back_urls: {
-          success: 'http://localhost:3000/success',
-          failure: 'http://localhost:3000/failure',
-          pending: 'http://localhost:3000/pending',
+          success: `${FRONTEND_URL}/mp-success`,
+          failure: `${FRONTEND_URL}/mp-failure`,
+          pending: `${FRONTEND_URL}/mp-pending`,
         },
-        // auto_return: 'approved'
+        // auto_return: 'approved',
       }});
 
       const { init_point, sandbox_init_point } = result; // result ya es el body
