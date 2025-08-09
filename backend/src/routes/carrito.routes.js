@@ -608,7 +608,7 @@ router.post(
           failure: `${FRONTEND_URL}/mp-failure`,
           pending: `${FRONTEND_URL}/mp-pending`,
         },
-        // auto_return: 'approved',
+        auto_return: 'approved',
       }});
 
       const { init_point, sandbox_init_point } = result; // result ya es el body
