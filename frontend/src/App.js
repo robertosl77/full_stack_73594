@@ -110,11 +110,8 @@ function App() {
           />
         )}
         <Routes>
-          <Route path="/" element={<Navigate to={`${basedir}/login`} />} />
-          <Route
-            path={`${basedir}/login`}
-            element={user ? <Navigate to={`${basedir}/productos`} /> : <Login />}
-          />
+          <Route path="/" element={<Navigate to={`/${basedir}/login`} replace />} />
+          <Route path={`/${basedir}/login`} element={user ? <Navigate to={`/${basedir}/productos`} replace /> : <Login />} />
           <Route
             path={`${basedir}/productos`}
             element={
