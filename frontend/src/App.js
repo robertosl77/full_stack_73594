@@ -14,6 +14,8 @@ import ModalCarrito from "./modales/ModalCarrito";
 import { apiFetch } from "./utils/apiFetch";
 import PingSpinner from './components/PingSpinner';
 import { esVista } from "./utils/tokenUtils";
+import MpSuccess from "./mercadopago/MpSuccess";
+import MpFailure from "./mercadopago/MpFailure";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -178,7 +180,10 @@ function App() {
               )
             }
           />
+          <Route path={`${basedir}/mp-success`} element={<MpSuccess />} />          
+          <Route path={`${basedir}/mp-failure`} element={<MpFailure />} />
         </Routes>
+
         {user && (
           <ModalCarrito
             show={showModalCarrito}

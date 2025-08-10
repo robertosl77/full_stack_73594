@@ -7,7 +7,7 @@ export default function MpSuccess() {
 
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
-    const status = q.get("status");
+    const status = q.get("status") || q.get("collection_status");
     const checkout = sessionStorage.getItem("checkout");
 
     if (status !== "approved" || !checkout) {
