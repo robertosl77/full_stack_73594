@@ -605,8 +605,8 @@ router.post(
         items: itemsMP,
         back_urls: {
           success: `${FRONTEND_URL}/mp-success`,
-          failure: `${FRONTEND_URL}/mp-failure`,
-          pending: `${FRONTEND_URL}/mp-pending`,
+          failure: `${FRONTEND_URL}/productos?cart=1`,
+          pending: `${FRONTEND_URL}/productos?cart=1`,
         },
         auto_return: 'approved',
       }});

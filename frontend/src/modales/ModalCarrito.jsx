@@ -5,6 +5,7 @@ import { Modal, Button, Tab, Nav } from "react-bootstrap"
 import { apiFetch } from "../utils/apiFetch"
 import ModalCarritoCards from "./ModalCarritoCards"
 import ModalCarritoTabla from "./ModalCarritoTabla"
+import Swal from 'sweetalert2';
 
 function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito }) {
   const [key, setKey] = useState("activos")
@@ -50,27 +51,33 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
     return Number((((100 - d) / 100) * base).toFixed(2))
   }
 
-  const confirmarCompra = async (productoId) => {
+  const iniciarPagoMercadoPago = async (productoId) => {
     try {
-      let productosParaComprar = []
+      let productosParaComprar = [];
 
       if (productoId) {
-        const p = carrito.activos.find((p) => p.idProducto === productoId)
-        if (!p) return
+        const p = carrito.activos.find((p) => p.idProducto === productoId);
+        if (!p) return;
         productosParaComprar.push({
           productoId: p.idProducto,
           cantidad: p.cantidad_solicitada,
           precio: p.precio_original,
           descuento: p.descuento_original,
-        })
+        });
       } else {
         productosParaComprar = carrito.activos.map((p) => ({
           productoId: p.idProducto,
           cantidad: p.cantidad_solicitada,
           precio: p.precio_original,
           descuento: p.descuento_original,
-        }))
+        }));
       }
+
+      // Guardar en sessionStorage para usar al volver de MP
+      sessionStorage.setItem(
+        "checkout",
+        JSON.stringify({ usuarioId: user._id, productos: productosParaComprar })
+      );
 
       const mpRes = await apiFetch("/api/carrito/comprar/mercadopago", {
         method: "POST",
@@ -78,28 +85,24 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
           usuarioId: user._id,
           productos: productosParaComprar,
         }),
-      })
+      });
 
       if (!mpRes.success) {
-        alert("Error al generar pago: " + (mpRes.error || "Desconocido"))
-        return
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al generar pago',
+          text: mpRes.error || 'Desconocido',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Aceptar'
+        });
+        return;
       }
 
-      window.location.href = mpRes.init_point
-
-      await apiFetch("/api/carrito/comprar", {
-        method: "PUT",
-        body: JSON.stringify({
-          usuarioId: user._id,
-          productos: productosParaComprar,
-        }),
-      })
-
-      await refrescarCarrito()
+      window.location.href = mpRes.init_point; // Redirigir a MP
     } catch (err) {
-      console.error("Error al confirmar compra:", err)
+      console.error("Error al iniciar pago MP:", err);
     }
-  }
+  };
 
   const modificarEstado = async (productoId, nuevoEstado) => {
     try {
@@ -199,7 +202,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                   variant="success"
                   className="fw-bold text-white px-3 py-1 rounded text-uppercase border-2 shadow-sm"
                   style={{ fontSize: "0.9rem", height: "38px", lineHeight: "1", display: "flex", alignItems: "center" }}
-                  onClick={() => confirmarCompra()}
+                  onClick={() => iniciarPagoMercadoPago()}
                   disabled={carrito.activos.length === 0 || carrito.activos.some(p => p.cantidad_solicitada > p.stock_actual)}
                 >
                   🛒 Comprar todo
@@ -213,7 +216,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                 <ModalCarritoCards
                   items={carrito.activos}
                   estado="activos"
-                  confirmarCompra={confirmarCompra}
+                  iniciarPagoMercadoPago={iniciarPagoMercadoPago}
                   modificarEstado={modificarEstado}
                   eliminar={eliminar}
                   verFacturacion={verFacturacion}
@@ -224,7 +227,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                 <ModalCarritoTabla
                   items={carrito.activos}
                   estado="activos"
-                  confirmarCompra={confirmarCompra}
+                  iniciarPagoMercadoPago={iniciarPagoMercadoPago}
                   modificarEstado={modificarEstado}
                   eliminar={eliminar}
                   verFacturacion={verFacturacion}
@@ -238,7 +241,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                 <ModalCarritoCards
                   items={carrito.reservados}
                   estado="reservados"
-                  confirmarCompra={confirmarCompra}
+                  iniciarPagoMercadoPago={iniciarPagoMercadoPago}
                   modificarEstado={modificarEstado}
                   eliminar={eliminar}
                   verFacturacion={verFacturacion}
@@ -249,7 +252,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                 <ModalCarritoTabla
                   items={carrito.reservados}
                   estado="reservados"
-                  confirmarCompra={confirmarCompra}
+                  iniciarPagoMercadoPago={iniciarPagoMercadoPago}
                   modificarEstado={modificarEstado}
                   eliminar={eliminar}
                   verFacturacion={verFacturacion}
@@ -263,7 +266,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                 <ModalCarritoCards
                   items={carrito.comprados}
                   estado="comprados"
-                  confirmarCompra={confirmarCompra}
+                  iniciarPagoMercadoPago={iniciarPagoMercadoPago}
                   modificarEstado={modificarEstado}
                   eliminar={eliminar}
                   verFacturacion={verFacturacion}
@@ -274,7 +277,7 @@ function ModalCarrito({ show, onHide, user, actualizarStock, setCantidadCarrito 
                 <ModalCarritoTabla
                   items={carrito.comprados}
                   estado="comprados"
-                  confirmarCompra={confirmarCompra}
+                  iniciarPagoMercadoPago={iniciarPagoMercadoPago}
                   modificarEstado={modificarEstado}
                   eliminar={eliminar}
                   verFacturacion={verFacturacion}

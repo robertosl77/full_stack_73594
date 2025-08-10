@@ -1,6 +1,6 @@
 {
   "name": "integrador3",
-  "version": "2.12.6",
+  "version": "2.12.8",
   "type": "module",
   "description": "proyecto del integrador con react y mongodb",
   "main": "index.js",

@@ -7,7 +7,7 @@ const precioConDescuento = (item) => {
   return Number((((100 - d) / 100) * base).toFixed(2))
 }
 
-function ModalCarritoTabla({ items, estado, confirmarCompra, modificarEstado, eliminar, verFacturacion, usuarioId, onCambio }) {
+function ModalCarritoTabla({ items, estado, iniciarPagoMercadoPago, modificarEstado, eliminar, verFacturacion, usuarioId, onCambio }) {
   return (
     <Table striped bordered hover responsive>
       <thead>
@@ -73,7 +73,7 @@ function ModalCarritoTabla({ items, estado, confirmarCompra, modificarEstado, el
                         name="btnComprar"
                         size="sm"
                         variant="success"
-                        onClick={() => confirmarCompra(item.idProducto)}
+                        onClick={() => iniciarPagoMercadoPago(item.idProducto)}
                         className="me-2"
                         disabled={item.cantidad_solicitada > item.stock_actual}
                       >

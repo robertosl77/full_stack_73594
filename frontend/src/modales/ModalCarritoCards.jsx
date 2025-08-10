@@ -7,7 +7,7 @@ const precioConDescuento = (item) => {
   return Number((((100 - d) / 100) * base).toFixed(2))
 }
 
-function ModalCarritoCards({ items, estado, confirmarCompra, modificarEstado, eliminar, verFacturacion, usuarioId, onCambio }) {
+function ModalCarritoCards({ items, estado, iniciarPagoMercadoPago, modificarEstado, eliminar, verFacturacion, usuarioId, onCambio }) {
   return (
     <div className="product-cards-container">
       {items.length > 0 ? (
@@ -59,7 +59,7 @@ function ModalCarritoCards({ items, estado, confirmarCompra, modificarEstado, el
                     {estado === "activos" && (
                       <>
                         <Dropdown.Item
-                          onClick={() => confirmarCompra(item.idProducto)}
+                          onClick={() => iniciarPagoMercadoPago(item.idProducto)}
                           disabled={item.cantidad_solicitada > item.stock_actual}
                         >
                           Comprar
