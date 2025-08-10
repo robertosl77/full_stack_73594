@@ -125,7 +125,7 @@ const Login = () => {
       `}</style>
 
       {/* CONTENIDO */}
-      <div className="login-container vh-100 d-flex align-items-center justify-content-center">
+      <div className="login-container vh-100 d-flex align-items-start justify-content-center">
         <div className="bodega-wrapper p-4 pb-3">
           <div className="text-center">
             <img
