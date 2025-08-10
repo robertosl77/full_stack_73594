@@ -1,15 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import packageJson from "../../package.json"; // lee versión frontend
 import LoginForm from "./LoginForm";
 import LoginGoogle from "./LoginGoogle";
 import LoginFacebook from "./LoginFacebook";
 import LoginInvitado from "./LoginInvitado";
 
 const Login = () => {
+  const basedir = process.env.REACT_APP_BASEDIR;
+  const url = process.env.REACT_APP_URL;
+
+  const [backendVersion, setBackendVersion] = useState(null);
+
+  useEffect(() => {
+    const fetchVersion = async () => {
+      try {
+        const res = await fetch(`${url}/${basedir}/api/version`, {
+          method: "GET",
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (data.success) setBackendVersion(data.version);
+      } catch (err) {
+        console.error("Error obteniendo versión backend:", err);
+      }
+    };
+
+    fetchVersion();
+  }, [url, basedir]);
+
   return (
     <>
-      {/* Bootstrap 5.3.5 */}
+      {/* Bootstrap 5.3.3 */}
       <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
         crossOrigin="anonymous"
       />
@@ -24,7 +47,7 @@ const Login = () => {
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
       />
 
-      {/*  ESTILOS  */}
+      {/* ESTILOS */}
       <style>{`
         :root {
           --bodega-terracota: #7d2e18;
@@ -34,22 +57,16 @@ const Login = () => {
           --bodega-gold: #c9a95c;
         }
 
-        body {
+        .login-container {
           margin: 0;
           font-family: "Lora", serif;
           background: url("https://images.unsplash.com/photo-1585559606442-93d3e1a0e3d4?auto=format&fit=crop&w=1350&q=80")
             no-repeat center center/cover fixed;
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          padding-top: 0px;
-          justify-content: center;
         }
 
         .bodega-wrapper {
           width: 100%;
           max-width: 430px;
-          padding: 2rem 2rem 1.5rem;
           background: rgba(76, 30, 30, 0.75);
           backdrop-filter: blur(6px);
           border: 1px solid var(--bodega-gold);
@@ -63,40 +80,28 @@ const Login = () => {
           font-weight: 600;
           font-size: 2.2rem;
           color: var(--bodega-gold);
-          text-align: center;
-          margin-bottom: 0;
         }
 
         .bodega-subtitle {
           font-style: italic;
           font-size: 1rem;
           color: var(--bodega-cream);
-          text-align: center;
-          margin-bottom: 1rem;
         }
 
         .bodega-logo {
           width: 100px;
           filter: sepia(100%) saturate(200%) hue-rotate(15deg) drop-shadow(0 2px 4px rgba(0,0,0,.4));
-          margin-bottom: 1rem;
         }
 
-        .divider-bodega {
-          display: flex;
-          align-items: center;
-          margin: 0.5rem 0 0.25rem;
-          color: var(--bodega-gold);
-          font-size: 0.9rem;
-        }
-        .divider-bodega::before,
-        .divider-bodega::after {
-          content: "";
-          flex: 1;
+        .divider-line {
           height: 1px;
           background: var(--bodega-roble);
         }
-        .divider-bodega::before { margin-right: 1rem; }
-        .divider-bodega::after  { margin-left: 1rem; }
+
+        .divider-text {
+          color: var(--bodega-gold);
+          font-size: 0.9rem;
+        }
 
         .btn-bodega {
           background: var(--bodega-gold);
@@ -115,56 +120,65 @@ const Login = () => {
         .footer-bodega {
           font-size: 0.75rem;
           color: var(--bodega-cream);
-          text-align: center;
-          margin-top: 1rem;
           opacity: .8;
         }
       `}</style>
 
-      {/*  CONTENIDO  */}
-      <div className="bodega-wrapper">
-        <div className="text-center">
-          <img
-            className="bodega-logo"
-            src="/img_logo/educacionit_logo.jpeg"
-            alt="Logo de la bodega"
-          />
-          <h1 className="bodega-title">Bodega Integrador3</h1>
-          <p className="bodega-subtitle">Reserva exclusiva · Acceso socios</p>
+      {/* CONTENIDO */}
+      <div className="login-container vh-100 d-flex align-items-center justify-content-center">
+        <div className="bodega-wrapper p-4 pb-3">
+          <div className="text-center">
+            <img
+              className="bodega-logo mb-3"
+              src="/img_logo/educacionit_logo.jpeg"
+              alt="Logo de la bodega"
+            />
+            <h1 className="bodega-title mb-0">Bodega Integrador3</h1>
+            <p className="bodega-subtitle mb-3">Reserva exclusiva · Acceso socios</p>
+          </div>
+
+          {/* Formularios de acceso */}
+          <LoginForm />
+
+          <div className="d-flex align-items-center my-2 mb-1">
+            <hr className="divider-line flex-grow-1 me-3" />
+            <span className="divider-text">o continúa con</span>
+            <hr className="divider-line flex-grow-1 ms-3" />
+          </div>
+          <div className="d-grid gap-0">
+            <LoginGoogle />
+            <LoginFacebook />
+          </div>
+
+          <div className="d-flex align-items-center my-2 mb-1">
+            <hr className="divider-line flex-grow-1 me-3" />
+            <span className="divider-text">¿Eres visitante?</span>
+            <hr className="divider-line flex-grow-1 ms-3" />
+          </div>
+          <div className="d-grid gap-0">
+            <LoginInvitado 
+              rol="ROLE_CONSULTA"
+              caption="Ingresar como Invitado"
+            />
+            <LoginInvitado 
+              rol="ROLE_CLIENTE"
+              caption="Ingresar como Cliente"
+            />
+            <LoginInvitado 
+              rol="ROLE_ADMINISTRADOR"
+              caption="Ingresar como Administrador"
+            />
+          </div>
+
+          <p className="footer-bodega mt-3 text-center">
+            Front: v{packageJson.version} — Back: v{backendVersion || "…"} <br />
+            © 2025 — Desarrollado por robertosl77@gmail.com
+          </p>
         </div>
-
-        {/* Formularios de acceso */}
-        <LoginForm />
-
-        <div className="divider-bodega">o continúa con</div>
-        <div className="d-grid gap-0">
-          <LoginGoogle />
-          <LoginFacebook />
-        </div>
-
-        <div className="divider-bodega">¿Eres visitante?</div>
-        <div className="d-grid gap-0">
-          <LoginInvitado 
-            rol="ROLE_CONSULTA"
-            caption="Ingresar como Invitado"
-          />
-          <LoginInvitado 
-            rol="ROLE_CLIENTE"
-            caption="Ingresar como Cliente"
-          />
-          <LoginInvitado 
-            rol="ROLE_ADMINISTRADOR"
-            caption="Ingresar como Administrador"
-          />
-        </div>
-
-        <p className="footer-bodega">
-          © 2025 — Desarrollado por robertosl77@gmail.com
-        </p>
       </div>
 
       <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         crossOrigin="anonymous"
       />
     </>

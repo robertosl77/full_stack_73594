@@ -3,6 +3,8 @@ import express from "express"
 import bcrypt from "bcrypt"
 import Usuario from "../models/usuario.js"
 import { generarTokenUsuario } from "../utils/token.js"
+import fs from "fs";
+import path from "path";
 
 const router = express.Router()
 
@@ -217,5 +219,17 @@ async function procesarLoginSocialMultiple({ proveedor, idSocial, email, nombre,
     proveedor: proveedor,
   };
 }
+
+// Nueva ruta para versión
+router.get("/api/version", (req, res) => {
+  try {
+    const packageJsonPath = path.join(process.cwd(), "package.json");
+    const pkg = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+    res.json({ success: true, version: pkg.version });
+  } catch (err) {
+    console.error("Error leyendo versión backend:", err);
+    res.status(500).json({ success: false, error: "No se pudo obtener versión" });
+  }
+});
 
 export default router
