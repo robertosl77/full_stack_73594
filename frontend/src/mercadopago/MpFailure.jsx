@@ -1,3 +1,4 @@
+// src/mercadopago/MpFailure.jsx
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -8,14 +9,11 @@ export default function MpFailure() {
 
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
-    const raw =
-      (q.get("status") || q.get("collection_status") || "").toLowerCase();
+    const raw = (q.get("status") || q.get("collection_status") || "").toLowerCase();
     const status = (!raw || raw === "null") ? "canceled" : raw;
 
-    // limpiar intento previo
     sessionStorage.removeItem("checkout");
 
-    // mensaje
     let title = "Operación no completada";
     let text = "Tu pago no se pudo completar.";
     if (status === "canceled") {
@@ -29,11 +27,15 @@ export default function MpFailure() {
       text = "La operación quedó pendiente de validación.";
     }
 
-    Swal.fire({ icon: "info", title, text, confirmButtonText: "Volver" })
-      .then(() => {
-        navigate(`${basedir}/productos?cart=1`, { replace: true });
-      });
+    Swal.fire({
+      icon: "info",
+      title,
+      text,
+      confirmButtonText: "Volver"
+    }).then(() => {
+      navigate(`${basedir}/productos`, { replace: true });
+    });
   }, [navigate, basedir]);
 
-  return <div className="p-4">Redirigiendo…</div>;
+  return null;
 }
