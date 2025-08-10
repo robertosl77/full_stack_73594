@@ -33,6 +33,7 @@ export default function MpFailure() {
       text,
       confirmButtonText: "Volver"
     }).then(() => {
+      window.dispatchEvent(new Event("cart:refresh"));
       navigate(`${basedir}/productos`, { replace: true });
     });
   }, [navigate, basedir]);

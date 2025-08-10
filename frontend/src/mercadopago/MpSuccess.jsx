@@ -39,7 +39,7 @@ export default function MpSuccess() {
         });
       } finally {
         sessionStorage.removeItem("checkout");
-        sessionStorage.setItem("forceCartRefresh", "1"); // flag para refrescar contador
+        window.dispatchEvent(new Event("cart:refresh"));
         navigate(`${basedir}/productos`, { replace: true });
       }
     })();

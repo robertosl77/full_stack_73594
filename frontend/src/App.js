@@ -51,6 +51,23 @@ function App() {
   }, [user]);  
 
   useEffect(() => {
+    if (!user) return;
+
+    const refrescarCantidad = async () => {
+      try {
+        const res = await apiFetch(`/api/carrito/cantidad`);
+        const data = await res;
+        if (typeof data.cantidad === "number") setCantidadCarrito(data.cantidad);
+      } catch (e) {
+        console.error("Error al refrescar cantidad del carrito:", e);
+      }
+    };
+
+    window.addEventListener("cart:refresh", refrescarCantidad);
+    return () => window.removeEventListener("cart:refresh", refrescarCantidad);
+  }, [user]);  
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
