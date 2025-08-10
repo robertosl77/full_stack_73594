@@ -1,4 +1,3 @@
-// src/mercadopago/MpSuccess.jsx
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -11,7 +10,7 @@ export default function MpSuccess() {
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
     const status = (q.get("status") || q.get("collection_status") || "").toLowerCase();
-    const comprobante = q.get("payment_id") || q.get("collection_id"); // nro MP
+    const comprobante = q.get("payment_id") || q.get("collection_id");
     const checkout = sessionStorage.getItem("checkout");
 
     if (status !== "approved" || !checkout) {
@@ -24,18 +23,32 @@ export default function MpSuccess() {
       try {
         const payload = JSON.parse(checkout);
         await apiFetch("/api/carrito/comprar", { method: "PUT", body: JSON.stringify(payload) });
-        await Swal.fire({
+
+        // copiar comprobante (si existe)
+        if (comprobante) {
+          try { await navigator.clipboard.writeText(comprobante); } catch {}
+        }
+
+        // toast verde con barra y “copiando…”
+        Swal.fire({
+          toast: true,
+          position: "bottom-end",
           icon: "success",
-          title: "Pago aprobado",
-          html: `<div>Comprobante: <b>${comprobante || "—"}</b></div>`,
-          timer: 1800,
+          title: "Pago confirmado",
+          html: `Comprobante <b>#${comprobante || "—"}</b> — copiando…`,
           showConfirmButton: false,
+          timer: 2600,
+          timerProgressBar: true,
         });
-      } catch (e) {
-        await Swal.fire({
+      } catch {
+        Swal.fire({
+          toast: true,
+          position: "bottom-end",
           icon: "error",
           title: "No se pudo confirmar la compra",
-          text: "Revisá tu carrito.",
+          showConfirmButton: false,
+          timer: 2600,
+          timerProgressBar: true,
         });
       } finally {
         sessionStorage.removeItem("checkout");
@@ -45,5 +58,5 @@ export default function MpSuccess() {
     })();
   }, [navigate, basedir]);
 
-  return null; // nada en pantalla (evita “Procesando…”)
+  return null;
 }
