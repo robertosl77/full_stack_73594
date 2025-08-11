@@ -25,7 +25,7 @@ function Navbar({ user, cantidadCarrito, setShowModalCarrito }) {
     >
       <div className="container-fluid">
         <Link className="navbar-brand" to={`${basedir}/productos`}>
-          <img src="/img_logo/logo.png" alt="Logo" style={{ height: "40px" }} />
+          <img src="/img_logo/logo.png" alt="Logo" className="rounded-2" style={{ height: "40px" }} />
         </Link>
 
         <button
@@ -39,7 +39,7 @@ function Navbar({ user, cantidadCarrito, setShowModalCarrito }) {
         </button>
 
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav me-auto">
+          <ul className="navbar-nav me-auto text-start">
             <li className="nav-item">
               <Link
                 className={`nav-link ${
