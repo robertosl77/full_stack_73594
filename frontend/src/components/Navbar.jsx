@@ -20,7 +20,7 @@ function Navbar({ user, cantidadCarrito, setShowModalCarrito }) {
 
   return (
     <nav
-      className="navbar navbar-expand-lg bg-dark border-bottom border-body fixed-top"
+      className="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-body fixed-top"
       data-bs-theme="dark"
     >
       <div className="container-fluid">
@@ -29,12 +29,13 @@ function Navbar({ user, cantidadCarrito, setShowModalCarrito }) {
         </Link>
 
         <button
-          className="navbar-toggler"
+          className="navbar-toggler border border-light-subtle"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
+          aria-label="Abrir menú"
         >
-          <span className="navbar-toggler-icon"></span>
+          <span className="navbar-toggler-icon" style={{ filter: "invert(1)" }} />
         </button>
 
         <div className="collapse navbar-collapse" id="navbarNav">
